@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SWall</string>
+    <string name="launch_camera_fail">摄像头启动失败</string>
+    <string name="collection_tab_name">采集资源</string>
+    <string name="activities_tab_name">活动</string>
+    <string name="settings_tab_name">设置</string>
+    <string name="timeline_tab_name">时间线</string>
 </resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"
+             android:layout_column="2"
+             android:layout_row="3"
+             android:weightSum="4"
+             android:id="@+id/collection"
+        >
+
+    <TableRow
+            android:layout_width="match_parent"
+            android:weightSum="2"
+            android:layout_weight="1"
+            android:paddingBottom="1dp">
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:id="@+id/btnPhoto"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:src="@drawable/btn_photo"
+                android:background="@drawable/btn_bg"
+                android:layout_marginRight="1dp"/>
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:src="@drawable/btn_text"
+                android:id="@+id/btnText"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/btn_bg"
+                />
+    </TableRow>
+
+    <TableRow
+            android:layout_width="match_parent"
+            android:weightSum="2"
+            android:layout_weight="1"
+            android:paddingBottom="1dp">
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:id="@+id/btnRecordVideo"
+                android:src="@drawable/btn_video_record"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/btn_bg"
+
+                android:layout_marginRight="1dp"/>
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:id="@+id/btnDraw"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/btn_bg"
+                android:src="@drawable/btn_draw"
+                />
+    </TableRow>
+    <TableRow
+            android:layout_width="match_parent"
+            android:weightSum="2"
+            android:layout_weight="1">
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:id="@+id/btnRecordAudio"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/btn_bg"
+                android:src="@drawable/btn_audio_record"
+
+                android:layout_marginRight="1dp"/>
+        <ImageButton
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@null"
+                android:id="@+id/btnJoinActivity"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:background="@drawable/btn_bg"
+                android:src="@drawable/btn_join_activity"
+                />
+    </TableRow>
+
+
+
+</TableLayout>
