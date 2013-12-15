@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import com.example.SWall.services.MyApplication;
 
 import java.lang.ref.WeakReference;
 
@@ -13,14 +14,16 @@ import java.lang.ref.WeakReference;
  * Time: 上午2:02
  */
 public abstract class TabFrame {
-    protected WeakReference<Activity> mActivityRef;
+    protected WeakReference<BaseActivity> mActivityRef;
+    protected MyApplication mApp;
     protected View mView;
-    protected Activity getActivity(){
+    protected BaseActivity getActivity(){
         return mActivityRef.get();
     }
 
-    public void setActivity(Activity activity){
-        mActivityRef = new WeakReference<Activity>(activity);
+    public void setActivity(BaseActivity activity){
+        mActivityRef = new WeakReference<BaseActivity>(activity);
+        mApp = activity.mApp;
     }
     public void startActivityForResult(Intent i,int reqCode){
         getActivity().startActivityForResult(i,reqCode);
@@ -53,4 +56,7 @@ public abstract class TabFrame {
 
     }
     public abstract View onCreateView(LayoutInflater inflater);
+    public void afterCreatView(){
+
+    }
 }

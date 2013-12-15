@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import com.example.SWall.SWallApplication;
+import com.example.SWall.services.ServiceManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -12,8 +12,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -31,9 +29,9 @@ public class HttpUtils {
             @Override
             public void run() {
                 URL url = null;
-                Message msg = dataHandler.obtainMessage(SWallApplication.ACTION_LOGIN);
+                Message msg = dataHandler.obtainMessage(ServiceManager.Constants.ACTION_LOGIN);
                 Bundle data = new Bundle();
-                data.putBoolean(SWallApplication.KEY_STATUS,false);
+                data.putBoolean(ServiceManager.Constants.KEY_STATUS,false);
                 msg.setData(data);
 
                 HttpGet httpRequest = new HttpGet(DATA_URL_PREFIX+userName+"/"+password);
@@ -42,7 +40,8 @@ public class HttpUtils {
                     HttpResponse httpResponse = httpclient.execute(httpRequest);
                     Log.i(TAG,"status:"+httpResponse.getStatusLine());
                     Log.i(TAG,"content:"+ EntityUtils.toString(httpResponse.getEntity()));
-                    data.putBoolean(SWallApplication.KEY_STATUS, true);
+                    data.putBoolean(ServiceManager.Constants.KEY_STATUS, true);
+                    // TODO other info
                 } catch (IOException e) {
                     Log.e(TAG, "doLogin", e);
                 }

@@ -7,10 +7,19 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="helo setting"
-            android:id="@+id/textView"
+            android:text="user:"
+            android:id="@+id/tvCurrentLogin"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="50dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="16dp"/>
+
+    <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Auto Login"
+            android:id="@+id/cbSettingsAutoLogin"
+            android:layout_alignLeft="@+id/tvCurrentLogin"
+            android:layout_below="@+id/tvCurrentLogin"
+            android:checked="false"/>
 </RelativeLayout>

@@ -6,4 +6,14 @@
     <string name="activities_tab_name">活动</string>
     <string name="settings_tab_name">设置</string>
     <string name="timeline_tab_name">时间线</string>
+    <string name="remote_service_started">数据服务运行中...</string>
+    <string name="remote_service_stopped">数据服务已停止</string>
+    <string name="remote_service_label">数据服务</string>
+    <string name="remote_service_disconnected">数据服务断开</string>
+    <string name="remote_service_connected">数据服务已连接</string>
+    <string name="login_progress_signing_in">登录中...</string>
+    <string name="action_login">登录</string>
+    <string name="place_holder_password">请输入密码</string>
+    <string name="place_holder_username">请输入帐号</string>
+    <string name="auto_login">自动登录</string>
 </resources>

@@ -1,8 +1,12 @@
 package com.example.SWall.activity;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.ServiceConnection;
+import android.os.*;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TabHost;
 import com.example.SWall.R;
 
@@ -55,8 +59,8 @@ public class MainActivity extends BaseActivity implements TabHost.TabContentFact
     }
 
     @Override
-    public void onTabChanged(String tabId) {
-
+    public void onTabChanged(String classTag) {
+        mTabFrames.get(classTag).onResume();
     }
 
     @Override
@@ -67,6 +71,7 @@ public class MainActivity extends BaseActivity implements TabHost.TabContentFact
             tf.setActivity(this);
             mTabFrames.put(classTag, tf);
             return tf.onCreateView(getLayoutInflater());
+
         } catch (Exception e){
             // do nothing
         }
@@ -81,6 +86,9 @@ public class MainActivity extends BaseActivity implements TabHost.TabContentFact
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
         getCurrentTab().onActivityResult(requestCode,resultCode,data);
     }
+
+
 }

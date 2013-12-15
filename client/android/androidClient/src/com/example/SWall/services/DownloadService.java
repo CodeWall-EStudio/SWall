@@ -1,13 +1,19 @@
 package com.example.SWall.services;
 
+import android.content.Context;
 import android.os.Bundle;
 
 /**
  * Created by pxz on 13-12-13.
  */
-public class DownloadService implements IService{
+public class DownloadService extends ActionService {
+
+    public DownloadService(Context context,ServiceManager manager){
+        super(context, manager);
+    }
+
     @Override
-    public void doAction(String action, Bundle data, IServiceCallback callback) {
+    public void doAction(int action, Bundle data, ActionListener callback) {
 
     }
 
