@@ -252,16 +252,15 @@ app.put('/activities/:aid', function(req, res){
                         updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去 TODO 确认一下是不是有这个逻辑
                     }
 
-                    //TODO 超长的字段直接截断
                     if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
-                    if(title)       updates['info.title']           = title;
                     if(type)        updates['info.type']            = type;
-                    if(ts)          updates['info.date']            = new Date(ts);
-                    if(teacher)     updates['info.teacher']         = teacher;
-                    if(grade)       updates['info.grade']           = grade;
-                    if(cls)         updates['info.class']           = cls;
-                    if(subject)     updates['info.subject']         = subject;
-                    if(domain)      updates['info.domain']          = domain;
+                    if(ts)          updates['info.date']            = ts;
+                    if(title)       updates['info.title']           = utf8.substr(title,    0, SHORT_STR_MAXLEN);
+                    if(teacher)     updates['info.teacher']         = utf8.substr(teacher,  0, SHORT_STR_MAXLEN);
+                    if(grade)       updates['info.grade']           = utf8.substr(grade,    0, SHORT_STR_MAXLEN);
+                    if(cls)         updates['info.class']           = utf8.substr(cls,      0, SHORT_STR_MAXLEN);
+                    if(subject)     updates['info.subject']         = utf8.substr(subject,  0, SHORT_STR_MAXLEN);
+                    if(domain)      updates['info.domain']          = utf8.substr(domain,   0, SHORT_STR_MAXLEN);
                 }
                 //否則的話就只能改用戶權限
                 //可以隨便新增用戶，但是只能刪除沒上傳過資源的用戶
@@ -327,7 +326,7 @@ app.post('/activities/:aid/participators', function(req, res){
                 db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
                     if(err)             res.json(500, {c:1, m:err.message});
                     else if(!newDoc)    res.json(401, {c:1});
-                    else                res.json(201, {c:0, r:newDoc.users.participators});
+                    else                res.json(201, {c:0});
                 });
             }
         });
@@ -355,7 +354,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
         db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
             if(err)         res.json(500, {c:1, m:err.message});
             else if(!doc)   res.json(404, {c:1});
-            else            res.json(200, {c:0, r:doc});
+            else            res.json(200, {c:0});
         });
     }
 });
@@ -370,10 +369,10 @@ app.post('/activities/:aid/resources', function(req, res){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             type = parseInt(req.body['type'])||0,
-            content = req.body['content'],
-            comment = req.body['comment'];
+            content = req.body['content'], //TODO 文本内容和url的长度限制是多少？
+            comment = req.body['comment']; //TODO 評論的長度限制是多少？
 
-        if(content && content.length){ //TODO 文本内容和url的长度限制是多少？
+        if(content && content.length){
             //必须是我正在参与的活动哦不可以随便上传到别的活动上去
             var query = {
                     '_id': aid,
@@ -386,7 +385,7 @@ app.post('/activities/:aid/resources', function(req, res){
                     type: type,
                     content: content,
                     comment: comment,
-                    date: new Date()
+                    date: (new Date()).getTime()
                 },
                 updates = {'$push':{'resources':resource}};
 
@@ -394,7 +393,7 @@ app.post('/activities/:aid/resources', function(req, res){
             db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
                 if(err)         res.json(500, {c:1, m:err.message});
                 else if(!doc)   res.json(404, {c:1});
-                else            res.json(201, {c:0, r:doc});
+                else            res.json(201, {c:0});
             });
         }
         else res.json(400, {c:1, m:'Require Content'});
