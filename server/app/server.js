@@ -22,6 +22,11 @@ var app = express();
     next();
 };*/
 //app.use(allowCrossDomain);
+var customHeaders = function(req, res, next){
+    res.header('Content-Type', 'application/json; charset=utf-8');
+    next();
+}
+app.use(customHeaders);
 app.use(express.cookieParser());
 app.use(express.bodyParser());
 
@@ -49,43 +54,51 @@ app.post('/activities', function(req, res){
         //TODO 以后不同的type可能会对应不同的必填字段，后面要考虑下怎么支持
         //TODO 應該把讀取和規整參數、檢查參數規格和是否必填這些操作做成通用可配置
         if(uids.length){
-            if(title && utf8.length(title) <= SHORT_STR_MAXLEN){
-                if(!desc || utf8.length(desc) <= LONG_STR_MAXLEN){ //要不没有desc，如果有则不能超过长度限制
-                    if(type){
-                        if(ts > (new Date()).getTime()){ //活动开始时间必须比现在要晚
-                            if(teacher && utf8.length(teacher) <= SHORT_STR_MAXLEN){
-                                if(grade && utf8.length(grade) <= SHORT_STR_MAXLEN){
-                                    if(cls && utf8.length(cls) <= SHORT_STR_MAXLEN){
-                                        if(subject && utf8.length(subject) <= SHORT_STR_MAXLEN){
-                                            if(domain && utf8.length(domain) <= SHORT_STR_MAXLEN){
-                                                var doc = {
-                                                    users: {creator:uid, invitedUsers:uids, participators:[]},
-                                                    resources: [],
-                                                    active: true,
-                                                    info: {
-                                                        title:title, desc:desc, type:type,
-                                                        date:new Date(ts), createDate:new Date(),
-                                                        teacher:teacher, grade:grade, 'class':cls,
-                                                        subject:subject, domain:domain
-                                                    }
-                                                };
+            if(title){
+                if(type){
+                    if(ts > (new Date()).getTime()){ //活动开始时间必须比现在要晚
+                        if(teacher){
+                            if(grade){
+                                if(cls){
+                                    if(subject){
+                                        if(domain){
+                                            var doc = {
+                                                users: {
+                                                    creator:uid,
+                                                    invitedUsers:uids,
+                                                    participators:[]
+                                                },
+                                                resources: [],
+                                                active: true,
+                                                info: {
+                                                    type:       type,
+                                                    date:       ts,
+                                                    createDate: new Date().getTime(),
+                                                    title:      utf8.substr(title,      0, LONG_STR_MAXLEN),
+                                                    desc:       utf8.substr(desc || '', 0, SHORT_STR_MAXLEN),
+                                                    teacher:    utf8.substr(teacher,    0, SHORT_STR_MAXLEN),
+                                                    grade:      utf8.substr(grade,      0, SHORT_STR_MAXLEN),
+                                                    'class':    utf8.substr(cls,        0, SHORT_STR_MAXLEN),
+                                                    subject:    utf8.substr(subject,    0, SHORT_STR_MAXLEN),
+                                                    domain:     utf8.substr(domain,     0, SHORT_STR_MAXLEN)
+                                                }
+                                            };
 
-                                                console.log('[server] insert document', doc);
-                                                db.activityDataCollection.insert(doc, {w:1}, function(err, newDoc){
-                                                    if(err) res.json(500, {c:1, m:err.message});
-                                                    else    res.json(201, {c:0, r:newDoc});
-                                                });
-                                            }
-                                            else res.json(400, {c:1, m:'Invalid Domain'}); }
-                                        else res.json(400, {c:1, m:'Invalid Subject'}); }
-                                    else res.json(400, {c:1, m:'Invalid Class'}); }
-                                else res.json(400, {c:1, m:'Invalid Grade'}); }
-                            else res.json(400, {c:1, m:'Invalid Teacher'}); }
-                        else res.json(400, {c:1, m:'Invalid Date'}); }
-                    else res.json(400, {c:1, m:'Invalid Type'}); }
-                else res.json(400, {c:1, m:'Invalid Description'}); }
-            else res.json(400, {c:1, m:'Invalid Title'}); }
-        else res.json(400, {c:1, m:'Invalid Uids'});
+                                            console.log('[server] insert document', doc);
+                                            db.activityDataCollection.insert(doc, {w:1}, function(err, newDoc){
+                                                if(err) res.json(500, {c:1, m:err.message});
+                                                else    res.json(201, {c:0, r:newDoc});
+                                            });
+                                        }
+                                        else res.json(400, {c:1, m:'Require Domain'}); }
+                                    else res.json(400, {c:1, m:'Require Subject'}); }
+                                else res.json(400, {c:1, m:'Require Class'}); }
+                            else res.json(400, {c:1, m:'Require Grade'}); }
+                        else res.json(400, {c:1, m:'Require Teacher'}); }
+                    else res.json(400, {c:1, m:'Require Date'}); }
+                else res.json(400, {c:1, m:'Require Type'}); }
+            else res.json(400, {c:1, m:'Require Title'}); }
+        else res.json(400, {c:1, m:'Require Uids'});
     }
 });
 
@@ -101,6 +114,14 @@ app.get('/activities', function(req, res){
                 case 'active': query.active = true;  break;
                 case 'closed': query.active = false; break;
             }
+        }
+        //根據時間戳過濾，只返回指定時間段的活動
+        var afterTs = parseInt(req.query['after']),
+            beforeTs = parseInt(req.query['before']);
+        if(afterTs || beforeTs){
+            query['info.date'] = {};
+            if(afterTs)     query['info.date']['$gt'] = new Date(afterTs);
+            if(beforeTs)    query['info.date']['$lt'] = new Date(beforeTs);
         }
         //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
         //默认会搜索所有符合这些条件的活动
@@ -120,18 +141,18 @@ app.get('/activities', function(req, res){
         }
 
         //起始位置和條數
-        var index = (req.query['index'] || 0)|0;
-        var count = (req.query['count'] || 0)|0;
+        var index = (req.query['index'] || 0)| 0,
+            count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
 
         console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
         db.activityDataCollection
-            .find(query)
+            .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
             .limit(count)
             .skip(index)
             .sort({'info.date':1, 'info.title':1})
             .toArray(function(err, docs){
             if(err) res.json(500, {c:1, m:err.message});
-            else    res.json(200, {c:0, r:docs});
+            else res.json(200, {c:0, r:docs});
         });
     }
 });
@@ -226,12 +247,13 @@ app.put('/activities/:aid', function(req, res){
                 //如果是開放中的活動，則所有字段都可以編輯
                 var updates = {};
                 if(doc.active){
-                    updates['info.desc'] = desc;
                     if(status == 'closed'){
                         updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
                         updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去 TODO 确认一下是不是有这个逻辑
                     }
 
+                    //TODO 超长的字段直接截断
+                    if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
                     if(title)       updates['info.title']           = title;
                     if(type)        updates['info.type']            = type;
                     if(ts)          updates['info.date']            = new Date(ts);
@@ -255,9 +277,10 @@ app.put('/activities/:aid', function(req, res){
 
                 //最後更新一下這個活動
                 console.log('[server] update activity', updates);
-                db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){ //TODO 可以返回修改後的doc不
+                //TODO 已经传入doc给findAndModify的话，应该就不会再搜索一次了吧？确定一下？
+                db.activityDataCollection.findAndModify(doc, null, {$set:updates}, {w:1, new:true}, function(err, doc){
                     if(err) res.json(500, {c:1, m:err.message});
-                    else    res.json(200, {c:0, r:count});
+                    else    res.json(200, {c:0, r:doc});
                 });
             }
         });
@@ -301,10 +324,10 @@ app.post('/activities/:aid/participators', function(req, res){
             else if(doc)    res.json(403, {c:1}); //禁止同时加入多个活动
             else{
                 //好吧这用户还是挺老实的，我们现在把用户插到participators里
-                db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, doc){
-                    if(err)         res.json(500, {c:1, m:err.message});
-                    else if(!doc)   res.json(401, {c:1});
-                    else            res.json(201, {c:0, r:doc});
+                db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
+                    if(err)             res.json(500, {c:1, m:err.message});
+                    else if(!newDoc)    res.json(401, {c:1});
+                    else                res.json(201, {c:0, r:newDoc.users.participators});
                 });
             }
         });
@@ -350,7 +373,7 @@ app.post('/activities/:aid/resources', function(req, res){
             content = req.body['content'],
             comment = req.body['comment'];
 
-        if(content){ //TODO 文本内容和url的长度限制是多少？
+        if(content && content.length){ //TODO 文本内容和url的长度限制是多少？
             //必须是我正在参与的活动哦不可以随便上传到别的活动上去
             var query = {
                     '_id': aid,
@@ -374,7 +397,7 @@ app.post('/activities/:aid/resources', function(req, res){
                 else            res.json(201, {c:0, r:doc});
             });
         }
-        else res.json(400, {c:1, m:'Invalid Content'});
+        else res.json(400, {c:1, m:'Require Content'});
     }
 });
 
@@ -383,7 +406,7 @@ app.get('/activities/:aid/resources', function(req, res){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             index = parseInt(req.query['index'])||0,
-            count = parseInt(req.query['count'])||0,
+            count = (req.query['count'] == undefined ? 20 : req.query['count'])|0,
             query = {
                 '_id': aid,
                 '$or': [
