@@ -1,4 +1,5 @@
-var express = require('express'),
+var fs      = require('fs'),
+    express = require('express'),
     mongodb = require('mongodb'),
     _       = require('underscore')._,
     db      = require('./app_modules/db'),
@@ -6,7 +7,8 @@ var express = require('express'),
     utf8    = require('./app_modules/utf8');
 
 
-var PORT = 8080;
+var PORT = 8080,
+    FILE_UPLOAD_DIRECTORY = '/Users/jojochow/tmp/';
 
 
 var SHORT_STR_MAXLEN = 90,
@@ -14,6 +16,7 @@ var SHORT_STR_MAXLEN = 90,
 
 
 var app = express();
+
 //allows CORS
 /*var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -22,13 +25,24 @@ var app = express();
     next();
 };*/
 //app.use(allowCrossDomain);
+
+//Content-Type & Charset
 var customHeaders = function(req, res, next){
-    res.header('Content-Type', 'application/json; charset=utf-8');
+    var pathComponents = req.path.split('/'); //"/activities" => ["", "activities"]
+    switch (pathComponents[1]){
+        case 'activities':
+            res.header('Content-Type', 'application/json; charset=utf-8');
+            break;
+    }
     next();
 }
+
 app.use(customHeaders);
 app.use(express.cookieParser());
-app.use(express.bodyParser());
+app.use(express.bodyParser({
+    keepExtensions: true,
+    uploadDir: FILE_UPLOAD_DIRECTORY
+}));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,6 +129,7 @@ app.get('/activities', function(req, res){
                 case 'closed': query.active = false; break;
             }
         }
+
         //根據時間戳過濾，只返回指定時間段的活動
         var afterTs = parseInt(req.query['after']),
             beforeTs = parseInt(req.query['before']);
@@ -123,6 +138,7 @@ app.get('/activities', function(req, res){
             if(afterTs)     query['info.date']['$gt'] = new Date(afterTs);
             if(beforeTs)    query['info.date']['$lt'] = new Date(beforeTs);
         }
+
         //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
         //默认会搜索所有符合这些条件的活动
         switch(req.query['authorize']){
@@ -139,20 +155,26 @@ app.get('/activities', function(req, res){
                 ];
                 break;
         }
-
-        //起始位置和條數
+        //控制起始位置和條數
+        //TODO 这里能根据id来确定从那条开始取不？
         var index = (req.query['index'] || 0)| 0,
             count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
 
+        //好现在来真的了我们马上去搜活动
         console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
-        db.activityDataCollection
+        var cursor = db.activityDataCollection
             .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
             .limit(count)
             .skip(index)
-            .sort({'info.date':1, 'info.title':1})
-            .toArray(function(err, docs){
-            if(err) res.json(500, {c:1, m:err.message});
-            else res.json(200, {c:0, r:docs});
+            .sort({'info.date':1, 'info.title':1});
+
+        cursor.count(false, function(err, total){ //先看看总共有多少条活动
+            var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
+            cursor.toArray(function(err, docs){
+                //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
+                if(err) res.json(500, {c:1, m:err.message});
+                else    res.json(200, {c:0, r:{activities:docs, more:hasMore}});
+            });
         });
     }
 });
@@ -500,6 +522,30 @@ app.get('/activities/:aid/stat/topUsers', function(req, res){
 
 app.get('/activities/:aid/stat/topTimes', function(req, res){
 
+});
+
+
+app.post('/resources', function(req, res){
+    var results = [];
+    _.each(req.files, function(field){
+        if(!(field instanceof Array)) field = [field];
+        _.each(field, function(item){
+            results.push({
+                'filename':         _.last(item.path.split('/')),
+                'originalFilename': item.originalFilename,
+                'fieldname':        item.fieldName
+            });
+        })
+    });
+    res.json(results);
+});
+
+app.get('/resources/:filename', function(req, res){
+    var path = FILE_UPLOAD_DIRECTORY + req.params['filename'];
+    fs.exists(path, function(exists){
+        if(exists)  res.sendfile(path);
+        else        res.send(404, 'File not found');
+    });
 });
 
 

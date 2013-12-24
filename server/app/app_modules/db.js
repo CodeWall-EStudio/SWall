@@ -18,6 +18,8 @@ function connect(){
         var activityConfigCollection = db.collection('activity.config');
         console.log('[mongodb] connected');
 
+        //TODO 创建indexes来优化检索性能
+
         //初始化活动配置
         //TODO 后面需要开发API和页面来管理这些配置
         activityConfigCollection.findOne({'config':{'$exists':true}}, function(err, doc){
