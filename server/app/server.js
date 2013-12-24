@@ -1,5 +1,6 @@
 var fs      = require('fs'),
     express = require('express'),
+    connect = require('connect'),
     mongodb = require('mongodb'),
     _       = require('underscore')._,
     db      = require('./app_modules/db'),
@@ -8,7 +9,7 @@ var fs      = require('fs'),
 
 
 var PORT = 8080,
-    FILE_UPLOAD_DIRECTORY = '/Users/jojochow/tmp/';
+    FILE_UPLOAD_DIRECTORY = '/root/tmp/';
 
 
 var SHORT_STR_MAXLEN = 90,
@@ -39,10 +40,9 @@ var customHeaders = function(req, res, next){
 
 app.use(customHeaders);
 app.use(express.cookieParser());
-app.use(express.bodyParser({
-    keepExtensions: true,
-    uploadDir: FILE_UPLOAD_DIRECTORY
-}));
+app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
+app.use(connect.compress());
+app.use('/static', express.static(__dirname + '/../www'));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -525,6 +525,10 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 });
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 临时的东东
+
+
 app.post('/resources', function(req, res){
     var results = [];
     _.each(req.files, function(field){
@@ -547,6 +551,9 @@ app.get('/resources/:filename', function(req, res){
         else        res.send(404, 'File not found');
     });
 });
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 app.listen(PORT);

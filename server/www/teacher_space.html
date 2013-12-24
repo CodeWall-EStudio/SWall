@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>教师空间</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="lib/angular.min.js"></script>
+</head>
+<body>
+    <article>
+        <!-- 顶部导航 -->
+        <section class="topbar hbox">
+            <header class="title">教师空间</header>
+            <nav class="buttons hbox spacer">
+                <div class="active">浏览活动</div>
+                <div>管理活动</div>
+            </nav>
+            <div class="username"></div>
+        </section>
+
+        <!-- 工具栏 -->
+        <section class="toolbar hbox">
+            <ul>
+                <li>新建活动</li>
+            </ul>
+            <div class="spacer"></div>
+            <ul>
+                <li>我参与的</li>
+                <li>公开的</li>
+                <li class="active">全部</li>
+            </ul>
+            <ul>
+                <li>开放的</li>
+                <li>关闭的</li>
+                <li class="active">全部</li>
+            </ul>
+            <input type="search" placeholder="搜索活动">
+        </section>
+
+        <!-- 活动 -->
+        <section id="activities">
+            <!-- 按日期分组排列的列表 -->
+            <aside id="dateList">
+                <ul></ul>
+            </aside>
+            <!-- 没活动时的提示 -->
+            <div id="bg">点击查看活动详情</div>
+            <!-- 活动详情 -->
+            <div id="activityDetail"></div>
+        </section>
+    </article>
+    <script src="lib/underscore-min.js"></script>
+    <script src="js/controllers.js"></script>
+</body>
+</html>
