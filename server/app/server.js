@@ -135,8 +135,8 @@ app.get('/activities', function(req, res){
             beforeTs = parseInt(req.query['before']);
         if(afterTs || beforeTs){
             query['info.date'] = {};
-            if(afterTs)     query['info.date']['$gt'] = new Date(afterTs);
-            if(beforeTs)    query['info.date']['$lt'] = new Date(beforeTs);
+            if(afterTs)     query['info.date']['$gt'] = afterTs;
+            if(beforeTs)    query['info.date']['$lt'] = beforeTs;
         }
 
         //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
