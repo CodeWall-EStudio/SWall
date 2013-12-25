@@ -3,14 +3,16 @@
 <head>
     <title>教师空间</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/common.css" rel="stylesheet">
-    <script src="lib/angular.min.js"></script>
+    <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="lib/bootstrap_datepicker_20130312/css/datepicker.css" rel="stylesheet">
+
+    <link href="css/teacherSpace.min.css?20131225001" rel="stylesheet">
+    <script src="lib/angular_1.2.6.min.js"></script>
 </head>
 <body class="fixedTopNavbar" ng-controller="MainController">
 
     <!-- 顶部的导航栏 -->
-    <div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top" ng-controller="NavigatorController">
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand">教师空间</a>
@@ -29,11 +31,11 @@
     <div class="container">
 
         <!-- 工具栏 -->
-        <div class="row">
+        <div class="row" ng-controller="ToolbarController">
             <div class="navbar navbar-default">
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a>创建活动</a></li>
+                        <li><a data-toggle="modal" data-target="#createActivityModal">创建活动</a></li>
                     </ul>
                     <form class="navbar-form navbar-right">
                         <div class="form-group">
@@ -42,19 +44,27 @@
                     </form>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown">全部 <b class="caret"></b></a>
+                            <a class="dropdown-toggle" data-toggle="dropdown">
+                                {{authorizationTypes[aTypeIndex].label}} <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
-                                <li><a>我参与的</a></li>
-                                <li><a>公开的</a></li>
-                                <li class="active"><a>全部</a></li>
+                                <li ng-repeat="atype in authorizationTypes"
+                                    ng-class="{active:aTypeIndex==$index}"
+                                    ng-click="updateQueryCondition('aTypeIndex', $index)">
+                                    <a>{{atype.label}}</a>
+                                </li>
                             </ul>
                         </li>
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown">所有状态 <b class="caret"></b></a>
+                            <a class="dropdown-toggle" data-toggle="dropdown">
+                                {{statuses[statusIndex].label}} <b class="caret"></b>
+                            </a>
                             <ul class="dropdown-menu">
-                                <li><a>开放的</a></li>
-                                <li><a>关闭的</a></li>
-                                <li class="active"><a>所有状态</a></li>
+                                <li ng-repeat="status in statuses"
+                                    ng-class="{active:statusIndex==$index}"
+                                    ng-click="updateQueryCondition('statusIndex', $index)">
+                                    <a>{{status.label}}</a>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -63,45 +73,28 @@
         </div>
 
         <!-- 活动列表和内容 -->
-        <div class="row">
+        <div class="row" ng-controller="ActivityListController">
             <div class="col-lg-3">
                 <div class="panel-group" id="activities">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#activities" href="#date1">
-                                    今天 2013年12月25日 星期三
-                                </a>
-                            </h4>
+                    <div class="panel panel-default" ng-repeat="item in activityList">
+                        <div data-toggle="collapse" data-parent="#activities" ng-href="#{{item.date}}" class="panel-heading">
+                            <h4 class="panel-title" activity-date></h4>
                         </div>
-                        <div id="date1" class="panel-collapse collapse in">
+                        <div id="{{item.date}}" class="panel-collapse collapse" ng-class="{in:$first}">
                             <div class="list-group">
-                                <a class="list-group-item active">学习雷锋</a>
-                                <a class="list-group-item">毛克思主义</a>
-                                <a class="list-group-item">马泽东思想</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#activities" href="#date2">
-                                    今天 2013年12月25日 星期三
+                                <a class="list-group-item activityItem"
+                                   ng-repeat="activity in item.activities"
+                                   ng-class="{active:activityID==activity._id}"
+                                   ng-click="selectActivity(activity._id)">
+                                    {{activity.info.title}}
                                 </a>
-                            </h4>
-                        </div>
-                        <div id="date2" class="panel-collapse collapse">
-                            <div class="list-group">
-                                <a class="list-group-item active">学习雷锋</a>
-                                <a class="list-group-item">毛克思主义</a>
-                                <a class="list-group-item">马泽东思想</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
-                活动详情
+            <div class="col-lg-8" ng-controller="ActivityDetailController">
+                <h1>{{activity.info.title}}</h1>
             </div>
         </div>
     </div>
@@ -129,9 +122,83 @@
         </div>
     </div>
 
+    <div class="modal fade" id="createActivityModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">新建活动</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="na_title" class="col-sm-2 control-label">活动主题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" id="na_title">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_type" class="col-sm-2 control-label">活动类型</label>
+                            <div class="col-sm-4">
+                                <select class="form-control input-sm" id="na_type">
+                                    <option value="1">公开课</option>
+                                </select>
+                            </div>
+                            <label for="na_date" class="col-sm-2 control-label">日期时间</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control input-sm" id="na_date" activity-date-picker>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_desc" class="col-sm-2 control-label">活动简介</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control input-sm" rows="3" id="na_desc"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_teacher" class="col-sm-2 control-label">出课教师</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" id="na_teacher">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_grade" class="col-sm-2 control-label">年级</label>
+                            <div class="col-sm-2">
+                                <input type="text" class="form-control input-sm" id="na_grade">
+                            </div>
+                            <label for="na_subject" class="col-sm-2 control-label">学科</label>
+                            <div class="col-sm-2">
+                                <input type="text" class="form-control input-sm" id="na_subject">
+                            </div>
+                            <label for="na_class" class="col-sm-2 control-label">班级</label>
+                            <div class="col-sm-2">
+                                <input type="text" class="form-control input-sm" id="na_class">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_domain" class="col-sm-2 control-label">课题</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" id="na_domain">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="na_users" class="col-sm-2 control-label">权限</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control input-sm" id="na_users">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">新建活动</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="lib/jquery-2.0.3.min.js"></script>
-    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
-    <script src="lib/underscore-min.js"></script>
-    <script src="js/teacherSpaceController.js"></script>
+    <script src="lib/bootstrap_3.0.3/js/bootstrap.min.js"></script>
+    <script src="lib/underscore_1.5.2.min.js"></script>
+    <script src="js/teacherSpace.min.js?20131225001"></script>
 </body>
 </html>
