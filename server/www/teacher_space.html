@@ -32,49 +32,51 @@
 
         <!-- 工具栏 -->
         <div class="row" ng-controller="ToolbarController">
-            <div class="navbar navbar-default">
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a data-toggle="modal" data-target="#createActivityModal">创建活动</a></li>
-                    </ul>
-                    <form class="navbar-form navbar-right">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="搜索活动">
-                        </div>
-                    </form>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown">
-                                {{authorizationTypes[aTypeIndex].label}} <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="atype in authorizationTypes"
-                                    ng-class="{active:aTypeIndex==$index}"
-                                    ng-click="updateQueryCondition('aTypeIndex', $index)">
-                                    <a>{{atype.label}}</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown">
-                                {{statuses[statusIndex].label}} <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="status in statuses"
-                                    ng-class="{active:statusIndex==$index}"
-                                    ng-click="updateQueryCondition('statusIndex', $index)">
-                                    <a>{{status.label}}</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+            <div class="col-sm-12">
+                <div class="navbar navbar-default">
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a data-toggle="modal" data-target="#createActivityModal">创建活动</a></li>
+                        </ul>
+                        <form class="navbar-form navbar-right">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="搜索活动">
+                            </div>
+                        </form>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown">
+                                    {{authorizationTypes[aTypeIndex].label}} <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="atype in authorizationTypes"
+                                        ng-class="{active:aTypeIndex==$index}"
+                                        ng-click="updateQueryCondition('aTypeIndex', $index)">
+                                        <a>{{atype.label}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown">
+                                    {{statuses[statusIndex].label}} <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="status in statuses"
+                                        ng-class="{active:statusIndex==$index}"
+                                        ng-click="updateQueryCondition('statusIndex', $index)">
+                                        <a>{{status.label}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- 活动列表和内容 -->
         <div class="row" ng-controller="ActivityListController">
-            <div class="col-lg-3">
+            <div class="col-sm-3">
                 <div class="panel-group" id="activities">
                     <div class="panel panel-default" ng-repeat="item in activityList">
                         <div data-toggle="collapse" data-parent="#activities" ng-href="#{{item.date}}" class="panel-heading">
@@ -93,8 +95,27 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8" ng-controller="ActivityDetailController">
-                <h1>{{activity.info.title}}</h1>
+            <div class="col-sm-8" ng-controller="ActivityDetailController">
+                <div ng-show="activity">
+                    <h3>{{activity.info.title}}</h3>
+                    <p>状态：{{activity.active ? '开放' : '关闭'}}的活动</p>
+                    <p><button type="button" class="btn btn-primary">{{activity.active ? '展示' : '回放'}}</button></p>
+                    <p ng-switch on="activity.info.type">
+                        活动类型：
+                        <span ng-switch-when="1">公开课</span>
+                        <span ng-switch-default>未知类型</span>
+                    </p>
+                    <p>活动简介：{{activity.info.desc}}</p>
+                    <br/>
+                    <p>出课教师：{{activity.info.teacher}}</p>
+                    <p>年级：{{activity.info.grade}}</p>
+                    <p>学科：{{activity.info.subject}}</p>
+                    <p>班级：{{activity.info.grade}}{{i.class}}</p>
+                    <p>课题：{{activity.info.domain}}</p>
+                    <br/>
+                    <p>用户：{{userCount()}}位参与者</p>
+                    <p>资源：共{{activity.resources.length}}个资源</p>
+                </div>
             </div>
         </div>
     </div>
@@ -122,7 +143,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="createActivityModal">
+    <div class="modal fade" id="createActivityModal" ng-controller="ActivityFieldsController">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -133,63 +154,63 @@
                         <div class="form-group">
                             <label for="na_title" class="col-sm-2 control-label">活动主题</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_title">
+                                <input type="text" class="form-control input-sm" id="na_title" ng-model="title">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_type" class="col-sm-2 control-label">活动类型</label>
                             <div class="col-sm-4">
-                                <select class="form-control input-sm" id="na_type">
+                                <select class="form-control input-sm" id="na_type" ng-model="type">
                                     <option value="1">公开课</option>
                                 </select>
                             </div>
                             <label for="na_date" class="col-sm-2 control-label">日期时间</label>
                             <div class="col-sm-4">
-                                <input type="text" class="form-control input-sm" id="na_date" activity-date-picker>
+                                <input type="text" class="form-control input-sm" id="na_date" date-model="date" activity-date-picker>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_desc" class="col-sm-2 control-label">活动简介</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control input-sm" rows="3" id="na_desc"></textarea>
+                                <textarea class="form-control input-sm" rows="3" id="na_desc" ng-model="desc"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_teacher" class="col-sm-2 control-label">出课教师</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_teacher">
+                                <input type="text" class="form-control input-sm" id="na_teacher" ng-model="teacher">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_grade" class="col-sm-2 control-label">年级</label>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_grade">
+                                <input type="text" class="form-control input-sm" id="na_grade" ng-model="grade">
                             </div>
                             <label for="na_subject" class="col-sm-2 control-label">学科</label>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_subject">
+                                <input type="text" class="form-control input-sm" id="na_subject" ng-model="subject">
                             </div>
                             <label for="na_class" class="col-sm-2 control-label">班级</label>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_class">
+                                <input type="text" class="form-control input-sm" id="na_class" ng-model="class">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_domain" class="col-sm-2 control-label">课题</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_domain">
+                                <input type="text" class="form-control input-sm" id="na_domain" ng-model="domain">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="na_users" class="col-sm-2 control-label">权限</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_users">
+                                <input type="text" class="form-control input-sm" id="na_users" ng-model="invitedUsers">
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">新建活动</button>
+                    <button type="button" class="btn btn-primary" ng-click="createActivity()">新建活动</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>

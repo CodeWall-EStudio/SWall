@@ -1,5 +1,9 @@
 (function(){
 
+    //var BACKEND_SERVER = 'http://localhost:8080';
+    var BACKEND_SERVER = '';
+
+
     angular.module('TeacherSpace', [])
         .controller('MainController', [
             '$rootScope', '$scope', '$http',
@@ -13,7 +17,7 @@
                     //TODO 显示一个modal菊花禁掉所有操作
                     params = params || {};
                     params['uid'] = $rootScope.uid;
-                    $http.get('/activities', {responseType:'json', params:params})
+                    $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
                         .success(function(data, status){
                             if(status === 200 && !data.c){
                                 //处理活动列表
@@ -76,10 +80,6 @@
                 $scope.aTypeIndex = 2;
                 $scope.statusIndex = 2;
 
-                $scope.createActivity = function(){
-
-                };
-
                 $scope.updateQueryCondition = function(field, index){
                     if($scope[field] !== index){
                         $scope[field] = index;
@@ -105,7 +105,49 @@
         .controller('ActivityDetailController', [
             '$rootScope', '$scope',
             function($rootScope, $scope){
+                $scope.userCount = function(){
+                    if($rootScope.activity){
+                        if($rootScope.activity.active){
+                            return $rootScope.activity.users.participators.length;
+                        }
+                        else{
+                            var users = _.countBy($rootScope.activity.resources, function(resource){
+                                return resource.user;
+                            });
+                            return _.keys(users).length;
+                        }
+                    }
+                    return 0;
+                }
+            }
+        ])
+        .controller('ActivityFieldsController', [
+            '$rootScope', '$scope', '$http',
+            function($rootScope, $scope, $http){
+                $scope.type = 1;
+                $scope.createActivity = function(){
+                    var params = {
+                        uid:        $rootScope.uid,
+                        uids:       $scope.invitedUsers ? $scope.invitedUsers : '',
+                        title:      $scope.title,
+                        type:       $scope.type|0,
+                        desc:       $scope.desc,
+                        date:       $scope.date ? $scope.date.getTime() : 0,
+                        teacher:    $scope.teacher,
+                        grade:      $scope.grade,
+                        'class':    $scope['class'],
+                        subject:    $scope.subject,
+                        domain:     $scope.domain
+                    };
+                    //TODO Angular將參數變成json放到body里了！要改成form-urlencoded
+                    $http.post(BACKEND_SERVER + '/activities', params, {responseType:'json'})
+                        .success(function(data, status){
+                            console.log(data, status);
+                        })
+                        .error(function(data, status){
 
+                        });
+                }
             }
         ])
         .directive('activityDate', function(){
@@ -123,8 +165,12 @@
                             return date.getTime() < now.getTime() ? 'disabled' : '';
                         }
                     })
-                    .on('changeDate', function(){
+                    .on('changeDate', function(e){
                         datePicker.hide();
+
+                        //update model value
+                        var modelName = attrs['dateModel'];
+                        if(modelName) scope[modelName] = e.date;
                     })
                     .data('datepicker');
             }
