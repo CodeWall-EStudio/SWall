@@ -15,6 +15,12 @@
 
                 $rootScope.fetchActivities = function(params){
                     //TODO 显示一个modal菊花禁掉所有操作
+
+                    //取消选择了的活动
+                    $rootScope.activityID = '';
+                    $rootScope.activity = null;
+
+                    //构造搜索请求
                     params = params || {};
                     params['uid'] = $rootScope.uid;
                     $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
@@ -79,6 +85,7 @@
 
                 $scope.aTypeIndex = 2;
                 $scope.statusIndex = 2;
+                $scope.searchKeyword = '';
 
                 $scope.updateQueryCondition = function(field, index){
                     if($scope[field] !== index){
@@ -86,8 +93,11 @@
                         var params = {},
                             selectedAType = $scope.authorizationTypes[$scope.aTypeIndex].value,
                             selectedStatus = $scope.statuses[$scope.statusIndex].value;
-                        if(selectedAType) params['authorize'] = selectedAType;
-                        if(selectedStatus) params['status'] = selectedStatus;
+
+                        if(selectedAType)           params['authorize'] = selectedAType;
+                        if(selectedStatus)          params['status'] = selectedStatus;
+                        if($scope.searchKeyword)    params['kw'] = $scope.searchKeyword;
+
                         $rootScope.fetchActivities(params);
                     }
                 };

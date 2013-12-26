@@ -123,8 +123,9 @@ app.get('/activities', function(req, res){
             query = {};
 
         //根據活動狀態過濾，active(true) | closed(false)
-        if(req.query['status']){
-            switch(req.query['status']){
+        var status = req.query['status'];
+        if(status){
+            switch(status){
                 case 'active': query.active = true;  break;
                 case 'closed': query.active = false; break;
             }
@@ -139,6 +140,9 @@ app.get('/activities', function(req, res){
             if(beforeTs)    query['info.date']['$lt'] = beforeTs;
         }
 
+        //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
+        query['$and'] = [];
+
         //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
         //默认会搜索所有符合这些条件的活动
         switch(req.query['authorize']){
@@ -148,13 +152,27 @@ app.get('/activities', function(req, res){
             case 'joined':      query['users.participators'] = {'$in':[uid]}; break; //我正在参与的
             case 'mine':        query['users.creator'] = uid; break; //我创建的
             default:
-                query['$or'] = [
+                query['$and'].push({'$or': [
                     {'users.creator': uid},
                     {'users.invitedUsers': {'$in':['*', uid]}}
                     //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
-                ];
+                ]});
                 break;
         }
+
+        //根据关键字过滤
+        var keyword = req.query['kw'];
+        if(keyword){
+            var regex = {'$regex':keyword, '$options':'i'};
+            query['$and'].push({'$or': [
+                {'info.title':      regex},
+                {'info.desc':       regex},
+                {'info.teacher':    regex},
+                {'info.subject':    regex},
+                {'info.domain':     regex}
+            ]});
+        }
+
         //控制起始位置和條數
         //TODO 这里能根据id来确定从那条开始取不？
         var index = (req.query['index'] || 0)| 0,
