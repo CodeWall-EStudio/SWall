@@ -5,6 +5,15 @@
 
 
     angular.module('TeacherSpace', [])
+        /**
+         * Main Controller
+         * @rootScope {String} uid
+         * @rootScope {String} activityID selected activity id
+         * @rootScope {Object} activity selected activity
+         * @rootScope {Array} activityList activities grouped by date
+         * @rootScope {Object} activityMap {id:activity}
+         * @rootScope {Function} fetchActivities(params:Object)
+         */
         .controller('MainController', [
             '$rootScope', '$scope', '$http',
             function($rootScope, $scope, $http){
@@ -61,12 +70,24 @@
                 $rootScope.fetchActivities();
             }
         ])
+        /**
+         * Navigator Controller
+         */
         .controller('NavigatorController', [
             '$rootScope', '$scope',
             function($rootScope, $scope){
 
             }
         ])
+        /**
+         * Toolbar Controller
+         * @scope {Array} authorizationTypes
+         * @scope {Array} statuses
+         * @scope {int} aTypeIndex index of the selected authorization type
+         * @scope {int} statusIndex index of the selected status
+         * @scope {String} searchKeyword
+         * @scope {Function} updateQueryCondition(field:String, index:int)
+         */
         .controller('ToolbarController', [
             '$rootScope', '$scope',
             function($rootScope, $scope){
@@ -83,7 +104,7 @@
 
                 $scope.aTypeIndex = 2;
                 $scope.statusIndex = 2;
-                $scope.searchKeyword = '';
+                $scope.searchKeyword = ''; //TODO press enter on search field to search
 
                 $scope.updateQueryCondition = function(field, index){
                     if($scope[field] !== index){
@@ -101,6 +122,10 @@
                 };
             }
         ])
+        /**
+         * Activity List Controller
+         * @scope {Function} selectActivity(id:String)
+         */
         .controller('ActivityListController', [
             '$rootScope', '$scope',
             function($rootScope, $scope){
@@ -110,6 +135,10 @@
                 };
             }
         ])
+        /**
+         * Activity Detail Controller
+         * @scope {Function} userCount()
+         */
         .controller('ActivityDetailController', [
             '$rootScope', '$scope',
             function($rootScope, $scope){
@@ -129,11 +158,40 @@
                 }
             }
         ])
-        .controller('ActivityFieldsController', [
+        /**
+         * Activity Form Controller
+         * @scope {String} title
+         * @scope {String} desc
+         * @scope {Date} date
+         * @scope {int} type
+         * @scope {String} teacher
+         * @scope {int} grade
+         * @scope {int} cls
+         * @scope {int} subject
+         * @scope {String} domain
+         * @scope {String} invitedUsers "uid1,uid2,uid3,..."
+         * @scope {String} errMsg error message responsed from backend server
+         * @scope {Object} config activity configuration responsed from backend server
+         * @scope {Function} createActivity()
+         */
+        .controller('ActivityFormController', [
             '$rootScope', '$scope', '$http',
             function($rootScope, $scope, $http){
+                //TODO 浮窗关闭时重置表单
+                var modal = $('#createActivityModal'),
+                    fieldset = document.querySelector('#createActivityForm > fieldset');
+
                 $scope.type = 1;
+
+                $scope.$watch('grade', function(newValue){
+                    $scope.cls = 0;
+                });
+
                 $scope.createActivity = function(){
+                    $scope.errMsg = '';
+                    disableFields();
+
+                    var config = $scope.config ? $scope.config.activityConfig : {};
                     var params = {
                         uids:       $scope.invitedUsers ? $scope.invitedUsers : '',
                         title:      $scope.title || '',
@@ -141,9 +199,9 @@
                         desc:       $scope.desc || '',
                         date:       $scope.date ? $scope.date.getTime() : 0,
                         teacher:    $scope.teacher || '',
-                        grade:      $scope.grade || '',
-                        'class':    $scope['class'] || '',
-                        subject:    $scope.subject || '',
+                        grade:      config.classes[$scope.grade].grade,
+                        'class':    config.classes[$scope.grade].cls[$scope.cls],
+                        subject:    config.subjects[$scope.subject],
                         domain:     $scope.domain || ''
                     };
                     var body = _.map(params, function(value, key){
@@ -161,13 +219,48 @@
                         )
                         .success(function(data, status){
                             console.log(data, status);
+                            enableFields();
+                            hideModal();
                         })
                         .error(function(data, status){
-                            console.error(data, status);
+                            data = data || {c:-1, msg:'UNKNOWN'};
+                            $scope.errMsg = status + ' - [' + data.c + '] ' + data.m;
+                            enableFields();
                         });
                 }
+
+                function fetchActivityConfig(){
+                    $http.get(BACKEND_SERVER + '/activities/config', null, {responseType:'json'})
+                        .success(function(data, status){
+                            console.log('[ActivityFormController] activity config =', data);
+                            $scope.config = data;
+                            $scope.grade = 0;
+                            $scope.cls = 0;
+                            $scope.subject = 0;
+                        })
+                        .error(function(data, status){
+                            console.error('[ActivityFormController] FAIL TO FETCH ACTIVITY CONFIGURATIONS');
+                        });
+                }
+
+                function enableFields(){
+                    fieldset.removeAttribute('disabled');
+                }
+                function disableFields(){
+                    fieldset.setAttribute('disabled', 'disabled');
+                }
+
+                function hideModal(){
+                    modal.modal('hide');
+                }
+
+                fetchActivityConfig();
             }
         ])
+        /**
+         * Activity Date Directive
+         * scope.item.date:String => "x年x月x日"
+         */
         .directive('activityDate', function(){
             function link(scope, element, attrs){
                 var ts = scope.item.date.split('_');
@@ -175,9 +268,18 @@
             }
             return {link:link};
         })
+        /**
+         * Activity Date Picker Directive
+         * 1.禁止选择今天以前的日期
+         * 2.选择日期后更新scope[ngModel]=date
+         */
         .directive('activityDatePicker', function(){
             function link(scope, element, attrs){
                 var now = new Date();
+                now.setHours(0);
+                now.setMinutes(0);
+                now.setSeconds(0);
+                now.setMilliseconds(0);
                 var datePicker = $(element).datepicker({
                         onRender: function(date){
                             return date.getTime() < now.getTime() ? 'disabled' : '';

@@ -22,25 +22,29 @@ function connect(){
 
         //初始化活动配置
         //TODO 后面需要开发API和页面来管理这些配置
-        activityConfigCollection.findOne({'config':{'$exists':true}}, function(err, doc){
+        function queryActivityConfig(callback){
+            activityConfigCollection.findOne({'activityConfig':{'$exists':true}}, callback);
+        }
+        queryActivityConfig(function(err, doc){
             if(!err && !doc){
                 var config = {
-                    config: {
-                        types: {
-                            //类型列表
+                    activityConfig: {
+                        //类型列表
+                        types: [
                             //类型名、可选字段、禁用字段
-                            1:{name:'公开课', optional:['desc'], disabled:[]}
-                        },
+                            {value:1, label:'公开课', optional:['desc'], disabled:[]}
+                        ],
+                        //学科列表
                         subjects: [
-                            //学科列表
+                            '数学', '英语', '物理'
                         ],
                         classes: [
                             //班级列表
                             {grade:'一年级', cls:['一班', '二班', '三班', '四班']},
-                            {grade:'二年级', cls:['一班', '二班', '三班', '四班']},
+                            {grade:'二年级', cls:['一班', '二班', '三班']},
                             {grade:'三年级', cls:['一班', '二班', '三班', '四班']},
                             {grade:'四年级', cls:['一班', '二班', '三班', '四班']},
-                            {grade:'五年级', cls:['一班', '二班', '三班', '四班']},
+                            {grade:'五年级', cls:['一班', '二班', '三班', '四班', '牛逼班']},
                             {grade:'六年级', cls:['一班', '二班', '三班', '四班']}
                         ]
                     }
@@ -54,6 +58,9 @@ function connect(){
         exports.db = db;
         exports.activityDataCollection = activityDataCollection;
         exports.activityConfigCollection = activityConfigCollection;
+        exports.utils = {
+            queryActivityConfig: queryActivityConfig
+        };
     });
     console.log('[mongodb] connecting ' + url + ' ...');
 }

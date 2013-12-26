@@ -47,7 +47,7 @@ app.use('/static', express.static(__dirname + '/../www'));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//POST, GET /activities
+// /activities
 
 
 //创建活动
@@ -200,8 +200,20 @@ app.get('/activities', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//GET, DELETE, PUT /activities/:aid
+// /activities/config
+// /activities/:aid
 
+
+//获取活动配置
+app.get('/activities/config', function(req, res){
+    console.log('hey there');
+    db.utils.queryActivityConfig(function(err, doc){
+        console.log(err, doc);
+        if(err)         res.json(500, {c:1, m:err.message});
+        else if(!doc)   res.json(404, {c:0});
+        else            res.json(200, doc);
+    });
+});
 
 //获取单个活动
 app.get('/activities/:aid', function(req, res){
@@ -329,7 +341,8 @@ app.put('/activities/:aid', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//Join / Quit Activity
+// /activities/:aid/participators
+// /activities/:aid/participators/:uid
 
 
 //参与活动
@@ -402,7 +415,8 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Resources
+// /activities/:aid/resources
+// /activities/:aid/resources/:rid
 
 
 app.post('/activities/:aid/resources', function(req, res){
@@ -506,7 +520,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Statistics
+// /activities/:aid/stat/*
 
 
 app.get('/activities/:aid/stat/topUsers', function(req, res){

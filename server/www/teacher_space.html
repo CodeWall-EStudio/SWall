@@ -4,9 +4,8 @@
     <title>教师空间</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="lib/bootstrap_datepicker_20130312/css/datepicker.css" rel="stylesheet">
-
     <link href="css/teacherSpace.min.css?20131225001" rel="stylesheet">
+    <script src="lib/jquery-2.0.3.min.js"></script>
     <script src="lib/angular_1.2.6.min.js"></script>
 </head>
 <body class="fixedTopNavbar" ng-controller="MainController">
@@ -110,7 +109,7 @@
                     <p>出课教师：{{activity.info.teacher}}</p>
                     <p>年级：{{activity.info.grade}}</p>
                     <p>学科：{{activity.info.subject}}</p>
-                    <p>班级：{{activity.info.grade}}{{i.class}}</p>
+                    <p>班级：{{activity.info.grade}}{{activity.info.class}}</p>
                     <p>课题：{{activity.info.domain}}</p>
                     <br/>
                     <p>用户：{{userCount()}}位参与者</p>
@@ -143,26 +142,29 @@
         </div>
     </div>
 
-    <div class="modal fade" id="createActivityModal" ng-controller="ActivityFieldsController">
+    <div class="modal fade" id="createActivityModal" ng-controller="ActivityFormController">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">新建活动</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-warning" ng-show="errMsg">
+                        <strong>完啦出错啦！</strong> {{errMsg}}
+                    </div>
                     <form id="createActivityForm" class="form-horizontal">
                         <fieldset>
                             <div class="form-group">
                                 <label for="na_title" class="col-sm-2 control-label">活动主题</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="na_title" ng-model="title" autofocus="autofocus">
+                                    <input type="text" class="form-control input-sm" id="na_title" ng-model="title">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="na_type" class="col-sm-2 control-label">活动类型</label>
                                 <div class="col-sm-4">
                                     <select class="form-control input-sm" id="na_type" ng-model="type">
-                                        <option value="1">公开课</option>
+                                        <option ng-repeat="type in config.activityConfig.types" value="{{type.value}}">{{type.label}}</option>
                                     </select>
                                 </div>
                                 <label for="na_date" class="col-sm-2 control-label">日期时间</label>
@@ -173,7 +175,7 @@
                             <div class="form-group">
                                 <label for="na_desc" class="col-sm-2 control-label">活动简介</label>
                                 <div class="col-sm-10">
-                                    <textarea class="form-control input-sm" rows="3" id="na_desc" ng-model="desc"></textarea>
+                                    <textarea class="form-control input-sm" rows="3" id="na_desc" ng-model="desc" placeholder="可选填"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -185,15 +187,27 @@
                             <div class="form-group">
                                 <label for="na_grade" class="col-sm-2 control-label">年级</label>
                                 <div class="col-sm-2">
-                                    <input type="text" class="form-control input-sm" id="na_grade" ng-model="grade">
+                                    <select class="form-control input-sm" id="na_grade" ng-model="grade">
+                                        <option ng-repeat="grade in config.activityConfig.classes" value="{{$index}}">
+                                            {{grade.grade}}
+                                        </option>
+                                    </select>
                                 </div>
                                 <label for="na_subject" class="col-sm-2 control-label">学科</label>
                                 <div class="col-sm-2">
-                                    <input type="text" class="form-control input-sm" id="na_subject" ng-model="subject">
+                                    <select class="form-control input-sm" id="na_subject" ng-model="subject">
+                                        <option ng-repeat="subject in config.activityConfig.subjects" value="{{$index}}">
+                                            {{subject}}
+                                        </option>
+                                    </select>
                                 </div>
                                 <label for="na_class" class="col-sm-2 control-label">班级</label>
                                 <div class="col-sm-2">
-                                    <input type="text" class="form-control input-sm" id="na_class" ng-model="class">
+                                    <select class="form-control input-sm" id="na_class" ng-model="cls">
+                                        <option ng-repeat="cls in config.activityConfig.classes[grade].cls" value="{{$index}}">
+                                            {{cls}}
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -205,7 +219,7 @@
                             <div class="form-group">
                                 <label for="na_users" class="col-sm-2 control-label">权限</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="na_users" ng-model="invitedUsers">
+                                    <input type="text" id="na_users" data-role="tagsinput" ng-model="invitedUsers">
                                 </div>
                             </div>
                         </fieldset>
@@ -219,7 +233,6 @@
         </div>
     </div>
 
-    <script src="lib/jquery-2.0.3.min.js"></script>
     <script src="lib/bootstrap_3.0.3/js/bootstrap.min.js"></script>
     <script src="lib/underscore_1.5.2.min.js"></script>
     <script src="js/teacherSpace.min.js?20131225001"></script>

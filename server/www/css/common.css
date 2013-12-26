@@ -6,3 +6,7 @@ body.fixedTopNavbar{
 .datepicker.dropdown-menu{
     z-index: 2000;
 }
+
+.bootstrap-tagsinput{
+    display: block;
+}
