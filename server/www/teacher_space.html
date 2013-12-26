@@ -150,63 +150,65 @@
                     <h4 class="modal-title">新建活动</h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="na_title" class="col-sm-2 control-label">活动主题</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_title" ng-model="title">
+                    <form id="createActivityForm" class="form-horizontal">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="na_title" class="col-sm-2 control-label">活动主题</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="na_title" ng-model="title" autofocus="autofocus">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_type" class="col-sm-2 control-label">活动类型</label>
-                            <div class="col-sm-4">
-                                <select class="form-control input-sm" id="na_type" ng-model="type">
-                                    <option value="1">公开课</option>
-                                </select>
+                            <div class="form-group">
+                                <label for="na_type" class="col-sm-2 control-label">活动类型</label>
+                                <div class="col-sm-4">
+                                    <select class="form-control input-sm" id="na_type" ng-model="type">
+                                        <option value="1">公开课</option>
+                                    </select>
+                                </div>
+                                <label for="na_date" class="col-sm-2 control-label">日期时间</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control input-sm" id="na_date" ng-model="date" activity-date-picker>
+                                </div>
                             </div>
-                            <label for="na_date" class="col-sm-2 control-label">日期时间</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control input-sm" id="na_date" date-model="date" activity-date-picker>
+                            <div class="form-group">
+                                <label for="na_desc" class="col-sm-2 control-label">活动简介</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control input-sm" rows="3" id="na_desc" ng-model="desc"></textarea>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_desc" class="col-sm-2 control-label">活动简介</label>
-                            <div class="col-sm-10">
-                                <textarea class="form-control input-sm" rows="3" id="na_desc" ng-model="desc"></textarea>
+                            <div class="form-group">
+                                <label for="na_teacher" class="col-sm-2 control-label">出课教师</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="na_teacher" ng-model="teacher">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_teacher" class="col-sm-2 control-label">出课教师</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_teacher" ng-model="teacher">
+                            <div class="form-group">
+                                <label for="na_grade" class="col-sm-2 control-label">年级</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control input-sm" id="na_grade" ng-model="grade">
+                                </div>
+                                <label for="na_subject" class="col-sm-2 control-label">学科</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control input-sm" id="na_subject" ng-model="subject">
+                                </div>
+                                <label for="na_class" class="col-sm-2 control-label">班级</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control input-sm" id="na_class" ng-model="class">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_grade" class="col-sm-2 control-label">年级</label>
-                            <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_grade" ng-model="grade">
+                            <div class="form-group">
+                                <label for="na_domain" class="col-sm-2 control-label">课题</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="na_domain" ng-model="domain">
+                                </div>
                             </div>
-                            <label for="na_subject" class="col-sm-2 control-label">学科</label>
-                            <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_subject" ng-model="subject">
+                            <div class="form-group">
+                                <label for="na_users" class="col-sm-2 control-label">权限</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="na_users" ng-model="invitedUsers">
+                                </div>
                             </div>
-                            <label for="na_class" class="col-sm-2 control-label">班级</label>
-                            <div class="col-sm-2">
-                                <input type="text" class="form-control input-sm" id="na_class" ng-model="class">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_domain" class="col-sm-2 control-label">课题</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_domain" ng-model="domain">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="na_users" class="col-sm-2 control-label">权限</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="na_users" ng-model="invitedUsers">
-                            </div>
-                        </div>
+                        </fieldset>
                     </form>
                 </div>
                 <div class="modal-footer">

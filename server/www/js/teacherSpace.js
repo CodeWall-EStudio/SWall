@@ -21,9 +21,7 @@
                     $rootScope.activity = null;
 
                     //构造搜索请求
-                    params = params || {};
-                    params['uid'] = $rootScope.uid;
-                    $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
+                    $http.get(BACKEND_SERVER + '/activities?uid=' + $rootScope.uid, {responseType:'json', params:params})
                         .success(function(data, status){
                             if(status === 200 && !data.c){
                                 //处理活动列表
@@ -137,25 +135,35 @@
                 $scope.type = 1;
                 $scope.createActivity = function(){
                     var params = {
-                        uid:        $rootScope.uid,
                         uids:       $scope.invitedUsers ? $scope.invitedUsers : '',
-                        title:      $scope.title,
+                        title:      $scope.title || '',
                         type:       $scope.type|0,
-                        desc:       $scope.desc,
+                        desc:       $scope.desc || '',
                         date:       $scope.date ? $scope.date.getTime() : 0,
-                        teacher:    $scope.teacher,
-                        grade:      $scope.grade,
-                        'class':    $scope['class'],
-                        subject:    $scope.subject,
-                        domain:     $scope.domain
+                        teacher:    $scope.teacher || '',
+                        grade:      $scope.grade || '',
+                        'class':    $scope['class'] || '',
+                        subject:    $scope.subject || '',
+                        domain:     $scope.domain || ''
                     };
-                    //TODO Angular將參數變成json放到body里了！要改成form-urlencoded
-                    $http.post(BACKEND_SERVER + '/activities', params, {responseType:'json'})
+                    var body = _.map(params, function(value, key){
+                        return encodeURIComponent(key) + '=' + encodeURIComponent(value);
+                    }).join('&');
+                    $http.post(
+                            BACKEND_SERVER + '/activities?uid=' + $rootScope.uid,
+                            body,
+                            {
+                                responseType: 'json',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            }
+                        )
                         .success(function(data, status){
                             console.log(data, status);
                         })
                         .error(function(data, status){
-
+                            console.error(data, status);
                         });
                 }
             }
@@ -179,7 +187,7 @@
                         datePicker.hide();
 
                         //update model value
-                        var modelName = attrs['dateModel'];
+                        var modelName = attrs['ngModel'];
                         if(modelName) scope[modelName] = e.date;
                     })
                     .data('datepicker');

@@ -13,7 +13,8 @@ var PORT = 8080,
 
 
 var SHORT_STR_MAXLEN = 90,
-    LONG_STR_MAXLEN = 450;
+    LONG_STR_MAXLEN = 450,
+    LONG_CONTENT_MAXLEN = 600;
 
 
 var app = express();
@@ -104,15 +105,15 @@ app.post('/activities', function(req, res){
                                                 else    res.json(201, {c:0, r:newDoc});
                                             });
                                         }
-                                        else res.json(400, {c:1, m:'Require Domain'}); }
-                                    else res.json(400, {c:1, m:'Require Subject'}); }
-                                else res.json(400, {c:1, m:'Require Class'}); }
-                            else res.json(400, {c:1, m:'Require Grade'}); }
-                        else res.json(400, {c:1, m:'Require Teacher'}); }
-                    else res.json(400, {c:1, m:'Require Date'}); }
-                else res.json(400, {c:1, m:'Require Type'}); }
-            else res.json(400, {c:1, m:'Require Title'}); }
-        else res.json(400, {c:1, m:'Require Uids'});
+                                        else res.json(400, {c:10090, m:'Require Domain'}); }
+                                    else res.json(400, {c:10080, m:'Require Subject'}); }
+                                else res.json(400, {c:10070, m:'Require Class'}); }
+                            else res.json(400, {c:10060, m:'Require Grade'}); }
+                        else res.json(400, {c:10050, m:'Require Teacher'}); }
+                    else res.json(400, {c:10040, m:'Require Date'}); }
+                else res.json(400, {c:10020, m:'Require Type'}); }
+            else res.json(400, {c:10010, m:'Require Title'}); }
+        else res.json(400, {c:10000, m:'Require Uids'});
     }
 });
 
@@ -220,7 +221,7 @@ app.get('/activities/:aid', function(req, res){
         db.activityDataCollection.findOne(query, function(err, doc){
             if(err) res.json(500, {c:1, m:err.message});
             else{
-                if(!doc)    res.json(404, {c:1});
+                if(!doc)    res.json(404, {c:0});
                 else        res.json(200, {c:0, r:doc});
             }
         });
@@ -247,7 +248,7 @@ app.delete('/activities/:aid', function(req, res){
         console.log('[server] delete document that matches:', query);
         db.activityDataCollection.remove(query, {w:1}, function(err, count){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!count) res.json(404, {c:1});
+            else if(!count) res.json(404, {c:0});
             else            res.json(200, {c:0, r:count});
         });
     }
@@ -268,7 +269,7 @@ app.put('/activities/:aid', function(req, res){
         db.activityDataCollection.findOne(query, function(err, doc){
             //沒找到或出錯的話就直接返回吧
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:1});
+            else if(!doc)   res.json(404, {c:0});
             else {
                 //把請求的參數都讀出來
                 var rawUids = req.body['uids'],
@@ -360,12 +361,12 @@ app.post('/activities/:aid/participators', function(req, res){
         //先检查用户有没已经加入了活动，如果已经加入了这个或者任何别的活动，都不允许再重复加入
         db.activityDataCollection.findOne(joinedActivityQuery, function(err, doc){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(doc)    res.json(403, {c:1}); //禁止同时加入多个活动
+            else if(doc)    res.json(403, {c:0}); //禁止同时加入多个活动
             else{
                 //好吧这用户还是挺老实的，我们现在把用户插到participators里
                 db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
                     if(err)             res.json(500, {c:1, m:err.message});
-                    else if(!newDoc)    res.json(401, {c:1});
+                    else if(!newDoc)    res.json(401, {c:0});
                     else                res.json(201, {c:0});
                 });
             }
@@ -393,7 +394,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
         console.log('[server] quit activity', query);
         db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:1});
+            else if(!doc)   res.json(404, {c:0});
             else            res.json(200, {c:0});
         });
     }
@@ -409,8 +410,8 @@ app.post('/activities/:aid/resources', function(req, res){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             type = parseInt(req.body['type'])||0,
-            content = req.body['content'], //TODO 文本内容和url的长度限制是多少？
-            comment = req.body['comment']; //TODO 評論的長度限制是多少？
+            content = utf8.substr(req.body['content'], 0, LONG_CONTENT_MAXLEN),
+            comment = utf8.substr(req.body['comment'], 0, LONG_CONTENT_MAXLEN);
 
         if(content && content.length){
             //必须是我正在参与的活动哦不可以随便上传到别的活动上去
@@ -432,11 +433,11 @@ app.post('/activities/:aid/resources', function(req, res){
             //找出活动并添加资源
             db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
                 if(err)         res.json(500, {c:1, m:err.message});
-                else if(!doc)   res.json(404, {c:1});
+                else if(!doc)   res.json(404, {c:0});
                 else            res.json(201, {c:0});
             });
         }
-        else res.json(400, {c:1, m:'Require Content'});
+        else res.json(400, {c:20000, m:'Require Content'});
     }
 });
 
@@ -457,7 +458,7 @@ app.get('/activities/:aid/resources', function(req, res){
         //查找对应的活动
         db.activityDataCollection.findOne(query, function(err, doc){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:1});
+            else if(!doc)   res.json(404, {c:0});
             else {
                 //取出这活动的资源
                 var resources = doc.resources;
@@ -497,7 +498,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 
         db.activityDataCollection.update(query, updates, {w:1}, function(err, count){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!count) res.json(404, {c:1});
+            else if(!count) res.json(404, {c:0});
             else            res.json(200, {c:0, r:count});
         });
     }
@@ -523,7 +524,7 @@ app.get('/activities/:aid/stat/topUsers', function(req, res){
 
         db.activityDataCollection.findOne(query, function(err, doc){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:1});
+            else if(!doc)   res.json(404, {c:0});
             else {
                 //首先统计每个用户都上传了多少资源，然后排个顺
                 var uidCount  = _.countBy(  doc.resources,  function(resource){     return resource.user;           }),
