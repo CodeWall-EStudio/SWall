@@ -3,13 +3,15 @@ var mongodb = require('mongodb');
 
 var HOST        = 'localhost',
     PORT        = 27017,
-    DB          = 'swall';
+    DB          = 'swall',
+    USERNAME    = 'nodejs',
+    PASSWORD    = 'ddhxs'; //党的好学生
 
 
 //connect to mongodb
 function connect(){
     //TODO 这里是不是应该搞个连接池？还是说MongoDB自己维护了一个池？
-    var url = 'mongodb://' + HOST + ':' + PORT + '/' + DB;
+    var url = 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + ':' + PORT + '/' + DB;
     mongodb.MongoClient.connect(url, null, function(err, db){
         if(err) throw err;
 
