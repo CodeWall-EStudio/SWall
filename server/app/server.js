@@ -146,20 +146,22 @@ app.get('/activities', function(req, res){
 
         //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
         //默认会搜索所有符合这些条件的活动
+        var userQuery = {};
         switch(req.query['authorize']){
-            case 'public':      query['users.invitedUsers']  = {'$in':['*']}; break; //公开的
-            case 'invited':     query['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
-            case 'available':   query['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
-            case 'joined':      query['users.participators'] = {'$in':[uid]}; break; //我正在参与的
-            case 'mine':        query['users.creator'] = uid; break; //我创建的
+            case 'public':      userQuery['users.invitedUsers']  = {'$in':['*']}; break; //公开的
+            case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
+            case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
+            case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
+            case 'mine':        userQuery['users.creator'] = uid; break; //我创建的
             default:
-                query['$and'].push({'$or': [
+                userQuery['$or'] = [
                     {'users.creator': uid},
                     {'users.invitedUsers': {'$in':['*', uid]}}
                     //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
-                ]});
+                ];
                 break;
         }
+        query['$and'].push(userQuery);
 
         //根据关键字过滤
         var keyword = req.query['kw'];
