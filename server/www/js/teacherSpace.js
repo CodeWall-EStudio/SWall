@@ -15,8 +15,8 @@
          * @rootScope {Function} fetchActivities(params:Object)
          */
         .controller('MainController', [
-            '$rootScope', '$scope', '$http',
-            function($rootScope, $scope, $http){
+            '$rootScope', '$scope', '$http', '$location',
+            function($rootScope, $scope, $http, $location){
                 $rootScope.uid = 'oscar'; //TODO 替换成当前用户uid
 
                 $rootScope.activityID = '';
@@ -65,7 +65,16 @@
                         .error(function(data, status){
                             //TODO
                         });
-                }
+                };
+
+                $rootScope.mode = function(){
+                    return $location.search()['mode'];
+                };
+
+                $rootScope.gotoMode = function(mode){
+                    $location.search('mode', mode);
+                    $rootScope.$emit('event.mode.change', mode);
+                };
 
                 $rootScope.fetchActivities();
             }
@@ -74,8 +83,8 @@
          * Navigator Controller
          */
         .controller('NavigatorController', [
-            '$rootScope', '$scope',
-            function($rootScope, $scope){
+            '$rootScope', '$scope', '$location',
+            function($rootScope, $scope, $location){
 
             }
         ])
@@ -86,7 +95,7 @@
          * @scope {int} aTypeIndex index of the selected authorization type
          * @scope {int} statusIndex index of the selected status
          * @scope {String} searchKeyword
-         * @scope {Function} updateQueryCondition(field:String, index:int)
+         * @scope {Function} updateQueryAndSearch(field:String, value:*)
          */
         .controller('ToolbarController', [
             '$rootScope', '$scope',
@@ -106,19 +115,26 @@
                 $scope.statusIndex = 2;
                 $scope.searchKeyword = ''; //TODO press enter on search field to search
 
-                $scope.updateQueryCondition = function(field, index){
-                    if($scope[field] !== index){
-                        $scope[field] = index;
-                        var params = {},
-                            selectedAType = $scope.authorizationTypes[$scope.aTypeIndex].value,
-                            selectedStatus = $scope.statuses[$scope.statusIndex].value;
-
-                        if(selectedAType)           params['authorize'] = selectedAType;
-                        if(selectedStatus)          params['status'] = selectedStatus;
-                        if($scope.searchKeyword)    params['kw'] = $scope.searchKeyword;
-
-                        $rootScope.fetchActivities(params);
+                $scope.showCreateActivityModal = function(event){
+                    if(!event.currentTarget.classList.contains('disabled')){
+                        $('#createActivityModal').modal('show');
                     }
+                };
+
+                $scope.updateQueryAndSearch = function(field, value){
+                    if(field){
+                        $scope[field] = value;
+                    }
+
+                    var query = {},
+                        selectedAType = $scope.authorizationTypes[$scope.aTypeIndex].value,
+                        selectedStatus = $scope.statuses[$scope.statusIndex].value;
+
+                    if(selectedAType)           query['authorize'] = selectedAType;
+                    if(selectedStatus)          query['status'] = selectedStatus;
+                    if($scope.searchKeyword)    query['kw'] = $scope.searchKeyword;
+
+                    $rootScope.fetchActivities(query);
                 };
             }
         ])
@@ -177,9 +193,14 @@
         .controller('ActivityFormController', [
             '$rootScope', '$scope', '$http',
             function($rootScope, $scope, $http){
-                //TODO 浮窗关闭时重置表单
                 var modal = $('#createActivityModal'),
                     fieldset = document.querySelector('#createActivityForm > fieldset');
+
+                modal.on('hidden.bs.modal', function () {
+                    $scope.$apply(function(){
+                        resetFields();
+                    });
+                });
 
                 $scope.type = 1;
 
@@ -195,7 +216,7 @@
                     var params = {
                         uids:       $scope.invitedUsers ? $scope.invitedUsers : '',
                         title:      $scope.title || '',
-                        type:       $scope.type|0,
+                        type:       $scope.type|1,
                         desc:       $scope.desc || '',
                         date:       $scope.date ? $scope.date.getTime() : 0,
                         teacher:    $scope.teacher || '',
@@ -254,9 +275,38 @@
                     modal.modal('hide');
                 }
 
+                function resetFields(){
+                    $scope.invitedUsers = '';
+                    $scope.title        = '';
+                    $scope.type         = 1;
+                    $scope.desc         = '';
+                    $scope.teacher      = '';
+                    $scope.grade        = '';
+                    $scope['class']     = '';
+                    $scope.subject      = '';
+                    $scope.domain       = '';
+                    $scope.errMsg       = '';
+                    console.log('reset');
+                }
+
                 fetchActivityConfig();
             }
         ])
+        .directive('ngEnter', function(){
+            function link(scope, element, attrs){
+                element.on('keydown', function(event){
+                    if(event.keyCode == 13){
+                        var callback = attrs['ngEnter'];
+                        if(callback){
+                            _.bind(function(scope){
+                                eval('this.' + callback);
+                            }, scope)();
+                        }
+                    }
+                });
+            }
+            return {link:link};
+        })
         /**
          * Activity Date Directive
          * scope.item.date:String => "x年x月x日"
@@ -289,7 +339,7 @@
                         datePicker.hide();
 
                         //update model value
-                        var modelName = attrs['ngModel'];
+                        var modelName = attrs['ngDateModel'];
                         if(modelName) scope[modelName] = e.date;
                     })
                     .data('datepicker');

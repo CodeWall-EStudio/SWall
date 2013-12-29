@@ -1,3 +1,6 @@
+body{
+    background-color: rgb(235,238,243);
+}
 body.fixedTopNavbar{
     padding-top: 70px;
     margin-bottom: 30px;
@@ -9,4 +12,86 @@ body.fixedTopNavbar{
 
 .bootstrap-tagsinput{
     display: block;
+}
+
+#topNavBar{
+    background-color: rgb(36, 74, 134);
+}
+#topNavBar .navbar-brand{
+    color: #FFF;
+}
+#topNavBar li > a{
+    color: rgb(180,201,221);
+}
+#topNavBar li.active > a{
+    color: #fff;
+    background-color: rgb(32,66,121);
+}
+
+#keywordSearchForm{
+    margin-left: 10px;
+}
+
+#topToolBar{
+    border-radius: 0;
+    border-color: rgb(211,214,218);
+    background-color: #fff;
+    margin-bottom: 0;
+}
+
+#activityList{
+    border: 1px rgb(211,214,218) solid;
+    border-top: none;
+    background-color: #FFF;
+    margin: 0;
+}
+#activityList > div:first-child{
+    padding-left: 10px;
+    padding-right: 0;
+}
+#activityList > div:last-child{
+    width: 75%;
+    padding-left: 0;
+    margin-left: -1px;
+}
+
+#activities .activityGroup{
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+#activities .activityGroup:first-child{
+    margin-top: 10px;
+}
+#activities .activityGroup:last-child{
+    margin-bottom: 10px;
+}
+#activities .activityGroup > .panel-heading{
+    color: #FFF;
+    border-radius: 0;
+    background-color: rgb(123,146,183);
+    margin-right: 5px;
+}
+#activities .activityItem{
+    color: #FFF;
+    border: none;
+    border-radius: 0;
+    background-color: rgb(167,182,206);
+    margin: 4px 5px 4px 0;
+    padding: 5px 10px;
+}
+#activities .activityItem.active{
+    color: #666;
+    border: 1px rgb(36,74,134) solid;
+    border-right: none;
+    background-color: #FFF;
+    margin-right: 0;
+}
+
+#activityDetail{
+    border: 1px rgb(36,74,134) solid;
+    padding-left: 20px;
+    margin: 10px 0;
 }

@@ -4,22 +4,27 @@
     <title>教师空间</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/teacherSpace.min.css?20131225001" rel="stylesheet">
+
+    <link href="css/teacherSpace.min.css?20131229001" rel="stylesheet">
+    <!--<link href="lib/bootstrap_datepicker/datepicker.css" rel="stylesheet">
+    <link href="lib/bootstrap_tagsinput/bootstrap-tagsinput.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">-->
+
     <script src="lib/jquery-2.0.3.min.js"></script>
     <script src="lib/angular_1.2.6.min.js"></script>
 </head>
 <body class="fixedTopNavbar" ng-controller="MainController">
 
     <!-- 顶部的导航栏 -->
-    <div class="navbar navbar-default navbar-fixed-top" ng-controller="NavigatorController">
+    <div id="topNavBar" class="navbar navbar-default navbar-fixed-top" ng-controller="NavigatorController">
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand">教师空间</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a>浏览活动</a></li>
-                    <li><a>管理活动</a></li>
+                    <li ng-class="{active:mode()!='manager'}"><a ng-click="gotoMode('viewer')">浏览活动</a></li>
+                    <li ng-class="{active:mode()=='manager'}"><a ng-click="gotoMode('manager')">管理活动</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a>{{username}}</a></li>
@@ -27,19 +32,21 @@
             </div>
         </div>
     </div>
-    <div class="container">
+    <div id="mainContainer" class="container">
 
         <!-- 工具栏 -->
         <div class="row" ng-controller="ToolbarController">
             <div class="col-sm-12">
-                <div class="navbar navbar-default">
+                <div id="topToolBar" class="navbar navbar-default">
                     <div class="collapse navbar-collapse">
                         <ul class="nav navbar-nav">
-                            <li><a data-toggle="modal" data-target="#createActivityModal">创建活动</a></li>
+                            <li ng-class="{disabled:mode()!='manager'}" ng-click="showCreateActivityModal($event)"><a>创建活动</a></li>
                         </ul>
-                        <form class="navbar-form navbar-right">
+                        <form id="keywordSearchForm" class="navbar-form navbar-right">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="搜索活动" ng-model="searchKeyword">
+                                <input type="text" class="form-control" placeholder="搜索活动"
+                                       ng-model="searchKeyword"
+                                       ng-enter="updateQueryAndSearch()">
                             </div>
                         </form>
                         <ul class="nav navbar-nav navbar-right">
@@ -50,7 +57,7 @@
                                 <ul class="dropdown-menu">
                                     <li ng-repeat="atype in authorizationTypes"
                                         ng-class="{active:aTypeIndex==$index}"
-                                        ng-click="updateQueryCondition('aTypeIndex', $index)">
+                                        ng-click="updateQueryAndSearch('aTypeIndex', $index)">
                                         <a>{{atype.label}}</a>
                                     </li>
                                 </ul>
@@ -62,7 +69,7 @@
                                 <ul class="dropdown-menu">
                                     <li ng-repeat="status in statuses"
                                         ng-class="{active:statusIndex==$index}"
-                                        ng-click="updateQueryCondition('statusIndex', $index)">
+                                        ng-click="updateQueryAndSearch('statusIndex', $index)">
                                         <a>{{status.label}}</a>
                                     </li>
                                 </ul>
@@ -74,10 +81,10 @@
         </div>
 
         <!-- 活动列表和内容 -->
-        <div class="row" ng-controller="ActivityListController">
+        <div class="row" id="activityList" ng-controller="ActivityListController">
             <div class="col-sm-3">
                 <div class="panel-group" id="activities">
-                    <div class="panel panel-default" ng-repeat="item in activityList">
+                    <div class="panel panel-default activityGroup" ng-repeat="item in activityList">
                         <div data-toggle="collapse" data-parent="#activities" ng-href="#{{item.date}}" class="panel-heading">
                             <h4 class="panel-title" activity-date></h4>
                         </div>
@@ -95,7 +102,7 @@
                 </div>
             </div>
             <div class="col-sm-8" ng-controller="ActivityDetailController">
-                <div ng-show="activity">
+                <div id="activityDetail" ng-show="activity">
                     <h3>{{activity.info.title}}</h3>
                     <p>状态：{{activity.active ? '开放' : '关闭'}}的活动</p>
                     <p><button type="button" class="btn btn-primary">{{activity.active ? '展示' : '回放'}}</button></p>
@@ -169,7 +176,7 @@
                                 </div>
                                 <label for="na_date" class="col-sm-2 control-label">日期时间</label>
                                 <div class="col-sm-4">
-                                    <input type="text" class="form-control input-sm" id="na_date" ng-model="date" activity-date-picker>
+                                    <input type="text" class="form-control input-sm" id="na_date" ng-date-model="date" activity-date-picker>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -235,6 +242,10 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.min.js"></script>
     <script src="lib/underscore_1.5.2.min.js"></script>
-    <script src="js/teacherSpace.min.js?20131225001"></script>
+
+    <script src="js/teacherSpace.min.js?20131229001"></script>
+    <!--<script src="lib/bootstrap_datepicker/bootstrap-datepicker.js"></script>
+    <script src="lib/bootstrap_tagsinput/bootstrap-tagsinput.js"></script>
+    <script src="js/teacherSpace.js"></script>-->
 </body>
 </html>
