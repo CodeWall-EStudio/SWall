@@ -40,6 +40,7 @@ body.fixedTopNavbar{
 }
 
 #activityList{
+    min-height: 400px;
     border: 1px rgb(211,214,218) solid;
     border-top: none;
     background-color: #FFF;
@@ -74,6 +75,9 @@ body.fixedTopNavbar{
     background-color: rgb(123,146,183);
     margin-right: 5px;
 }
+#activities .list-group{
+    margin-bottom: 0;
+}
 #activities .activityItem{
     color: #FFF;
     border: none;
@@ -81,6 +85,9 @@ body.fixedTopNavbar{
     background-color: rgb(167,182,206);
     margin: 4px 5px 4px 0;
     padding: 5px 10px;
+}
+#activities .activityItem:last-child{
+    margin-bottom: 0;
 }
 #activities .activityItem.active{
     color: #666;

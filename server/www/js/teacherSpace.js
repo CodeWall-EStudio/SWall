@@ -1,7 +1,9 @@
 (function(){
 
-    //var BACKEND_SERVER = 'http://localhost:8080';
-    var BACKEND_SERVER = '';
+    var BACKEND_SERVER = (location.hostname == 'localhost') ? 'http://localhost:8080' : '';
+
+    var EVENT_LOGIN         = 'event.login',
+        EVENT_MODE_CHANGE   = 'event.mode.change';
 
 
     angular.module('TeacherSpace', [])
@@ -12,80 +14,82 @@
          * @rootScope {Object} activity selected activity
          * @rootScope {Array} activityList activities grouped by date
          * @rootScope {Object} activityMap {id:activity}
-         * @rootScope {Function} fetchActivities(params:Object)
+         * @rootScope {Function} fetchActivities([params:Object])
+         * @rootScope {Function} showLoginModal()
+         * @rootScope {Function} mode()
+         * @rootScope {Function} gotoMode(mode:String)
          */
         .controller('MainController', [
-            '$rootScope', '$scope', '$http', '$location',
-            function($rootScope, $scope, $http, $location){
+            '$rootScope', '$scope', '$http', '$location', 'UserService', 'ActivityService',
+            function($rootScope, $scope, $http, $location, UserService, ActivityService){
                 $rootScope.uid = 'oscar'; //TODO 替换成当前用户uid
 
                 $rootScope.activityID = '';
                 $rootScope.activity = null;
 
+                /**
+                 * 拉取活動列表
+                 * @param [params]
+                 */
                 $rootScope.fetchActivities = function(params){
                     //TODO 显示一个modal菊花禁掉所有操作
-
                     //取消选择了的活动
                     $rootScope.activityID = '';
                     $rootScope.activity = null;
-
-                    //构造搜索请求
-                    $http.get(BACKEND_SERVER + '/activities?uid=' + $rootScope.uid, {responseType:'json', params:params})
-                        .success(function(data, status){
-                            if(status === 200 && !data.c){
-                                //处理活动列表
-                                //CGI返回的活动列表 => [Activity, ...]
-                                //按日期分组活动 => {date1:[Activity, ...], date2:[...]}
-                                var activities = data.r.activities,
-                                    groupedActivities = _.groupBy(activities, function(activity){
-                                        //TODO 分组的时间可能有几个维度，比如距今一星期内的活动会以每天为一组，一星期至一个月内的以一周为一组
-                                        //TODO 一个月到半年内的以每月为一组，半年到一年的为一组，更旧的则全归为同一组
-                                        var date = new Date(activity.info.date),
-                                            y = date.getFullYear(),
-                                            m = date.getMonth()+1,
-                                            d = date.getDate();
-                                        return [y, m, d].join('_');
-                                    });
-
-                                //转换为数组 => [{date:date1, activities:[...]}, ...]
-                                $rootScope.activityList = _.map(groupedActivities, function(arr, date){
-                                    return {date:date, activities:arr};
-                                });
-
-                                //另外存一个id与活动的map => {id1:Activity, id2:..., ...}
-                                $rootScope.activityMap = _.reduce(activities, function(result, activity){
-                                    result[activity._id] = activity;
-                                    return result;
-                                }, {});
-                            }
-                            else {
-                                //TODO 拉取失败
-                            }
-                        })
-                        .error(function(data, status){
-                            //TODO
-                        });
+                    ActivityService.fetchActivities(params);
                 };
 
+                $rootScope.showLoginModal = function(){
+                    if(UserService.hasLoggedIn()){
+                        //TODO logout
+                    }
+                    else {
+                        $('#loginModal').modal('show');
+                    }
+                };
+
+                /**
+                 * 返回當前模式，可能是「瀏覽活動(viewer)」或是「管理活動(manager)」
+                 * @returns {String}
+                 */
                 $rootScope.mode = function(){
                     return $location.search()['mode'];
                 };
-
+                /**
+                 * 使用指定模式
+                 * @param {String} mode viewer or manager
+                 */
                 $rootScope.gotoMode = function(mode){
                     $location.search('mode', mode);
-                    $rootScope.$emit('event.mode.change', mode);
+                    $rootScope.$emit(EVENT_MODE_CHANGE, mode);
                 };
 
-                $rootScope.fetchActivities();
+                function main(){
+                    if(UserService.hasLoggedIn()){
+                        $rootScope.fetchActivities();
+                    }
+                    else{
+                        $rootScope.showLoginModal();
+                    }
+                }
+                main();
+
+                $rootScope.$on(EVENT_LOGIN, function(event, ret){
+                    $rootScope.fetchActivities();
+                });
             }
         ])
         /**
          * Navigator Controller
          */
         .controller('NavigatorController', [
-            '$rootScope', '$scope', '$location',
-            function($rootScope, $scope, $location){
+            '$rootScope', '$scope', 'UserService',
+            function($rootScope, $scope, UserService){
+                $scope.username = UserService.uid();
 
+                $rootScope.$on(EVENT_LOGIN, function(event, ret){
+                    $scope.username = UserService.uid();
+                })
             }
         ])
         /**
@@ -95,6 +99,7 @@
          * @scope {int} aTypeIndex index of the selected authorization type
          * @scope {int} statusIndex index of the selected status
          * @scope {String} searchKeyword
+         * @scope {Function} showCreateActivityModal(event:MouseEvent)
          * @scope {Function} updateQueryAndSearch(field:String, value:*)
          */
         .controller('ToolbarController', [
@@ -191,8 +196,8 @@
          * @scope {Function} createActivity()
          */
         .controller('ActivityFormController', [
-            '$rootScope', '$scope', '$http',
-            function($rootScope, $scope, $http){
+            '$rootScope', '$scope', '$http', 'ActivityService',
+            function($rootScope, $scope, $http, ActivityService){
                 var modal = $('#createActivityModal'),
                     fieldset = document.querySelector('#createActivityForm > fieldset');
 
@@ -225,43 +230,30 @@
                         subject:    config.subjects[$scope.subject],
                         domain:     $scope.domain || ''
                     };
-                    var body = _.map(params, function(value, key){
-                        return encodeURIComponent(key) + '=' + encodeURIComponent(value);
-                    }).join('&');
-                    $http.post(
-                            BACKEND_SERVER + '/activities?uid=' + $rootScope.uid,
-                            body,
-                            {
-                                responseType: 'json',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                }
-                            }
-                        )
-                        .success(function(data, status){
+                    ActivityService.createActivity(
+                        params,
+                        function(data, status){
                             console.log(data, status);
                             enableFields();
                             hideModal();
-                        })
-                        .error(function(data, status){
+                        },
+                        function(data, status){
                             data = data || {c:-1, msg:'UNKNOWN'};
                             $scope.errMsg = status + ' - [' + data.c + '] ' + data.m;
                             enableFields();
-                        });
-                }
+                        }
+                    );
+                };
 
                 function fetchActivityConfig(){
-                    $http.get(BACKEND_SERVER + '/activities/config', null, {responseType:'json'})
-                        .success(function(data, status){
-                            console.log('[ActivityFormController] activity config =', data);
+                    ActivityService.fetchActivityConfig(
+                        function(data, status){
                             $scope.config = data;
                             $scope.grade = 0;
                             $scope.cls = 0;
                             $scope.subject = 0;
-                        })
-                        .error(function(data, status){
-                            console.error('[ActivityFormController] FAIL TO FETCH ACTIVITY CONFIGURATIONS');
-                        });
+                        }
+                    )
                 }
 
                 function enableFields(){
@@ -290,6 +282,32 @@
                 }
 
                 fetchActivityConfig();
+            }
+        ])
+        .controller('LoginFormController', [
+            '$rootScope', '$scope', 'UserService',
+            function($rootScope, $scope, UserService){
+                $scope.uid = '';
+                $scope.pwd = '';
+                $scope.errMsg = '';
+
+                $scope.login = function(){
+                    if($scope.uid){
+                        if($scope.pwd){
+                            UserService.login($scope.uid, $scope.pwd, function(ret){
+                                if(!ret){
+                                    $('#loginModal').modal('hide');
+                                }
+                                else {
+                                    //TODO 登录失败
+                                }
+                                //reset form
+                                $scope.uid = $scope.pwd = $scope.errMsg = '';
+                            });
+                        }
+                        else $scope.errMsg = '请输入密码'; }
+                    else $scope.errMsg = '请输入帐号名';
+                };
             }
         ])
         .directive('ngEnter', function(){
@@ -345,6 +363,101 @@
                     .data('datepicker');
             }
             return {link:link};
-        });
+        })
+        /**
+         * User Service
+         */
+        .service('UserService', ['$rootScope', '$location', function($rootScope, $location){
+            function uid(){
+                return $location.search()['uid'];
+            }
 
+            function hasLoggedIn(){
+                return uid() !== undefined;
+            }
+
+            function login(username, password, callback){
+                $location.search('uid', username);
+                callback(0);
+                $rootScope.$emit(EVENT_LOGIN, 0);
+            }
+
+            return {
+                uid: uid,
+                hasLoggedIn: hasLoggedIn,
+                login: login
+            };
+        }])
+        .service('ActivityService', ['$rootScope', '$http', function($rootScope, $http){
+            function fetchActivities(params, success, error){
+                //构造搜索请求
+                $http.get(BACKEND_SERVER + '/activities?uid=' + $rootScope.uid, {responseType:'json', params:params})
+                    .success(function(data, status){
+                        if(status === 200 && !data.c){
+                            //处理活动列表
+                            //CGI返回的活动列表 => [Activity, ...]
+                            //按日期分组活动 => {date1:[Activity, ...], date2:[...]}
+                            var activities = data.r.activities,
+                                groupedActivities = _.groupBy(activities, function(activity){
+                                    //TODO 分组的时间可能有几个维度，比如距今一星期内的活动会以每天为一组，一星期至一个月内的以一周为一组
+                                    //TODO 一个月到半年内的以每月为一组，半年到一年的为一组，更旧的则全归为同一组
+                                    var date = new Date(activity.info.date),
+                                        y = date.getFullYear(),
+                                        m = date.getMonth()+1,
+                                        d = date.getDate();
+                                    return [y, m, d].join('_');
+                                });
+
+                            //转换为数组 => [{date:date1, activities:[...]}, ...]
+                            $rootScope.activityList = _.map(groupedActivities, function(arr, date){
+                                return {date:date, activities:arr};
+                            });
+
+                            //另外存一个id与活动的map => {id1:Activity, id2:..., ...}
+                            $rootScope.activityMap = _.reduce(activities, function(result, activity){
+                                result[activity._id] = activity;
+                                return result;
+                            }, {});
+                        }
+                        if(success) success(data, status);
+                    })
+                    .error(error);
+            }
+
+            function createActivity(params, success, error){
+                var body = _.map(params, function(value, key){
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(value);
+                }).join('&');
+                $http.post(
+                        BACKEND_SERVER + '/activities?uid=' + $rootScope.uid,
+                        body,
+                        {
+                            responseType: 'json',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        }
+                    )
+                    .success(success)
+                    .error(error);
+            }
+
+            function fetchActivityConfig(success, error){
+                $http.get(BACKEND_SERVER + '/activities/config', null, {responseType:'json'})
+                    .success(function(data, status){
+                        console.log('[ActivityService] activity config =', data);
+                        if(success) success(data, status);
+                    })
+                    .error(function(data, status){
+                        console.error('[ActivityService] FAIL TO FETCH ACTIVITY CONFIGURATIONS');
+                        if(error) error(data, status);
+                    });
+            }
+
+            return {
+                fetchActivities:        fetchActivities,
+                createActivity:         createActivity,
+                fetchActivityConfig:    fetchActivityConfig
+            };
+        }]);
 })();
