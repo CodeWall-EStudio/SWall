@@ -141,6 +141,10 @@ app.get('/activities', function(req, res){
             if(beforeTs)    query['info.date']['$lt'] = beforeTs;
         }
 
+        //根據活動創建者過濾
+        var creator = req.query['creator'];
+        if(creator) query['users.creator'] = creator;
+
         //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
         query['$and'] = [];
 
@@ -152,7 +156,6 @@ app.get('/activities', function(req, res){
             case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
             case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
             case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
-            case 'mine':        userQuery['users.creator'] = uid; break; //我创建的
             default:
                 userQuery['$or'] = [
                     {'users.creator': uid},

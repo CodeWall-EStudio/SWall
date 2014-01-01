@@ -6,6 +6,18 @@ WWW_DIR=../../server/www
 
 java -jar $JS_COMPILER --js $WWW_DIR/lib/bootstrap_datepicker/bootstrap-datepicker.js \
 					   --js $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput.js \
+					   --js $WWW_DIR/js/services/UserService.js \
+					   --js $WWW_DIR/js/services/ActivityService.js \
+					   --js $WWW_DIR/js/controllers/ActivityDetailController.js \
+					   --js $WWW_DIR/js/controllers/ActivityListController.js \
+					   --js $WWW_DIR/js/controllers/ActivityPanelController.js \
+					   --js $WWW_DIR/js/controllers/LoginFormController.js \
+					   --js $WWW_DIR/js/controllers/MainController.js \
+					   --js $WWW_DIR/js/controllers/NavigatorController.js \
+					   --js $WWW_DIR/js/controllers/ToolbarController.js \
+					   --js $WWW_DIR/js/directives/ngEnter.js \
+					   --js $WWW_DIR/js/directives/activityDate.js \
+					   --js $WWW_DIR/js/directives/activityDatePicker.js \
 					   --js $WWW_DIR/js/teacherSpace.js \
  					   --js_output_file $WWW_DIR/js/teacherSpace.min.js
 

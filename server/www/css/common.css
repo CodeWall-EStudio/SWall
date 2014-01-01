@@ -15,7 +15,9 @@ body.fixedTopNavbar{
 }
 
 #topNavBar{
+    border: none;
     background-color: rgb(36, 74, 134);
+    box-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 #topNavBar .navbar-brand{
     color: #FFF;
