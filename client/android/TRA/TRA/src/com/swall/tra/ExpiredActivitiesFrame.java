@@ -12,7 +12,6 @@ import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
-import com.swall.tra2.TRAInfoActivity2;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,13 +19,13 @@ import org.json.JSONObject;
 /**
  * Created by pxz on 13-12-25.
  */
-public class ExpiredActivitiesActivity2 extends TabFrame implements AdapterView.OnItemClickListener {
+public class ExpiredActivitiesFrame extends TabFrame implements AdapterView.OnItemClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater) {
-        mView = inflater.inflate(R.layout.activity_expired_list,null);
+        mView = inflater.inflate(R.layout.activities_list,null);
 
 
-        mListView = (ListView)findViewById(R.id.expiredlist);
+        mListView = (ListView)findViewById(R.id.listview);
         mAdapter = new ActivitiesListAdapter(getActivity());
         mListView.setAdapter(mAdapter);
 
@@ -66,7 +65,7 @@ public class ExpiredActivitiesActivity2 extends TabFrame implements AdapterView.
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         TRAInfo info = (TRAInfo)adapterView.getAdapter().getItem(position);
-        Intent i = new Intent(getActivity(),TRAInfoActivity2.class);
+        Intent i = new Intent(getActivity(),TRAInfoActivity.class);
         Bundle bundle = new Bundle();
         Log.i("JSON", info.toString());
         bundle.putString("result", info.toString());

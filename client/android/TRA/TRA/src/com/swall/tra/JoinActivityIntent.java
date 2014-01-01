@@ -1,15 +1,10 @@
 package com.swall.tra;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
-import com.swall.tra2.BaseFragmentActivity;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static com.swall.tra.network.ServiceManager.Constants;
 

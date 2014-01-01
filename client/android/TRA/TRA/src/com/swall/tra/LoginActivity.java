@@ -1,23 +1,23 @@
 package com.swall.tra;
 
-import android.app.Activity;
-import android.content.Context;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
+import com.swall.tra.widget.InputMethodRelativeLayout;
 
 /**
- * Created by ippan on 13-12-24.
+ * Created by pxz on 13-12-28.
  */
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseFragmentActivity implements View.OnClickListener, InputMethodRelativeLayout.onSizeChangedListenner {
 
     ActionListener listener = new ActionListener(LoginActivity.this) {
         @Override
@@ -38,7 +38,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                         String userName = mEtUserName.getText().toString();
                         String pwd = mEtPassword.getText().toString();
                         app.updateCurrentAccount(new AccountInfo(userName,pwd),true);
-                        startActivity(new Intent(LoginActivity.this, MainActivity2.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                         Log.i(TAG, "login success");
                         finish();
                     }else{
@@ -61,11 +61,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
 
     private Bundle mLoginData;
+    private AlertDialog mProgressDialog;
+    private InputMethodRelativeLayout mRootLayout;
+    private ImageView mSchoolNameView;
+
 
     private void updateAccounts(Bundle data) {
-        String name = data.getString(ServiceManager.Constants.KEY_USER_NAME,"");
-        String pwd = data.getString(ServiceManager.Constants.KEY_PASSWORD,"");
-        if(!"".equals(name) && mEtUserName.getText().toString().isEmpty()){
+        String name = data.getString(ServiceManager.Constants.KEY_USER_NAME);
+        String pwd = data.getString(ServiceManager.Constants.KEY_PASSWORD);
+        if(!"".equals(name) && TextUtils.isEmpty(mEtUserName.getText().toString())){
             mEtUserName.setText(name);
             mEtPassword.setText(pwd);
         }
@@ -77,14 +81,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login2);
+        setContentView(R.layout.activity_login);
 
         app.addObserver(ServiceManager.Constants.ACTION_LOGIN, listener);
         app.addObserver(ServiceManager.Constants.ACTION_GET_ACCOUNTS,listener);
 
         mEtUserName = (EditText)findViewById(R.id.username);
         mEtPassword = (EditText)findViewById(R.id.password);
+        mRootLayout = (InputMethodRelativeLayout)findViewById(R.id.root);
+        mSchoolNameView = (ImageView)findViewById(R.id.login_school_name);
+
+        mRootLayout.setOnSizeChangedListenner(this);
         findViewById(R.id.login_button).setOnClickListener(this);
+
+        mProgressDialog = new AlertDialog.Builder(this)
+                .setTitle("登录中，请稍候...")
+                .setCancelable(false)
+                .create();
 
         app.doAction(ServiceManager.Constants.ACTION_GET_ACCOUNTS,null,null);
     }
@@ -99,7 +112,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login_button:
-
+                // hide soft keyboard
+                ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 String userName = mEtUserName.getText().toString();
                 String pwd = mEtPassword.getText().toString();
 
@@ -117,9 +131,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void showLoginProgressDialog() {
         // TODO
+        mProgressDialog.show();
     }
     private void dismissLoginProgressDialog(){
         // TODO
+        mProgressDialog.dismiss();
     }
 
     private void enableLoginActoins() {
@@ -130,5 +146,14 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         //findViewById(R.id.login_status).setVisibility(View.VISIBLE);
         findViewById(R.id.login_button).setEnabled(false);
+    }
+
+    @Override
+    public void onSizeChange(boolean isOpen, int preH, int curH) {
+        if(isOpen){
+            mSchoolNameView.setImageResource(R.drawable.login_school_input);
+        }else{
+            mSchoolNameView.setImageResource(R.drawable.login_school_normal);
+        }
     }
 }

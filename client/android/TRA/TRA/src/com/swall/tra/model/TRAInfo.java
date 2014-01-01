@@ -44,6 +44,7 @@ public class TRAInfo {
     private String mTimeFormatted;
     private boolean mJoined;
     private String mAllDesc;
+    private String mLongDesc;
 /*
 {
       "users": {
@@ -120,6 +121,9 @@ public class TRAInfo {
         // init resrouce desc
         mResourceDesc=participators.size()+"人参与 ";
         mResourceDesc += caculateResourceDesc(resources," ");
+
+        mLongDesc = mTimeFormatted+" "+mResourceDesc;
+
 
         // init all desc
         StringBuilder sb = new StringBuilder();
@@ -248,5 +252,9 @@ public class TRAInfo {
 
     public String getAllDesc() {
         return mAllDesc;
+    }
+
+    public String getLongDesc() {
+        return mLongDesc;
     }
 }

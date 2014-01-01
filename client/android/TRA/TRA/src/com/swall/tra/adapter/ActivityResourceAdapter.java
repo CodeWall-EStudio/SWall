@@ -100,14 +100,14 @@ public class ActivityResourceAdapter extends BaseAdapter {
         private final TextView dateTime;
         private final NetworkImageView imageView;
         private final TextView textView;
-        private final View joined;
+//        private final View joined;
 
         public ViewHolder(View convertView) {
             name = (TextView) convertView.findViewById(R.id.item_resource_owner);
             textView = (TextView)convertView.findViewById(R.id.item_resource_text);
             imageView = (NetworkImageView)convertView.findViewById(R.id.item_resource_image);
             dateTime = (TextView)convertView.findViewById(R.id.item_resource_time);
-            joined = convertView.findViewById(R.id.tra_joined);
+//            joined = convertView.findViewById(R.id.tra_joined);
         }
 /*
 [

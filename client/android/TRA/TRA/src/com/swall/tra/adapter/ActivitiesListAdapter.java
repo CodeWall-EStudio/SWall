@@ -7,11 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.swall.tra.BaseActivity;
 import com.swall.tra.R;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.utils.JSONUtils;
-import com.swall.tra2.BaseFragmentActivity;
+import com.swall.tra.BaseFragmentActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,60 +108,15 @@ public class ActivitiesListAdapter extends BaseAdapter {
 
     private class ViewHolder {
         private final TextView name;
-        private final TextView time;
-        private final TextView resouceCount;
-        private final TextView paticipantCount;
-        private final View joined;
+        private final TextView longDesc;
 
         public ViewHolder(View convertView) {
             name = (TextView) convertView.findViewById(R.id.tra_name);
-            time = (TextView)convertView.findViewById(R.id.tra_time);
-            paticipantCount = (TextView)convertView.findViewById(R.id.tra_participant_count);
-            resouceCount = (TextView)convertView.findViewById(R.id.tra_resource_count);
-            joined = convertView.findViewById(R.id.tra_joined);
+            longDesc = (TextView)convertView.findViewById(R.id.tra_long_desc);
         }
-/*
-{
-  "c": 0,
-  "r": [
-    {
-      "users": {
-        "creator": "oscar",
-        "invitedUsers": [
-          "*"
-        ],
-        "participators": []
-      },
-      "resources": [],
-      "active": true,
-      "info": {
-        "title": "三個戴錶重要思想",
-        "desc": null,
-        "type": 1,
-        "date": "2014-05-07T11:02:06.758Z",
-        "createDate": "2013-12-19T13:42:15.227Z",
-        "teacher": "雷鋒",
-        "grade": "3",
-        "class": "2",
-        "subject": "三個戴錶重要思想",
-        "domain": "毛克思理論"
-      },
-      "_id": "52b2f7b7dcd66b942728d8b4"
-    }
-  ]
-}
-
-*/
-
-        public void update(TRAInfo info)  {
+         public void update(TRAInfo info)  {
             name.setText(info.title);
-            time.setText(info.getTimeFormated());
-            resouceCount.setText(info.getResourceDesc());
-            if(info.ismJoined()){
-                joined.setVisibility(View.VISIBLE);
-            }else{
-                joined.setVisibility(View.GONE);
-            }
+            longDesc.setText(info.getLongDesc());
         }
     }
 }

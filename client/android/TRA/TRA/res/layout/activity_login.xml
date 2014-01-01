@@ -1,75 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:id="@+id/login_layout"
-                android:layout_height="fill_parent"
-                android:background="@drawable/bg"
-        >
+<com.swall.tra.widget.InputMethodRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:id="@+id/root"
+                android:background="@drawable/login"
+                android:layout_height="match_parent">
 
-    <TextView
-            android:drawableLeft="@drawable/icon"
-            android:gravity="center_vertical"
+    <ImageView
+            android:src="@drawable/login_school_normal"
+            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="北京市海滨区七一小学"
-            android:id="@+id/textView"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_alignParentTop="true"
+            android:id="@+id/login_school_name"
             android:layout_centerHorizontal="true"/>
 
-    <TextView
+    <LinearLayout
+            android:id="@+id/inputlayout"
+            android:layout_below="@+id/login_school_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="新媒体教研中心"
-            android:id="@+id/textView2"
-            android:layout_marginTop="24dp"
-            android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"/>
+            android:orientation="vertical"
+            android:padding="2dp"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/white"
+            >
+        <EditText
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/username"
+                android:layout_centerVertical="true"
+                android:hint="请输入帐号"
+                android:singleLine="true"
+                android:background="@android:color/white"
+                android:padding="10dp"
+                android:text=""/>
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:background="@android:color/darker_gray"
+                ></View>
 
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="移动设备客户端"
-            android:id="@+id/textView3"
-            android:layout_below="@+id/textView2"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"/>
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/password"
+                android:background="@android:color/white"
+                android:padding="10dp"
+                android:text=""
+                android:singleLine="true"
+                android:hint="请输入密码"
+                android:layout_alignRight="@+id/username"
+                android:layout_alignLeft="@+id/username"
+                android:layout_below="@+id/username"
+                android:layout_centerHorizontal="true"/>
 
-    <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/username"
-            android:layout_centerVertical="true"
-            android:layout_alignRight="@+id/textView"
-            android:text=""
-            android:layout_alignLeft="@+id/textView"/>
-
-    <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:id="@+id/password"
-            android:text=""
-            android:layout_alignRight="@+id/username"
-            android:layout_alignLeft="@+id/username"
-            android:layout_below="@+id/username"
-            android:layout_centerHorizontal="true"/>
+    </LinearLayout>
 
     <Button
+            style="@style/buttonBlue"
             android:id="@+id/login_button"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_below="@+id/password"
-            android:layout_alignRight="@+id/username"
-            android:layout_alignLeft="@+id/username"
+            android:layout_below="@+id/inputlayout"
+            android:layout_alignRight="@+id/inputlayout"
+            android:layout_alignLeft="@+id/inputlayout"
             android:text="登录"/>
 
-</RelativeLayout>
+
+</com.swall.tra.widget.InputMethodRelativeLayout>

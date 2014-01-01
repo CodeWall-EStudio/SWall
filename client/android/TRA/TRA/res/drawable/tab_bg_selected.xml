@@ -2,8 +2,9 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape>
+        <shape android:height="8dp">
             <solid android:color="@color/bg_cyan" />
         </shape>
+        <bitmap android:src="@color/bg" />
     </item>
 </layer-list>

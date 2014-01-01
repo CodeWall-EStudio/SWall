@@ -29,7 +29,7 @@
             android:visibility="gone"
             android:id="@+id/item_resource_image"
             android:scaleType="centerCrop"
-            android:src="@drawable/btn_join_activity_disable"
+            android:src="@drawable/icon"
             android:layout_below="@+id/item_resource_owner"
             android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"/>

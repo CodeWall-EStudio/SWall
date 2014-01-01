@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
-import com.swall.tra2.BaseFragmentActivity;
 
 import java.lang.ref.WeakReference;
 

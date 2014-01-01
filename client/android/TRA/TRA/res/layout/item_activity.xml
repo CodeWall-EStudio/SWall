@@ -21,51 +21,27 @@
                 android:singleLine="true"
                 android:ellipsize="middle"
                 android:text="英语教学英语教学英语教学英语教学英语教学英语教学"
-                android:textColor="@android:color/holo_blue_light"
+                android:textColor="@color/bg"
                 android:id="@+id/tra_name"
                 android:layout_alignParentTop="true"
                 android:textSize="28sp"
                 android:layout_alignParentLeft="true"/>
-        <TextView
-                android:layout_weight="0"
-                android:layout_width="wrap_content"
-                android:singleLine="true"
-                android:visibility="visible"
-                android:gravity="right|top"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="昨天 2014年9月8号 15:30"
-                android:id="@+id/tra_time"
-                android:layout_alignParentRight="true"
-                android:textColor="@android:color/darker_gray"
-                android:layout_alignParentTop="true"/>
+
     </LinearLayout>
 
     <TextView
+            android:layout_alignLeft="@+id/topLayout"
+            android:layout_below="@+id/topLayout"
+            android:layout_weight="0"
+            android:layout_marginTop="8dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:text="已参与"
+            android:singleLine="false"
             android:visibility="visible"
-            android:textColor="@android:color/holo_red_light"
-            android:id="@+id/tra_joined"/>
-
-    <TextView
-            android:layout_width="wrap_content"
+            android:gravity="top"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="100人参与"
-            android:layout_below="@+id/topLayout"
-            android:id="@+id/tra_participant_count"
-            android:layout_alignRight="@+id/topLayout"/>
-
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3位参与者, 4张图片, 5段视频, 8条文字"
-            android:id="@+id/tra_resource_count"
-            android:layout_below="@+id/topLayout"
-            android:layout_marginTop="3dp"
-            android:layout_alignLeft="@+id/topLayout"/>
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="昨天 2014年9月8号 15:30 1人参与 33资源 33 资源 33 资源 33资源"
+            android:id="@+id/tra_long_desc"
+            android:textColor="@android:color/darker_gray"
+            />
 </RelativeLayout>

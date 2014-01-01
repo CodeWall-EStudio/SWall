@@ -70,7 +70,7 @@ public class DateUtil {
     }
 
     public final static String DATE_FORMAT = "%d-%d %d:%02d";
-    public final static String DATE_FORMAT_FULL = "%d-%d-%d %d:%02d";
+    public final static String DATE_FORMAT_FULL = "%d年%d月%d日 %d:%02d";
     public final static String DATE_FORMAT_TODAY = "%d:%02d";
     public final static String DATE_FORMAT_YESTERDAY = "%s %d:%02d";
 
@@ -108,15 +108,20 @@ public class DateUtil {
         long intervalMill = now - time;
         int offset = (int)(intervalMill/(24 * 60 * 60 * 1000));
 
-        if(offset == 0){ //今天
-            date = String.format(DATE_FORMAT_TODAY, timeHour, timeMin);
+        String pre = "";
+        if(offset == -1){
+            pre = "明天";
+        }else if(offset == 0){ //今天
+                pre = "今天 ";
+//            date = String.format(DATE_FORMAT_TODAY, timeHour, timeMin);
         }else if(offset == 1){//昨天
-            date = String.format(DATE_FORMAT_YESTERDAY, mYESTERDAY,timeHour, timeMin);
+            pre = "昨天 ";
+//            date = String.format(DATE_FORMAT_YESTERDAY, mYESTERDAY,timeHour, timeMin);
         }else if (nowYear == timeYear){//同一年
-            date = String.format(DATE_FORMAT, timeMonth, timeDay, timeHour, timeMin);
-        }else{//一年以外
-            date = String.format(DATE_FORMAT_FULL, timeYear, timeMonth, timeDay,timeHour, timeMin);
+//            date = String.format(DATE_FORMAT, timeMonth, timeDay, timeHour, timeMin);
         }
+
+        date = pre + String.format(DATE_FORMAT_FULL, timeYear, timeMonth, timeDay,timeHour, timeMin);
         return date;
     }
 

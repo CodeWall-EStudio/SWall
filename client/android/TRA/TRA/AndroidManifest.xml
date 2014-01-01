@@ -22,18 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.swall.tra2.LoginActivity2"
+        <activity android:name=".LoginActivity"
                   android:theme="@style/Theme.Sherlock.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|screenSize"
-                  android:windowSoftInputMode="adjustPan"
+                  android:windowSoftInputMode="adjustResize"
                 />
-        <activity android:name=".MainActivity2"
+        <activity android:name=".MainActivity"
                   android:theme="@style/MyTheme"
                 />
-        <activity android:name=".AvailableActivitiesActivity"/>
-        <activity android:name=".TRAInfoActivity"/>
-        <activity android:name=".CurrentTRAActivity"/>
-        <activity android:name=".ExpiredActivitiesActivity"/>
         <activity android:name=".SettingActivity"/>
         <activity android:name=".JoinActivityIntent"
                 android:theme="@style/MyTheme"
@@ -41,11 +37,12 @@
         <activity android:name=".ResourceListActivity"/>
         <activity android:name=".ImageViewActivity"/>
         <activity android:name=".VideoCaptureActivity"/>
-        <activity android:name="com.swall.tra2.MainActivity2"
-                  android:theme="@style/Theme.Sherlock.Light"
-                />
-        <activity android:name="com.swall.tra2.TRAInfoActivity2"/>
-        <activity android:name="com.swall.tra2.CurrentTRAActivity3"/>
+        <activity android:name=".TRAInfoActivity"/>
+        <activity android:name=".CurrentTRAActivity"/>
+        <activity android:name=".TRAResourceListAcitivity"/>
+        <activity android:name=".QuitActivity"/>
+        <activity android:name=".AddTextResourceActivity"
+                android:windowSoftInputMode="adjustResize"/>
 
         <!-- 友盟 -->
         <meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />

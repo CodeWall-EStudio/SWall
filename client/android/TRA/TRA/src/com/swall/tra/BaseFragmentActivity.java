@@ -1,7 +1,9 @@
-package com.swall.tra2;
+package com.swall.tra;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -30,24 +32,29 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     protected MenuItem mMenuItemQuit;
     private AlertDialog mQuitProgramConfirmDialog;
 
+
+
     public String getCurrentAcccountName(){
         return currentAccount.userName;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        menu.clear();
         if(mShowQuitButton){
-            mMenuItemQuit = menu.add("")
+            mMenuItemQuit = menu.add("注销帐号")
                     .setIcon(R.drawable.logout_icon);
             mMenuItemQuit.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
+//        menu.add("设置").setIcon(R.drawable.setting_icon);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(item == mMenuItemQuit){
-            confirnQuitProgram();
+//            confirnQuitProgram();
+            startActivity(new Intent(this,QuitActivity.class));
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -89,9 +96,12 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
 
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null){
+            actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             actionBar.setIcon(R.drawable.icon);
-            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#224888")));
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));
         }
 
 

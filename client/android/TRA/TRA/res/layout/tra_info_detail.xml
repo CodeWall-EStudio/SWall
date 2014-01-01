@@ -26,11 +26,11 @@
             android:layout_alignBottom="@+id/textView"/>
 
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_below="@+id/tra_time"
             android:layout_marginTop="20dp"
             android:textSize="20dp"
             android:id="@+id/tra_intro"
-            android:text="活动简介: 公开课\n活动简介:区域示范课\n\n\n\n\n\n\n\n\n\n\n\n\n\n]n\n\n\n\nhello world"
+            android:text="活动简介: 公开课\n活动简介:区域示范课\n\n\n\n\n\n\n\n\n\n\n\n\n\n-----\n\n\n\n\nhello world"
             android:layout_height="wrap_content"/>
 </RelativeLayout>
