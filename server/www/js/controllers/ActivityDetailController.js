@@ -20,23 +20,28 @@ angular.module('ts.controllers.activityDetail', [
                 return 0;
             };
 
-            $scope.editActivity = function(activityDetail){
+            $scope.editActivity = function(){
                 $rootScope.$emit(CMD_SHOW_ACTIVITY_PANEL, {
                     panelTitle: '编辑活动',
                     confirmBtnTitle: '保存',
-                    activity: $.extend(true, {}, activityDetail)
+                    activity: $.extend(true, {}, $rootScope.selectedActivity)
                 });
             };
 
-            $scope.closeActivity = function(activityDetail){
+            $scope.closeActivity = function(){
                 if(confirm('确定要关闭活动？')){
-                    ActivityService.closeActivity(activityDetail._id);
+                    ActivityService.closeActivity($rootScope.selectedActivity._id);
                     //TODO how to refresh after successfully close the activity
                 }
             };
 
-            $scope.deleteActivity = function(activityDetail){
+            $scope.deleteActivity = function(){
 
+            };
+
+            $scope.handlePlayBtnClick = function(){
+                var url = 'activity_play.html#?aid=' + $rootScope.selectedActivity._id;
+                window.open(url, '_blank');
             };
         }
     ]);

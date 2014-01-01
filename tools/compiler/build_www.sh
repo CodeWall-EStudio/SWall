@@ -25,4 +25,5 @@ java -jar $CSS_COMPILER --allow-unrecognized-functions \
 		  $WWW_DIR/lib/bootstrap_datepicker/datepicker.css \
 		  $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput.css \
 		  $WWW_DIR/css/common.css \
+		  $WWW_DIR/css/teacherSpace.css \
 		  > $WWW_DIR/css/teacherSpace.min.css
