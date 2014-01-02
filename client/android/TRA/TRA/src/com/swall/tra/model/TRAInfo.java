@@ -116,7 +116,7 @@ public class TRAInfo {
 
 
         mJsonString = object.toString();
-        mTimeFormatted = DateUtil.getDate(beginDate);
+        mTimeFormatted = DateUtil.getDisplayTime(beginDate,true);
 
         // init resrouce desc
         mResourceDesc=participators.size()+"人参与 ";

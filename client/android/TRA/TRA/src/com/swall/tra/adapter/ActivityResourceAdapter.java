@@ -153,7 +153,7 @@ public class ActivityResourceAdapter extends BaseAdapter {
         public void update(ResourceInfo item) {
 
             name.setText(item.user);
-            dateTime.setText(DateUtil.getDate(item.date));
+            dateTime.setText(DateUtil.getDisplayTime(item.date,true));
             if(item.type  == ITEM_TYPE_TEXT){
                 textView.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);

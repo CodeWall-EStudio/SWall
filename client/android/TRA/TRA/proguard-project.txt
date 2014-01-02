@@ -18,3 +18,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# keep all classes that might be used in XML layouts
+-keep class android.support.v4.app.** { *; }
+-keep interface android.support.v4.app.** { *; }
+-keep class com.actionbarsherlock.** { *; }
+-keep interface com.actionbarsherlock.** { *; }
+-keepattributes *Annotation*
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+
+#APACHE LIBRARY
+-libraryjars libs
+-keepnames class org.apache.** {*;}
+-keep public class org.apache.** {*;}
+-dontwarn org.apache.http.auth.**
+-dontwarn org.apache.http.**
+-dontwarn org.apache.http.annotation.ThreadSafe
+-dontwarn org.apache.http.annotation.Immutable
+-dontwarn org.apache.http.annotation.NotThreadSafe

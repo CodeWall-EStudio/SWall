@@ -105,8 +105,9 @@ public class DateUtil {
 
         final String date;
 
-        long intervalMill = now - time;
-        int offset = (int)(intervalMill/(24 * 60 * 60 * 1000));
+        double onDay = 24 * 60 * 60 * 1000;
+        long offset = (long)(Math.floor(1.0*now/onDay) - Math.floor(1.0*time/onDay));
+        //int offset = (int)(intervalMill/(24 * 60 * 60 * 1000));
 
         String pre = "";
         if(offset == -1){
