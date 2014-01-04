@@ -1,0 +1,61 @@
+html{
+    height: 100%;
+    overflow: hidden;
+}
+
+body{
+    height: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+#activityInfo{
+    background-color: rgb(156,172,199);
+    color: #fff;
+    font-size: 14px;
+    padding: 10px;
+}
+#activityInfo p{
+    padding: 0;
+    margin: 0;
+}
+#activityInfo .section1{
+    font-size: 18px;
+}
+
+#mainContent{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-flex: 1;
+    background-color: #fff;
+}
+#mainContent ul{
+    list-style: none;
+    -webkit-padding-start: 0px;
+}
+#mainContent .sidebar{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    border-right: 1px solid rgb(211,214,218);
+    padding-right: 0;
+}
+#mainContent .userlist{
+    -webkit-box-flex: 1;
+    padding: 10px;
+}
+#mainContent .stat{
+    height: 240px;
+    border-top: 1px solid rgb(211,214,218);
+}
+#mainContent .timeline{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    overflow: scroll;
+}
+#mainContent .times{
+    -webkit-box-flex: 0.3;
+    border-right: 5px solid rgb(36,74,134);
+}
+#mainContent .resources{
+    -webkit-box-flex: 0.7;
+}

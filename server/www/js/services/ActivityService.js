@@ -1,7 +1,7 @@
 angular.module('ts.services.activity', [
+        'ts.utils.constants',
         'ts.services.user'
     ])
-    .constant('BACKEND_SERVER', location.hostname == 'localhost' ? 'http://localhost:8080' : '')
     .service('ActivityService', [
         '$rootScope', '$http', 'UserService', 'BACKEND_SERVER',
         function($rootScope, $http, UserService, BACKEND_SERVER)
@@ -15,8 +15,12 @@ angular.module('ts.services.activity', [
                 if(activity){
                     $rootScope.selectedActivity = activity;
                     $rootScope.selectedActivityID = activity._id;
-                    console.log('[ActivityService] selected activity', $rootScope.selectedActivity);
                 }
+                else {
+                    $rootScope.selectedActivity = null;
+                    $rootScope.selectedActivityID = '';
+                }
+                console.log('[ActivityService] selected activity', $rootScope.selectedActivity);
             }
             function selectActivityByID(id){
                 var activity = $rootScope.activityMap[id];

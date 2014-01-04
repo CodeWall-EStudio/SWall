@@ -1,7 +1,7 @@
 angular.module('ts.controllers.activityPanel', [
+        'ts.utils.constants',
         'ts.services.activity'
     ])
-    .constant('CMD_SHOW_ACTIVITY_PANEL', 'cmd.activity.panel.show')
     .controller('ActivityPanelController', [
         '$rootScope', '$scope', '$http', 'ActivityService', 'CMD_SHOW_ACTIVITY_PANEL',
         function($rootScope, $scope, $http, ActivityService, CMD_SHOW_ACTIVITY_PANEL){

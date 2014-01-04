@@ -1,12 +1,13 @@
 angular.module('ts.controllers.main', [
+        'ts.utils.constants',
         'ts.services.user',
         'ts.services.activity'
     ])
     .controller('MainController', [
         '$rootScope', '$scope', '$http', '$location', 'UserService', 'ActivityService',
-        'EVENT_LOGIN',
+        'EVENT_LOGIN', 'EVENT_MODE_CHANGE',
         function($rootScope, $scope, $http, $location, UserService, ActivityService,
-            EVENT_LOGIN){
+            EVENT_LOGIN, EVENT_MODE_CHANGE){
 
             $rootScope.$on(EVENT_LOGIN, function(event, ret){
                 $rootScope.fetchActivities();
@@ -45,8 +46,10 @@ angular.module('ts.controllers.main', [
              * @param {String} mode viewer or manager
              */
             $rootScope.gotoMode = function(mode){
-                $location.search('mode', mode);
-                $rootScope.$emit('event.mode.change', mode);
+                if(mode !== $rootScope.mode()){
+                    $location.search('mode', mode);
+                    $rootScope.$emit(EVENT_MODE_CHANGE, mode);
+                }
             };
 
             function main(){

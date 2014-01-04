@@ -5,7 +5,38 @@
  */
 function uid(req){
     //TODO 從cookie里取出sid和skey，驗證用戶身份
-    return req.query['uid'];
+    var uid = req.cookies['uid'],
+        skey = req.cookies['skey'];
+    if(uid && skey /*TODO && verify(uid, skey)*/) return uid;
+    return null;
+}
+
+function login(req, res){
+    var uid = req.params['uid'],
+        password = req.body['pwd'];
+    if(uid && password /*TODO && verify(uid, password)*/){
+        var skey = generateSkey(),
+            expiresDate = new Date(Date.now() + 20),
+            options = {domain:'localhost:8080', path:'/', expires:expiresDate};
+        res.cookie('uid', uid, options);
+        res.cookie('skey', skey, options);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 检查是否已登录，若未登录则返回401
+ * @param req
+ * @param res
+ * @return {boolean}
+ */
+function response401IfUnauthoirzed(req, res){
+    if(!uid(req)){
+        res.json(401, {c:10, m:'Unauthoirzed'});
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -23,5 +54,14 @@ function redirectToLoginIfUnauthorized(req, res, path){
     return false;
 }
 
-exports.uid = uid;
-exports.redirectToLoginIfUnauthorized = redirectToLoginIfUnauthorized;
+function generateSkey(){
+    return Math.random().toString(36).substring(2,8)
+          +Math.random().toString(36).substring(9,15);
+}
+
+exports.user = {
+    uid: uid,
+    login: login,
+    response401IfUnauthoirzed: response401IfUnauthoirzed,
+    redirectToLoginIfUnauthorized: redirectToLoginIfUnauthorized
+};

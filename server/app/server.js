@@ -4,7 +4,7 @@ var fs      = require('fs'),
     mongodb = require('mongodb'),
     _       = require('underscore')._,
     db      = require('./app_modules/db'),
-    user    = require('./app_modules/user'),
+    user    = require('./app_modules/user').user,
     utf8    = require('./app_modules/utf8');
 
 
@@ -52,7 +52,7 @@ app.use('/static', express.static(__dirname + '/../www'));
 
 //创建活动
 app.post('/activities', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid     = user.uid(req);
         var rawUids = req.body['uids'],
             uids    = rawUids ? rawUids.split(',') : [],
@@ -119,7 +119,7 @@ app.post('/activities', function(req, res){
 
 //获取活动列表
 app.get('/activities', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             query = {};
 
@@ -222,7 +222,7 @@ app.get('/activities/config', function(req, res){
 
 //获取单个活动
 app.get('/activities/:aid', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             //找出特定id且是我創建的/我獲授權參與的/公開的
@@ -247,7 +247,7 @@ app.get('/activities/:aid', function(req, res){
 
 //删除活动
 app.delete('/activities/:aid', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             query = {
@@ -273,7 +273,7 @@ app.delete('/activities/:aid', function(req, res){
 
 //更新活动
 app.put('/activities/:aid', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid     = user.uid(req),
             aid     = new mongodb.ObjectID(req.params['aid']);
 
@@ -352,7 +352,7 @@ app.put('/activities/:aid', function(req, res){
 
 //参与活动
 app.post('/activities/:aid/participators', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             //这是用来检查我是否已经加入别的活动的
@@ -394,7 +394,7 @@ app.post('/activities/:aid/participators', function(req, res){
 
 //退出活动
 app.delete('/activities/:aid/participators/:uid', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             //找出指定id且我已经参与的活动
@@ -425,7 +425,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
 
 
 app.post('/activities/:aid/resources', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             type = parseInt(req.body['type'])||0,
@@ -461,7 +461,7 @@ app.post('/activities/:aid/resources', function(req, res){
 });
 
 app.get('/activities/:aid/resources', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             index = parseInt(req.query['index'])||0,
@@ -498,7 +498,7 @@ app.get('/activities/:aid/resources', function(req, res){
 });
 
 app.delete('/activities/:aid/resources/:rid', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             rid = new mongodb.ObjectID(req.params['rid']),
@@ -529,7 +529,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 
 
 app.get('/activities/:aid/stat/topUsers', function(req, res){
-    if(!user.redirectToLoginIfUnauthorized(req, res)){
+    if(!user.response401IfUnauthoirzed(req, res)){
         var uid = user.uid(req),
             aid = new mongodb.ObjectID(req.params['aid']),
             count = parseInt(req.query['n']),
@@ -565,6 +565,17 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 临时的东东
+
+
+app.post('/users/:uid/login', function(req, res){
+    try{
+        var success = user.login(req, res);
+        res.send(success ? 200 : 404);
+    }
+    catch(e){
+        res.send(500);
+    }
+});
 
 
 app.post('/resources', function(req, res){

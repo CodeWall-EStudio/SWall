@@ -2,7 +2,7 @@ body{
     background-color: rgb(235,238,243);
 }
 body.fixedTopNavbar{
-    padding-top: 70px;
+    padding-top: 50px;
     margin-bottom: 30px;
 }
 

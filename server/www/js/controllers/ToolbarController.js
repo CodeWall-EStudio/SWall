@@ -1,8 +1,6 @@
 angular.module('ts.controllers.toolbar', [
-        'ts.services.user',
-        'ts.controllers.activityPanel'
+        'ts.utils.constants'
     ])
-    .constant('EVENT_MODE_CHANGE', 'event.mode.change')
     .controller('ToolbarController', [
         '$rootScope', '$scope', 'EVENT_MODE_CHANGE', 'CMD_SHOW_ACTIVITY_PANEL',
         function($rootScope, $scope, EVENT_MODE_CHANGE, CMD_SHOW_ACTIVITY_PANEL){

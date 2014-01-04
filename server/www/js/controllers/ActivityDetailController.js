@@ -1,10 +1,11 @@
 angular.module('ts.controllers.activityDetail', [
+        'ts.utils.constants',
         'ts.services.activity',
-        'ts.controllers.activityPanel'
+        'ts.controllers.main'
     ])
     .controller('ActivityDetailController', [
-        '$rootScope', '$scope', 'ActivityService', 'CMD_SHOW_ACTIVITY_PANEL',
-        function($rootScope, $scope, ActivityService, CMD_SHOW_ACTIVITY_PANEL){
+        '$rootScope', '$scope', 'ActivityService', 'EVENT_MODE_CHANGE', 'CMD_SHOW_ACTIVITY_PANEL',
+        function($rootScope, $scope, ActivityService, EVENT_MODE_CHANGE, CMD_SHOW_ACTIVITY_PANEL){
             $scope.userCount = function(){
                 if($rootScope.selectedActivity){
                     if($rootScope.selectedActivity.active){
@@ -43,5 +44,9 @@ angular.module('ts.controllers.activityDetail', [
                 var url = 'activity_play.html#?aid=' + $rootScope.selectedActivity._id;
                 window.open(url, '_blank');
             };
+
+            $rootScope.$on(EVENT_MODE_CHANGE, function(event, mode){
+                ActivityService.selectActivity();
+            });
         }
     ]);

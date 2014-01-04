@@ -6,6 +6,10 @@
     display: block;
 }
 
+#mainContainer{
+    margin-top: 20px;
+}
+
 #keywordSearchForm{
     margin-left: 10px;
 }

@@ -1,8 +1,7 @@
-angular.module('ts.services.user', [])
-    .constant('EVENT_LOGIN', 'event.login')
+angular.module('ts.services.user', ['ts.utils.constants'])
     .service('UserService', [
-        '$rootScope', '$location', 'EVENT_LOGIN',
-        function($rootScope, $location, EVENT_LOGIN){
+        '$rootScope', '$location', '$http', 'EVENT_LOGIN',
+        function($rootScope, $location, $http, EVENT_LOGIN){
             function uid(){
                 return $location.search()['uid'];
             }
@@ -12,6 +11,7 @@ angular.module('ts.services.user', [])
             }
 
             function login(username, password, callback){
+                $http.post('')
                 $location.search('uid', username);
                 callback(0);
                 $rootScope.$emit(EVENT_LOGIN, 0);
