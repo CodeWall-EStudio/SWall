@@ -1,7 +1,6 @@
 angular.module('ts.controllers.activityDetail', [
         'ts.utils.constants',
-        'ts.services.activity',
-        'ts.controllers.main'
+        'ts.services.activity'
     ])
     .controller('ActivityDetailController', [
         '$rootScope', '$scope', 'ActivityService', 'EVENT_MODE_CHANGE', 'CMD_SHOW_ACTIVITY_PANEL',

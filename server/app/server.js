@@ -567,8 +567,9 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 // 临时的东东
 
 
-app.post('/users/:uid/login', function(req, res){
+app.put('/users/:uid/login', function(req, res){
     try{
+        //TODO fetch user profiles
         var success = user.login(req, res);
         res.send(success ? 200 : 404);
     }

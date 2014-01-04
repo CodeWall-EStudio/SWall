@@ -14,10 +14,11 @@ function uid(req){
 function login(req, res){
     var uid = req.params['uid'],
         password = req.body['pwd'];
+    console.log(uid, password);
     if(uid && password /*TODO && verify(uid, password)*/){
         var skey = generateSkey(),
-            expiresDate = new Date(Date.now() + 20),
-            options = {domain:'localhost:8080', path:'/', expires:expiresDate};
+            expiresDate = new Date(Date.now() + 3600000),
+            options = {/*domain:'localhost:8080', */path:'/', expires:expiresDate};
         res.cookie('uid', uid, options);
         res.cookie('skey', skey, options);
         return true;

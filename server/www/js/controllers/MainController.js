@@ -9,8 +9,10 @@ angular.module('ts.controllers.main', [
         function($rootScope, $scope, $http, $location, UserService, ActivityService,
             EVENT_LOGIN, EVENT_MODE_CHANGE){
 
-            $rootScope.$on(EVENT_LOGIN, function(event, ret){
-                $rootScope.fetchActivities();
+            $rootScope.$on(EVENT_LOGIN, function(event, status){
+                if(status == 200){
+                    $rootScope.fetchActivities();
+                }
             });
 
             /**

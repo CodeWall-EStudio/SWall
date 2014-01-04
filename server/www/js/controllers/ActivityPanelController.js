@@ -6,10 +6,11 @@ angular.module('ts.controllers.activityPanel', [
         '$rootScope', '$scope', '$http', 'ActivityService', 'CMD_SHOW_ACTIVITY_PANEL',
         function($rootScope, $scope, $http, ActivityService, CMD_SHOW_ACTIVITY_PANEL){
             var modal                       = $('#createActivityModal'),
-                datePicker                  = $('input[activity-date-picker]'),
                 usersInput                  = $('input[data-role="tagsinput"]'),
+                datetimePicker              = document.getElementById('na_date'),
                 fieldset                    = document.getElementById('activityFormAllFields'),
                 fieldsetForOpenActivities   = document.getElementById('activityFormFieldsForOpenActivities'),
+                timezoneOffset              = (new Date()).getTimezoneOffset(),
                 defaults = {
                     panelTitle: '创建活动',
                     confirmBtnTitle: '创建活动',
@@ -33,9 +34,15 @@ angular.module('ts.controllers.activityPanel', [
                 $scope.activity         = data.activity ||cloneDefaulActivityContent();
                 $scope.invitedUsers     = $scope.activity.users.invitedUsers.join(',');
 
-                //update date picker and users input
-                var date = $scope.activity.info.date;
-                if(date) datePicker.datepicker('setValue', new Date(date));
+                //初始化日期時間
+                var ts = $scope.activity.info.date,
+                    now = new Date(),
+                    date = (ts ? new Date(ts) : now);
+                date.setSeconds(0);
+                date.setMilliseconds(0);
+                $scope.activity.info.date = dateToDatetimePickerValue(date);
+                datetimePicker.setAttribute('min', dateToDatetimePickerValue(now));
+
                 _.each($scope.activity.users.invitedUsers, function(item){
                     usersInput.tagsinput('add', item);
                 });
@@ -69,12 +76,13 @@ angular.module('ts.controllers.activityPanel', [
                 disableFields();
 
                 var config = $scope.config ? $scope.config.activityConfig : {};
+                console.log(config, $scope.activity);
                 var params = {
                     uids:       $scope.invitedUsers || '',
                     title:      $scope.activity.info.title || '',
                     type:       $scope.activity.info.type|1,
                     desc:       $scope.activity.info.desc || '',
-                    date:       $scope.activity.info.date ? $scope.activity.info.date.getTime() : 0,
+                    date:       datetimePickerValueToTs($scope.activity.info.date),
                     teacher:    $scope.activity.info.teacher || '',
                     grade:      config.classes[$scope.grade].grade,
                     'class':    config.classes[$scope.grade].cls[$scope.cls],
@@ -100,7 +108,7 @@ angular.module('ts.controllers.activityPanel', [
                     params['title']     = $scope.activity.info.title || '';
                     params['type']      = $scope.activity.info.type || '';
                     params['desc']      = $scope.activity.info.desc || '';
-                    params['date']      = $scope.activity.info.date || 0;
+                    params['date']      = datetimePickerValueToTs($scope.activity.info.date);
                     params['teacher']   = $scope.activity.info.teacher || '';
                     params['grade']     = config.classes[$scope.grade].grade || '';
                     params['class']     = config.classes[$scope.grade].cls[$scope.cls] || '';
@@ -162,6 +170,27 @@ angular.module('ts.controllers.activityPanel', [
                 $scope.grade = $scope.cls = $scope.subject = 0;
                 $scope.errMsg = '';
                 usersInput.tagsinput('removeAll');
+            }
+
+            function dateToDatetimePickerValue(date, includeSeconds){
+                //toISOString 會得出一個中央時區既時間（timezone=0）
+                //我地呢度算上時區，最後得出一個本地的時間
+                date.setMinutes(date.getMinutes() - timezoneOffset);
+                if(!includeSeconds){
+                    date.setSeconds(0);
+                    date.setMilliseconds(0);
+                }
+                return date.toISOString().split('.')[0];
+            }
+
+            function datetimePickerValueToTs(value){
+                if(value){
+                    var tail = (value.split(':').length < 3) ? ':00.000Z' : '.000Z';
+                    var result = Date.parse(value + tail) + timezoneOffset * 60 * 1000;
+                    console.log(value, result, new Date(result));
+                    return result;
+                }
+                return 0;
             }
 
             fetchActivityConfig();

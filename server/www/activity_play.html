@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/activityPlay.min.css?20140104001" rel="stylesheet">
-    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
-    <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
-<body class="fixedTopNavbar">
+<body class="fixedTopNavbar" ng-controller="PlayerMainController">
 
     <!-- 顶部的导航栏 -->
     <div id="topNavBar" class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand">展示活动：{{}}</a>
+                <a class="navbar-brand">展示活动：{{activity.info.title}}</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -27,21 +25,21 @@
     <!-- 活动信息 -->
     <div class="row" id="activityInfo">
         <div class="col-sm-4 section1">
-            <p>活动日期：</p>
-            <p>开始时间：</p>
-            <p>活动类型：</p>
+            <p>活动日期：{{activityDate}}</p>
+            <p>开始时间：{{activityTime}}</p>
+            <p>活动类型：{{activity.info.type}}</p>
         </div>
         <div class="col-sm-4 section2">
-            <p>出课教师：</p>
-            <p>年级：</p>
-            <p>学科：</p>
-            <p>班级：</p>
-            <p>课题：</p>
+            <p>出课教师：{{activity.info.teacher}}</p>
+            <p>年级：{{activity.info.grade}}</p>
+            <p>学科：{{activity.info.subject}}</p>
+            <p>班级：{{activity.info.class}}</p>
+            <p>课题：{{activity.info.domain}}</p>
         </div>
         <div class="col-sm-4 section3">
             <p>用户：</p>
             <p>资源：</p>
-            <p>活动简介：</p>
+            <p>活动简介：{{activity.info.desc}}</p>
         </div>
     </div>
 
@@ -67,6 +65,8 @@
         </div>
     </div>
 
+    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/angular/angular_1.2.6.js"></script>
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
     <script src="js/activityPlay.min.js?20140104001"></script>

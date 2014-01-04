@@ -1,10 +1,11 @@
 angular.module('ts.services.activity', [
         'ts.utils.constants',
+        'ts.services.utils',
         'ts.services.user'
     ])
     .service('ActivityService', [
-        '$rootScope', '$http', 'UserService', 'BACKEND_SERVER',
-        function($rootScope, $http, UserService, BACKEND_SERVER)
+        '$rootScope', '$http', 'UtilsService', 'UserService', 'BACKEND_SERVER',
+        function($rootScope, $http, UtilsService, UserService, BACKEND_SERVER)
         {
             $rootScope.activityList = [];
             $rootScope.activityMap = {};
@@ -46,7 +47,7 @@ angular.module('ts.services.activity', [
                 }
                 console.log('[ActivityService] fetching activities with', params);
                 //构造搜索请求
-                $http.get(BACKEND_SERVER + '/activities?uid=' + UserService.uid(), {responseType:'json', params:params})
+                $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
                     .success(function(data, status){
                         if(status === 200 && !data.c){
                             //处理活动列表
@@ -76,10 +77,16 @@ angular.module('ts.services.activity', [
                     .error(error);
             }
 
+            function getActivity(aid, success, error){
+                $http.get(BACKEND_SERVER + '/activities/' + aid, {responseType:'json'})
+                    .success(success)
+                    .error(error);
+            }
+
             function createActivity(params, success, error){
-                var body = object2urlencoded(params);
+                var body = UtilsService.object.toUrlencodedString(params);
                 $http.post(
-                        BACKEND_SERVER + '/activities?uid=' + UserService.uid(),
+                        BACKEND_SERVER + '/activities',
                         body,
                         {
                             responseType: 'json',
@@ -96,9 +103,9 @@ angular.module('ts.services.activity', [
             }
 
             function updateActivity(activityID, params, success, error){
-                var body = object2urlencoded(params);
+                var body = UtilsService.object.toUrlencodedString(params);
                 $http.put(
-                        BACKEND_SERVER + '/activities/' + activityID + '?uid=' + UserService.uid(),
+                        BACKEND_SERVER + '/activities/' + activityID,
                         body,
                         {
                             responseType: 'json',
@@ -173,18 +180,13 @@ angular.module('ts.services.activity', [
                 return date.getTime().toString();
             }
 
-            function object2urlencoded(object){
-                return _.map(object, function(value, key){
-                    return encodeURIComponent(key) + '=' + encodeURIComponent(value);
-                }).join('&');
-            }
-
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             return {
                 selectActivity:         selectActivity,
                 selectActivityByID:     selectActivityByID,
                 fetchActivities:        fetchActivities,
+                getActivity:            getActivity,
                 createActivity:         createActivity,
                 updateActivity:         updateActivity,
                 closeActivity:          closeActivity,
