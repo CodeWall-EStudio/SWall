@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html ng-app="activityPlay">
+<html ng-app="activityPlay" ng-controller="PlayerMainController">
 <head>
-    <title></title>
+    <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/activityPlay.min.css?20140104001" rel="stylesheet">
 </head>
-<body class="fixedTopNavbar" ng-controller="PlayerMainController">
+<body class="fixedTopNavbar">
 
     <!-- 顶部的导航栏 -->
     <div id="topNavBar" class="navbar navbar-default navbar-fixed-top">

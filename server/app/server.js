@@ -5,6 +5,7 @@ var fs      = require('fs'),
     _       = require('underscore')._,
     db      = require('./app_modules/db'),
     user    = require('./app_modules/user').user,
+    auth    = require('./app_modules/authentication').api,
     utf8    = require('./app_modules/utf8');
 
 
@@ -52,8 +53,8 @@ app.use('/static', express.static(__dirname + '/../www'));
 
 //创建活动
 app.post('/activities', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid     = user.uid(req);
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid     = userInfo['loginName'];
         var rawUids = req.body['uids'],
             uids    = rawUids ? rawUids.split(',') : [],
             title   = req.body['title'],
@@ -114,13 +115,13 @@ app.post('/activities', function(req, res){
                 else res.json(400, {c:10020, m:'Require Type'}); }
             else res.json(400, {c:10010, m:'Require Title'}); }
         else res.json(400, {c:10000, m:'Require Uids'});
-    }
+    });
 });
 
 //获取活动列表
 app.get('/activities', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             query = {};
 
         //根據活動狀態過濾，active(true) | closed(false)
@@ -200,7 +201,7 @@ app.get('/activities', function(req, res){
                 else    res.json(200, {c:0, r:{activities:docs, more:hasMore}});
             });
         });
-    }
+    });
 });
 
 
@@ -211,7 +212,6 @@ app.get('/activities', function(req, res){
 
 //获取活动配置
 app.get('/activities/config', function(req, res){
-    console.log('hey there');
     db.utils.queryActivityConfig(function(err, doc){
         console.log(err, doc);
         if(err)         res.json(500, {c:1, m:err.message});
@@ -222,8 +222,8 @@ app.get('/activities/config', function(req, res){
 
 //获取单个活动
 app.get('/activities/:aid', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             //找出特定id且是我創建的/我獲授權參與的/公開的
             query = {
@@ -242,13 +242,13 @@ app.get('/activities/:aid', function(req, res){
                 else        res.json(200, {c:0, r:doc});
             }
         });
-    }
+    });
 });
 
 //删除活动
 app.delete('/activities/:aid', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             query = {
                 '_id': aid, //匹配id
@@ -268,14 +268,14 @@ app.delete('/activities/:aid', function(req, res){
             else if(!count) res.json(404, {c:0});
             else            res.json(200, {c:0, r:count});
         });
-    }
+    });
 });
 
 //更新活动
 app.put('/activities/:aid', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid     = user.uid(req),
-            aid     = new mongodb.ObjectID(req.params['aid']);
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
+            aid = new mongodb.ObjectID(req.params['aid']);
 
         //先把這活動找出來
         var query = {
@@ -341,7 +341,7 @@ app.put('/activities/:aid', function(req, res){
                 });
             }
         });
-    }
+    });
 });
 
 
@@ -352,8 +352,8 @@ app.put('/activities/:aid', function(req, res){
 
 //参与活动
 app.post('/activities/:aid/participators', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             //这是用来检查我是否已经加入别的活动的
             joinedActivityQuery = {
@@ -389,13 +389,13 @@ app.post('/activities/:aid/participators', function(req, res){
                 });
             }
         });
-    }
+    });
 });
 
 //退出活动
 app.delete('/activities/:aid/participators/:uid', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             //找出指定id且我已经参与的活动
             query = {
@@ -415,7 +415,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
             else if(!doc)   res.json(404, {c:0});
             else            res.json(200, {c:0});
         });
-    }
+    });
 });
 
 
@@ -425,8 +425,8 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
 
 
 app.post('/activities/:aid/resources', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             type = parseInt(req.body['type'])||0,
             content = utf8.substr(req.body['content'], 0, LONG_CONTENT_MAXLEN),
@@ -457,12 +457,12 @@ app.post('/activities/:aid/resources', function(req, res){
             });
         }
         else res.json(400, {c:20000, m:'Require Content'});
-    }
+    });
 });
 
 app.get('/activities/:aid/resources', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             index = parseInt(req.query['index'])||0,
             count = (req.query['count'] == undefined ? 20 : req.query['count'])|0,
@@ -494,12 +494,12 @@ app.get('/activities/:aid/resources', function(req, res){
                 res.json(200, {c:0, r:resources});
             }
         });
-    }
+    });
 });
 
 app.delete('/activities/:aid/resources/:rid', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             rid = new mongodb.ObjectID(req.params['rid']),
             //只能删我能参与的活动中我自己上传的资源
@@ -520,7 +520,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
             else if(!count) res.json(404, {c:0});
             else            res.json(200, {c:0, r:count});
         });
-    }
+    });
 });
 
 
@@ -529,8 +529,8 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 
 
 app.get('/activities/:aid/stat/topUsers', function(req, res){
-    if(!user.response401IfUnauthoirzed(req, res)){
-        var uid = user.uid(req),
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             count = parseInt(req.query['n']),
             query = {
@@ -555,7 +555,7 @@ app.get('/activities/:aid/stat/topUsers', function(req, res){
                 res.json(200, {c:0, r:sortedArr});
             }
         });
-    }
+    });
 });
 
 app.get('/activities/:aid/stat/topTimes', function(req, res){
