@@ -385,7 +385,7 @@ app.post('/activities/:aid/participators', function(req, res){
                 db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
                     if(err)             res.json(500, {c:1, m:err.message});
                     else if(!newDoc)    res.json(401, {c:0});
-                    else                res.json(201, {c:0});
+                    else                res.json(201, {c:0, r:newDoc});
                 });
             }
         });
@@ -410,10 +410,10 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
             };
 
         console.log('[server] quit activity', query);
-        db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
+        db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, newDoc){
             if(err)         res.json(500, {c:1, m:err.message});
             else if(!doc)   res.json(404, {c:0});
-            else            res.json(200, {c:0});
+            else            res.json(200, {c:0, r:newDoc});
         });
     });
 });
@@ -450,10 +450,10 @@ app.post('/activities/:aid/resources', function(req, res){
                 updates = {'$push':{'resources':resource}};
 
             //找出活动并添加资源
-            db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, doc){
+            db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, newDoc){
                 if(err)         res.json(500, {c:1, m:err.message});
                 else if(!doc)   res.json(404, {c:0});
-                else            res.json(201, {c:0});
+                else            res.json(201, {c:0, r:newDoc});
             });
         }
         else res.json(400, {c:20000, m:'Require Content'});
