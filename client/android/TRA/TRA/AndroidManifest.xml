@@ -43,6 +43,7 @@
         <activity android:name=".QuitActivity"/>
         <activity android:name=".AddTextResourceActivity"
                 android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".UploadProgressActivity"/>
 
         <!-- 友盟 -->
         <meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />

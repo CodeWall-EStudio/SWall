@@ -15,6 +15,7 @@ public class SplashActivity extends BaseActivity {
         if(info == null || TextUtils.isEmpty(info.userName)){
             gotoLogin();
         }else{
+            app.updateCurrentAccount(info);
             gotoMain();
         }
         finish();

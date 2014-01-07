@@ -49,7 +49,7 @@ public class DataService extends ActionService{
     private void quitActivity(final int action,final  Bundle data, final ActionListener listener) {
         RequestQueue rq = MyVolley.getRequestQueue();
 
-        JsonObjectRequest request  = new JsonObjectRequest(
+        MyJsonObjectRequest request  = new MyJsonObjectRequest(
                 Request.Method.DELETE,
                 Constants.getQuitUrl(data.getString(Constants.KEY_USER_NAME), data.getString("id")),null,
                 new Response.Listener<JSONObject>() {
@@ -80,7 +80,7 @@ public class DataService extends ActionService{
     private void joinActivity(final int action,final Bundle data,final ActionListener listener) {
         RequestQueue rq = MyVolley.getRequestQueue();
 
-        JsonObjectRequest request  = new JsonObjectRequest(
+        MyJsonObjectRequest request  = new MyJsonObjectRequest(
                 Request.Method.POST,
                 Constants.getJoinUrl(data.getString(Constants.KEY_USER_NAME), data.getString("id")),null,
                 new Response.Listener<JSONObject>() {
@@ -109,14 +109,14 @@ public class DataService extends ActionService{
     }
 
 
-    JsonObjectRequest availableActivityRequest;
+    MyJsonObjectRequest availableActivityRequest;
     private void getActivities(final int action, final Bundle data, final ActionListener listener, final boolean active) {
         if(availableActivityRequest != null && availableActivityRequest.hasHadResponseDelivered()){
             // TODO
             //throw new Error("deal with me...");
         }
         RequestQueue rq = MyVolley.getRequestQueue();
-        availableActivityRequest  = new JsonObjectRequest(
+        availableActivityRequest  = new MyJsonObjectRequest(
                 Constants.getActivitiesListUrl(data.getString(Constants.KEY_USER_NAME),active,data.getInt("index",0),false),null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -145,7 +145,7 @@ public class DataService extends ActionService{
 
     private void getCurrentActivityInfo(final int action, final Bundle data, final ActionListener listener) {
         RequestQueue rq = MyVolley.getRequestQueue();
-        JsonObjectRequest request  = new JsonObjectRequest(
+        MyJsonObjectRequest request  = new MyJsonObjectRequest(
                 Constants.getActivitiesListUrl(data.getString(Constants.KEY_USER_NAME),true,data.getInt("index",0),true),null,
                 new Response.Listener<JSONObject>() {
                     @Override

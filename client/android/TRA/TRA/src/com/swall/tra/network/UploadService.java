@@ -19,6 +19,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pxz on 13-12-13.
@@ -115,7 +117,7 @@ public class UploadService extends ActionService {
                 break;
 
         }
-        doUpload(ServiceManager.Constants.URL_PREFIX + "resources",
+        doUpload("http://szone.71xiaoxue.com/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
                 bytes,
                 new ActionListener(null) {//此处不应该用ActionListener
                     @Override
@@ -164,8 +166,37 @@ public class UploadService extends ActionService {
 
 
     private void doUpload(String postUrl,byte[] data, final ActionListener listener,ContentType contentType){
+
+        /*
+        Map<String,String> params = new HashMap<String,String>(3);
+        params.put("media","1");
+        params.put("name", "noname");
+        params.put("encodeKey", sEncodeKey);
+        params.put("file","test");
+        NetworkUtils.StringRequestWithParams request = new NetworkUtils.StringRequestWithParams(
+                Request.Method.POST,
+                postUrl,
+                params,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Bundle data = new Bundle();
+                        data.putString("data",response);
+                        listener.onReceive(0,data);
+                    }
+                },
+                new Response.ErrorListener(){
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        listener.onReceive(-1,null);
+                    }
+                  
+        );
+        */
         NetworkUtils.MultipartRequest req =  new NetworkUtils.MultipartRequest(
                 postUrl,
+                sEncodeKey,
                 data,
                 contentType,
                 new Response.Listener<String>() {

@@ -28,7 +28,7 @@ public class SettingActivity extends PreferenceActivity implements Preference.On
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
         if(key.equals("account")){
-            TRAApplication.getApp().updateCurrentAccount(new AccountInfo("",""));
+            TRAApplication.getApp().updateCurrentAccount(null);
             finish();
             return true;
         }

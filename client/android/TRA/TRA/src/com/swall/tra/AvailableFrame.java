@@ -1,5 +1,6 @@
 package com.swall.tra;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -81,6 +82,10 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
     }
 
     private void showEmptyOrShowError() {
+        Activity activity = getActivity();
+        if(activity == null || activity.isFinishing()){
+            return;
+        }
         mAutoRetryCount ++;
         if(RETRY_MAX > mAutoRetryCount){
             Toast.makeText(getActivity(),"暂无数据,5秒后重新刷新...",Toast.LENGTH_SHORT).show();

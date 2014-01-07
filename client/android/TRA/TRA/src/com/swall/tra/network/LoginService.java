@@ -6,13 +6,24 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.swall.tra.TRAApplication;
 import com.swall.tra.model.AccountInfo;
 import static com.swall.tra.network.ServiceManager.Constants;
+
+import com.swall.tra.utils.NetworkUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pxz on 13-12-13.
@@ -20,6 +31,8 @@ import java.util.List;
 public class LoginService extends ActionService {
     private static final String URL_PREFIX = "http://codewall.com/";
     private static final String URL_LOGIN = URL_PREFIX+"login";
+
+    private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
 
 
     private ArrayList<ActionListener> tmpListenerList = new ArrayList<ActionListener>(5);
@@ -73,8 +86,10 @@ public class LoginService extends ActionService {
         boolean autoLogin = data.getBoolean(Constants.KEY_AUT_LOGIN,false);
         String name = data.getString(Constants.KEY_USER_NAME,"");
         String pwd = data.getString(Constants.KEY_PASSWORD,"");
+        String showName = data.getString(TRAApplication.KEY_SHOW_NAME,"");
+        String encodeKey = data.getString(TRAApplication.KEY_ENCODE_KEY,"");
         TRAApplication app = TRAApplication.getApp();
-        app.updateCurrentAccount(new AccountInfo(name, pwd), autoLogin);
+        app.updateCurrentAccount(new AccountInfo(name, pwd,showName,encodeKey), autoLogin);
     }
 
     private void doGetAccounts(Bundle data, final ActionListener listener) {
@@ -134,7 +149,7 @@ public class LoginService extends ActionService {
     }
 
 
-    private void doLogin(Bundle data,ActionListener listener){
+    private void doLogin(Bundle data,final ActionListener listener){
         String userName = data.getString(Constants.KEY_USER_NAME);
         String password = data.getString(Constants.KEY_PASSWORD);
         if(TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)){
@@ -144,51 +159,42 @@ public class LoginService extends ActionService {
             return;
         }
 
-        if(listener != null && !tmpListenerList.contains(tmpListenerList)){
+        if(listener != null && !tmpListenerList.contains(listener)){
             tmpListenerList.add(listener);
         }
         if(!isLoginProcessing){
-            new LoginAsyncTask().execute(userName,password);
+
+            RequestQueue rq = MyVolley.getRequestQueue();
+
+            Map<String,String> params = new HashMap<String,String>();
+            params.put("loginName",userName);
+            params.put("password",password);
+
+            NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
+                    Request.Method.POST,
+                    LOGIN_URL,params,
+                    new Response.Listener<String>() {
+                        public void onResponse(String response) {
+                            Bundle result = new Bundle();
+                            result.putBoolean(Constants.KEY_STATUS,true);
+                            result.putString("result",response);
+                            notifyListener(Constants.ACTION_LOGIN,result,tmpListenerList);
+                            tmpListenerList.clear();
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO 分别处理网络错误
+                            notifyListener(Constants.ACTION_LOGIN,null,tmpListenerList);
+                            tmpListenerList.clear();
+                        }
+                    }
+            );
+            rq.add(request);
+            rq.start();
+//            new LoginAsyncTask().execute(userName,password);
         }
     }
-
-    private class LoginAsyncTask extends AsyncTask<String,Integer,Bundle> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            isLoginProcessing = true;
-        }
-
-        @Override
-        protected void onPostExecute(final Bundle data) {
-            super.onPostExecute(data);
-            isLoginProcessing = false;
-
-            ActionService[] as = new ActionService[tmpListenerList.size()];
-            notifyListener(Constants.ACTION_LOGIN,data,tmpListenerList.toArray());
-        }
-
-        @Override
-        protected Bundle doInBackground(String... params) {
-            if(params.length != 2)return null;
-            String userName = params[0];
-            String password = params[1];
-
-            try {
-                Thread.sleep(1000);
-
-                Bundle response = new Bundle();
-                response.putBoolean(Constants.KEY_STATUS,true);// TODO status应该有多个值表明登录返回状态而不应该只是成功或失败
-                response.putString(Constants.KEY_USER_NAME, userName);
-                response.putString(Constants.KEY_PASSWORD, password);
-                return response;
-
-           } catch (Exception e) {
-                // TODO
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
 }

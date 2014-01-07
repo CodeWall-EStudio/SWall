@@ -22,7 +22,7 @@ public class SettingActivity2 extends TabFrame implements View.OnClickListener {
 
     @Override
     public void onClick(View v){
-        TRAApplication.getApp().updateCurrentAccount(new AccountInfo("",""));
+        TRAApplication.getApp().updateCurrentAccount(new AccountInfo("","","",""));
         getActivity().finish();
     }
 }

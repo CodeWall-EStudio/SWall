@@ -28,6 +28,10 @@ public class ServiceManager {
 
         //public static final String URL_PREFIX = "http://54.251.49.104:8080/";
         public static final String URL_PREFIX = "http://115.28.55.91:8080/";
+        public static final String KEY_LOGIN_SUCCESS = "success";
+        public static final String KEY_LOGIN_RESULT_OBJECT = "resultObject";
+        public static final String KEY_RESULT = "result";
+
         public static String getPostResourceUrl(String aid, String uid){
             String url =  URL_PREFIX + String.format("activities/%s/resources?uid=%s",aid,URLEncoder.encode(uid));//TODO
             Log.w("SWall",url);

@@ -18,7 +18,7 @@ public class QuitActivity extends BaseFragmentActivity implements View.OnClickLi
 
         findViewById(R.id.btnBack).setOnClickListener(this);
         findViewById(R.id.btnQuit).setOnClickListener(this);
-        ((TextView)findViewById(R.id.username)).setText(currentAccount.userName);
+        ((TextView)findViewById(R.id.username)).setText(currentAccount.showName);
 
         hideQuitButton();
     }
@@ -36,7 +36,7 @@ public class QuitActivity extends BaseFragmentActivity implements View.OnClickLi
     }
 
     private void gotoLogin() {
-        app.updateCurrentAccount(new AccountInfo("", ""));
+        app.updateCurrentAccount(new AccountInfo("", "","",""));
         Intent intent = new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|
             Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

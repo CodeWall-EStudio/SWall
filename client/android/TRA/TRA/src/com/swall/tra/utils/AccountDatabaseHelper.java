@@ -63,7 +63,7 @@ public class AccountDatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
     }
-
+/*
     public List<AccountInfo> getAccountInfoList(){
         synchronized (synLocker) {
             SQLiteDatabase db = getReadableDatabase();
@@ -76,7 +76,7 @@ public class AccountDatabaseHelper extends SQLiteOpenHelper {
                         String userid = cursor.getString(0);
                         String userName = cursor.getString(1);
                         String userPassword = cursor.getString(2);
-                        AccountInfo info = new AccountInfo(userName,userPassword);
+                        AccountInfo info = new AccountInfo(userName,userPassword,"","");
                         accounts.add(info);
                     } while (cursor.moveToNext());
                     return accounts;
@@ -92,7 +92,7 @@ public class AccountDatabaseHelper extends SQLiteOpenHelper {
         }
         return Collections.EMPTY_LIST;
     }
-
+*/
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + USER_TABLENAME + " ("

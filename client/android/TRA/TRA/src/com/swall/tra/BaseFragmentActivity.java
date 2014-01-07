@@ -34,6 +34,8 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
 
 
 
+
+
     public String getCurrentAcccountName(){
         return currentAccount.userName;
     }
@@ -74,7 +76,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mQuitProgramConfirmDialog.dismiss();
-                            app.updateCurrentAccount(new AccountInfo("", ""));
+                            app.updateCurrentAccount(new AccountInfo("", "","",""));
                             finish();
                         }
                     })

@@ -28,6 +28,8 @@ public class TRAApplication extends Application {
     public static final String KEY_USER_NAME = "user_name";
     public static final String KEY_USER_PASSWORD = "user_pwd";
     private static final String KEY_AUTO_LOGIN = "auto_login";
+    public static final String KEY_SHOW_NAME = "show_name";
+    public static final String KEY_ENCODE_KEY = "encode_key";
 
 
     private ServiceManager mServiceManager;
@@ -46,8 +48,10 @@ public class TRAApplication extends Application {
                 case ServiceManager.Constants.ACTION_AUTO_LOGIN:
                     if(data == null)return;
                     mAccount = new AccountInfo(
-                            data.getString(ServiceManager.Constants.KEY_USER_NAME),
-                            data.getString(ServiceManager.Constants.KEY_PASSWORD));
+                            data.getString(KEY_USER_NAME),
+                            data.getString(KEY_USER_PASSWORD),
+                            data.getString(KEY_SHOW_NAME),
+                            data.getString(KEY_ENCODE_KEY));
                     break;
             }
         }
@@ -119,13 +123,15 @@ public class TRAApplication extends Application {
 
     // ###########
     public AccountInfo getCachedAccount(){
-        Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD});
+        Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY});
         String name = data.get(KEY_USER_NAME);
         String password = data.get(KEY_USER_PASSWORD);
+        String showName = data.get(KEY_SHOW_NAME);
+        String encodeKey = data.get(KEY_ENCODE_KEY);
         if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password)){
-            return new AccountInfo("","");
+            return new AccountInfo("","","","");
         }
-        return new AccountInfo(name,password);
+        return new AccountInfo(name,password,showName,encodeKey);
     }
 
     public void updateCurrentAccount(AccountInfo account){
@@ -133,9 +139,13 @@ public class TRAApplication extends Application {
     }
 
     public void updateCurrentAccount(AccountInfo account,boolean autoLogin){
+        if(account == null){
+            account = new AccountInfo("","","","");
+        }
+        ActionService.sEncodeKey = account.encodeKey;
         saveMappingData(CACHED_USER_DATA,
-                new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_AUTO_LOGIN},
-                new String[]{account.userName,account.password,autoLogin?"true":"false"}
+                new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_AUTO_LOGIN,KEY_SHOW_NAME,KEY_ENCODE_KEY},
+                new String[]{account.userName,account.password,autoLogin?"true":"false",account.showName,account.encodeKey}
         );
     }
 

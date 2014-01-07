@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -26,6 +27,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 /**
  * Created by pxz on 13-12-28.
  */
@@ -38,6 +43,9 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private boolean mIsQuiting = false;
     private AlertDialog mQuitDialog;
     private TextView mTitleTips;
+    private View mBtnPhoto;
+    private View mBtnVideo;
+    private View mBtnText;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +86,11 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
         mListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+
+
+        mBtnPhoto = findViewById(R.id.btnPhoto);
+        mBtnText = findViewById(R.id.btnText);
+        mBtnVideo = findViewById(R.id.btnRecordVideo);
     }
 
     @Override
@@ -167,10 +180,10 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
     private void initClickListeners() {
 //        findViewById(R.id.btnDraw).setOnClickListener(this);
-        findViewById(R.id.btnPhoto).setOnClickListener(this);
+        mBtnPhoto.setOnClickListener(this);
 //        findViewById(R.id.btnRecordAudio).setOnClickListener(this);
-        findViewById(R.id.btnRecordVideo).setOnClickListener(this);
-        findViewById(R.id.btnText).setOnClickListener(this);
+        mBtnText.setOnClickListener(this);
+        mBtnVideo.setOnClickListener(this);
 
         mBtnQuit.setOnClickListener(this);
     }
@@ -178,6 +191,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private void initIntents(){
         mTakePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         mTakePicIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 100);
+        mTakePicIntent.putExtra(MediaStore.EXTRA_OUTPUT,new File(getFilesDir(), "tmp.jpg"));
 
 
         mTakeVideoRecordIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -228,12 +242,14 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
         }
         if(i != null){
+            setCollectionButtonEnabled(false);
             try{
                 startActivityForResult(i, reqId);
             }catch(Exception e){//某些机器上启动不了摄像头拍照或录像
                 if(viewId == R.id.btnPhoto){
                     Toast.makeText(this, R.string.launch_camera_fail, Toast.LENGTH_LONG).show();
                 }
+                setCollectionButtonEnabled(true);
             }
         }
     }
@@ -273,7 +289,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        setCollectionButtonEnabled(true);
         switch(requestCode){
 //            case R.id.btnDraw:// 涂鸦和拍照是同一类型
             case REQUEST_ID_PHOTO:
@@ -312,6 +328,12 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         }
     }
 
+    private void setCollectionButtonEnabled(boolean enabled) {
+        mBtnPhoto.setEnabled(enabled);
+        mBtnText.setEnabled(enabled);
+        mBtnVideo.setEnabled(enabled);
+    }
+
     private void doUploadText(String text) {
         defaultRequestData.putString("text",text.toString());
         defaultRequestData.putString("id", mInfo.id);
@@ -331,9 +353,22 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             case  ServiceManager.Constants.ACTION_UPLOAD_VIDEO:
                 dataToTranfer = data.getData();
                 break;
-            case ServiceManager.Constants.ACTION_UPLOAD_PIC:
-                dataToTranfer = (Bitmap) data.getExtras().get("data");
+            case ServiceManager.Constants.ACTION_UPLOAD_PIC:{
+                Bitmap bitmap=null;
+                File f= new File(getFilesDir(),"tmp.jpg");
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                try {
+                    bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+                    dataToTranfer = bitmap;
+//                    dataToTranfer = (Bitmap) data.getExtras().get("data");
+                } catch (FileNotFoundException e) {
+                    dataToTranfer = (Bitmap)data.getExtras().get("data");
+                    e.printStackTrace();
+                }
+
                 break;
+            }
             case ServiceManager.Constants.ACTION_UPLOAD_AUDIO:// TODO
                 return;
         }

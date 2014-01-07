@@ -5,12 +5,23 @@ import android.os.Bundle;
 import com.swall.tra.utils.AccountDatabaseHelper;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pxz on 13-12-13.
  */
 public abstract class ActionService {
+    protected static Map<String, String> sRequestCookies = new HashMap<String, String>();
+    public static Map<String, String> getRequestHeaders(){
+        if(sRequestCookies.isEmpty()){
+            sRequestCookies.put("Cookie","skey="+sEncodeKey);
+        }
+        return sRequestCookies;
+    }
     protected String TAG;
+    public static String sEncodeKey;
     protected WeakReference<Context> contextRef;
     protected WeakReference<ServiceManager> managerRef;
     public ActionService(Context context, ServiceManager manager){
@@ -29,13 +40,15 @@ public abstract class ActionService {
                 }
             });
         }
-
+        notifyListener(action,data);
+    }
+    protected void notifyListener(final int action,final Bundle data){
         ServiceManager manager =managerRef.get();
         if(manager != null){
             manager.notifyListener(action, data);
         }
     }
-    protected void notifyListener(final int action, final Bundle data,Object... localListeners){
+    protected void notifyListener(final int action, final Bundle data,List<ActionListener> localListeners){
         if(localListeners != null){
             for(Object listenerObj:localListeners){
                 if(listenerObj instanceof ActionListener){
@@ -49,11 +62,7 @@ public abstract class ActionService {
                 }
             }
         }
-
-        ServiceManager manager =managerRef.get();
-        if(manager != null){
-            manager.notifyListener(action, data);
-        }
+        notifyListener(action,data);
     }
     protected AccountDatabaseHelper getDBHelper(){
         ServiceManager manager =managerRef.get();
