@@ -9,7 +9,12 @@ body{
     -webkit-box-orient: vertical;
 }
 
+#topNavBar{
+    box-shadow: none;
+}
+
 #activityInfo{
+    border-bottom: 1px solid #d3d6da;
     background-color: rgb(156,172,199);
     color: #fff;
     font-size: 14px;
@@ -29,6 +34,7 @@ body{
     -webkit-box-flex: 1;
     background-color: #fff;
 }
+
 #mainContent ul{
     list-style: none;
     -webkit-padding-start: 0px;
@@ -47,15 +53,49 @@ body{
     height: 240px;
     border-top: 1px solid rgb(211,214,218);
 }
+
 #mainContent .timeline{
+    overflow: scroll;
+    width: 82%;
+}
+#mainContent .resourceGroup{
     display: -webkit-box;
     -webkit-box-orient: horizontal;
-    overflow: scroll;
 }
-#mainContent .times{
-    -webkit-box-flex: 0.3;
+#mainContent .time{
+    width: 30%;
+    text-align: right;
     border-right: 5px solid rgb(36,74,134);
+    padding-top: 10px;
+    padding-right: 10px;
 }
-#mainContent .resources{
-    -webkit-box-flex: 0.7;
+#mainContent .resource{
+    position: relative;
+    width: 70%;
+    padding-left: 60px;
+}
+#mainContent .line{
+    position: absolute;
+    width: 50px;
+    left: 0;
+    top: 20px;
+    border-top: 3px dotted rgb(36,74,134);
+}
+#mainContent .resourceItem{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    padding: 10px 0;
+}
+#mainContent .thumb{
+    border-radius: 4px;
+    background-color: #CCC;
+    width: 170px;
+    height: 100px;
+    margin-right: 10px;
+}
+#mainContent .content{
+
+}
+#mainContent .comment{
+    color: #999;
 }

@@ -5,9 +5,9 @@ angular.module('ts.controllers.main', [
     ])
     .controller('MainController', [
         '$rootScope', '$scope', '$http', '$location', 'UserService', 'ActivityService',
-        'EVENT_LOGIN', 'EVENT_MODE_CHANGE',
+        'EVENT_LOGIN', 'EVENT_LOGIN_CLICK', 'EVENT_MODE_CHANGE',
         function($rootScope, $scope, $http, $location, UserService, ActivityService,
-            EVENT_LOGIN, EVENT_MODE_CHANGE){
+            EVENT_LOGIN, EVENT_LOGIN_CLICK, EVENT_MODE_CHANGE){
 
             $rootScope.$on(EVENT_LOGIN, function(event, status){
                 if(status == 200){
@@ -27,13 +27,7 @@ angular.module('ts.controllers.main', [
             };
 
             $rootScope.showLoginModal = function(){
-                //TODO 改为发事件
-                if(UserService.hasLoggedIn()){
-                    //TODO logout
-                }
-                else {
-                    $('#loginModal').modal('show');
-                }
+                $rootScope.$emit(EVENT_LOGIN_CLICK);
             };
 
             /**

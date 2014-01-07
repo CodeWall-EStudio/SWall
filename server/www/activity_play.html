@@ -29,7 +29,11 @@
         <div class="col-sm-4 section1">
             <p>活动日期：{{activityDate}}</p>
             <p>开始时间：{{activityTime}}</p>
-            <p>活动类型：{{activity.info.type}}</p>
+            <p ng-switch on="activity.info.type">
+                活动类型：
+                <span ng-switch-when="1">公开课</span>
+                <span ng-switch-default>其他</span>
+            </p>
         </div>
         <div class="col-sm-4 section2">
             <p>出课教师：{{activity.info.teacher}}</p>
@@ -53,8 +57,7 @@
             <div class="userlist">
                 用户：
                 <ul>
-                    <li>王泥马</li>
-                    <li>张泥马</li>
+                    <li ng-repeat="uid in activity.users.participators">{{uid}}</li>
                 </ul>
             </div>
             <!-- 统计信息入口 -->
@@ -62,8 +65,44 @@
         </div>
         <!-- 时间线和资源列表 -->
         <div class="col-sm-11 timeline">
-            <div class="times"></div>
-            <div class="resources"></div>
+            <div class="resourceGroup" ng-repeat="group in resources">
+                <div class="time">{{group[0].date | date:'hh:mm'}}</div>
+                <div class="resource">
+                    <div class="line"></div>
+                    <div class="resourceItem" ng-repeat="resource in group">
+                        <div class="thumb" ng-hide="resource.type==0"></div>
+                        <div class="content">
+                            <div ng-switch on="resource.type">
+                                <span ng-switch-when="0">文字</span>
+                                <span ng-switch-when="1">图片</span>
+                                <span ng-switch-when="2">视频</span>
+                                <span ng-switch-when="3">音频</span>
+                                <span>{{resource.user}}</span>
+                            </div>
+                            <div class="textContent" ng-show="resource.type==0">{{resource.content}}</div>
+                            <div class="comment">{{resource.comment}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="resourceItem" ng-repeat="resource in activity.resources">
+                <div class="time">{{resource.date | date:'hh:mm'}}</div>
+                <div class="resource">
+                    <div class="thumb" ng-hide="resource.type==0"></div>
+                    <div class="content">
+                        <div ng-switch on="resource.type">
+                            <span ng-switch-when="0">文字</span>
+                            <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="2">视频</span>
+                            <span ng-switch-when="3">音频</span>
+                            <span>{{resource.user}}</span>
+                        </div>
+                        <div class="textContent" ng-show="resource.type==0">{{resource.content}}</div>
+                        <div class="comment">{{resource.comment}}</div>
+                    </div>
+                </div>
+            </div>-->
         </div>
     </div>
 

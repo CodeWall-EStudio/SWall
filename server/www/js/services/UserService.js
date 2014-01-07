@@ -5,8 +5,6 @@ angular.module('ts.services.user', [
     .service('UserService', [
         '$rootScope', '$http', 'UtilsService', 'BACKEND_SERVER', 'EVENT_LOGIN',
         function($rootScope, $http, UtilsService, BACKEND_SERVER, EVENT_LOGIN){
-            var nick;
-
             function uid(){
                 return UtilsService.cookie.get('uid');
             }
@@ -18,14 +16,16 @@ angular.module('ts.services.user', [
             }
 
             function nick(){
-                return nick;
+                var s = localStorage['login_result'];
+                var r = s ? JSON.parse(s) : {};
+                return r ? r.nick : '';
             }
 
             function login(username, password, success, error){
                 function handleResponse(data, status){
                     console.log('[UserService] login result:', data, status, document.cookie);
                     if(status == 200 && success){
-                        nick = data.nick;
+                        localStorage['login_result'] = JSON.stringify(data);
                         success(data, status);
                     }
                     else if(error){
