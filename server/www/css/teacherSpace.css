@@ -28,11 +28,15 @@
     background-color: #FFF;
     margin: 0;
 }
-#activityList > div:first-child{
+#activityList .emptyTips{
+    text-align: center;
+    padding: 10px;
+}
+#activitiesWrapper{
     padding-left: 10px;
     padding-right: 0;
 }
-#activityList > div:last-child{
+#activityDetailWrapper{
     width: 75%;
     padding-left: 0;
     margin-left: -1px;

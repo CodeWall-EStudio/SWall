@@ -4,12 +4,16 @@ angular.module('ts.controllers.navigator', [
     .controller('NavigatorController', [
         '$rootScope', '$scope', 'UserService', 'EVENT_LOGIN',
         function($rootScope, $scope, UserService, EVENT_LOGIN){
-            $scope.username = UserService.uid();
+            function getNickname(){
+                $scope.nickname = UserService.nick();
+            }
 
             $rootScope.$on(EVENT_LOGIN, function(event, status){
                 if(status == 200){
-                    $scope.username = UserService.uid();
+                    getNickname();
                 }
             });
+
+            getNickname();
         }
     ]);

@@ -5,19 +5,32 @@ angular.module('ts.services.user', [
     .service('UserService', [
         '$rootScope', '$http', 'UtilsService', 'BACKEND_SERVER', 'EVENT_LOGIN',
         function($rootScope, $http, UtilsService, BACKEND_SERVER, EVENT_LOGIN){
+            var nick;
+
             function uid(){
                 return UtilsService.cookie.get('uid');
             }
 
             function hasLoggedIn(){
-                return uid() !== undefined;
+                var uid = UtilsService.cookie.get('uid'),
+                    skey = UtilsService.cookie.get('skey');
+                return uid && skey;
+            }
+
+            function nick(){
+                return nick;
             }
 
             function login(username, password, success, error){
                 function handleResponse(data, status){
                     console.log('[UserService] login result:', data, status, document.cookie);
-                    if(status == 200 && success) success(data, status);
-                    else if(error) error(data, status);
+                    if(status == 200 && success){
+                        nick = data.nick;
+                        success(data, status);
+                    }
+                    else if(error){
+                        error(data, status);
+                    }
                     $rootScope.$emit(EVENT_LOGIN, status, data);
                 }
                 $http.put(
@@ -35,6 +48,7 @@ angular.module('ts.services.user', [
             return {
                 uid: uid,
                 hasLoggedIn: hasLoggedIn,
+                nick: nick,
                 login: login
             };
         }

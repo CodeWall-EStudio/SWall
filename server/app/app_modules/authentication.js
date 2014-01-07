@@ -6,41 +6,59 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com', path:'/authenticationUse
     GET_PROFILE_API         = {host:'mapp.71xiaoxue.com', path:'/components/getUserInfo.htm'};
 
 
+function login(username, password, callback){
+    if(username && password){
+        post(
+            GET_ENCODE_KEY_API,
+            'loginName=' + username + '&password=' + password,
+            function(data, res){
+                try{
+                    var json = JSON.parse(data),
+                        nick, encodeKey;
+                    if(json && json['success'] && json['resultObject']){
+                        nick = json['resultObject']['userName'];
+                        encodeKey = json['resultObject']['encodeKey'];
+                    }
+                    callback(null, res.statusCode, encodeKey ? {nick:nick, skey:encodeKey} : null);
+                }
+                catch(e){
+                    callback(e);
+                }
+            },
+            function(e){
+                callback(e);
+            }
+        )
+    }
+    else callback(new Error('Invaild username or password'));
+}
+
+
 /**
  * verify encodeKey and returns the user info object
  * @param {String} encodeKey
  * @param {Function} callback function(error:Error, statusCode:int, userInfo:Object)
  */
 function verifyEncodeKey(encodeKey, callback){
-    var options = {
-        hostname: GET_PROFILE_API.host,
-        path: GET_PROFILE_API.path,
-        port: 80,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    };
-    var req = http.request(options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            var json;
-            try{
-                json = JSON.parse(chunk);
-                callback(null, res.statusCode, json['userInfo']);
-            }
-            catch(e){
+    if(encodeKey){
+        post(
+            GET_PROFILE_API,
+            'encodeKey='+encodeKey,
+            function (data, res) {
+                try{
+                    var json = JSON.parse(data);
+                    callback(null, res.statusCode, json['userInfo']);
+                }
+                catch(e){
+                    callback(e);
+                }
+            },
+            function(e) {
                 callback(e);
             }
-        });
-    });
-
-    req.on('error', function(e) {
-        callback(e);
-    });
-
-    req.write('encodeKey=' + encodeKey);
-    req.end();
+        );
+    }
+    else callback(new Error('Invalid EncodeKey'));
 }
 
 
@@ -66,7 +84,30 @@ function response401IfUnauthoirzed(req, res, callback){
 }
 
 
+function post(api, body, onData, onError){
+    var options = {
+        hostname: api.host,
+        path: api.path,
+        port: 80,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+    var req = http.request(options, function(res) {
+        res.setEncoding('utf8');
+        res.on('data', function(chunk){
+            onData(chunk, res);
+        });
+    });
+    req.on('error', onError);
+    req.write(body);
+    req.end();
+}
+
+
 exports.api = {
+    login: login,
     verifyEncodeKey: verifyEncodeKey,
     response401IfUnauthoirzed: response401IfUnauthoirzed
 };

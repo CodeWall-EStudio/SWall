@@ -568,14 +568,24 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 
 
 app.put('/users/:uid/login', function(req, res){
-    try{
-        //TODO fetch user profiles
-        var success = user.login(req, res);
-        res.send(success ? 200 : 404);
-    }
-    catch(e){
-        res.send(500);
-    }
+    var uid = req.params['uid'],
+        pwd = req.body['pwd'];
+    auth.login(
+        uid, pwd,
+        function(error, status, result){
+            if(!error && status==200){
+                if(result){
+                    var expiresDate = new Date(Date.now() + 3600000*24),
+                        options = {/*domain:'...', */path:'/', expires:expiresDate};
+                    res.cookie('uid', uid, options);
+                    res.cookie('skey', result.skey, options);
+                    res.json(200, result);
+                }
+                else res.send(401);
+            }
+            else res.send(500);
+        }
+    );
 });
 
 

@@ -9,20 +9,23 @@ angular.module('ts.controllers.loginForm', [
             $scope.errMsg = '';
 
             $scope.login = function(){
+                function handleResult(data, status){
+                    if(status == 200){
+                        $('#loginModal').modal('hide');
+                    }
+                    else {
+                        $scope.errMsg = '验证失败';
+                        $scope.$digest();
+                    }
+                    //reset form
+                    $scope.uid = $scope.pwd = $scope.errMsg = '';
+                }
+
                 if($scope.uid){
                     if($scope.pwd){
                         UserService.login(
                             $scope.uid, $scope.pwd,
-                            function(data, status){
-                                if(status == 200){
-                                    $('#loginModal').modal('hide');
-                                }
-                                else {
-                                    //TODO 登录失败
-                                }
-                                //reset form
-                                $scope.uid = $scope.pwd = $scope.errMsg = '';
-                            }
+                            handleResult, handleResult
                         );
                     }
                     else $scope.errMsg = '请输入密码'; }

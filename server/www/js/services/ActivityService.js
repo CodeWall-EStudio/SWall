@@ -11,6 +11,7 @@ angular.module('ts.services.activity', [
             $rootScope.activityMap = {};
             $rootScope.selectedActivity = null;
             $rootScope.selectedActivityID = '';
+            $rootScope.hints = '';
 
             function selectActivity(activity){
                 if(activity){
@@ -41,6 +42,11 @@ angular.module('ts.services.activity', [
             }
 
             function fetchActivities(params, success, error){
+                //cleanup first
+                $rootScope.activityList = [];
+                $rootScope.activityMap = {};
+                $rootScope.hints = '请稍候...';
+
                 params = params || {};
                 if($rootScope.mode() == 'manager'){
                     params['creator'] = UserService.uid();
@@ -71,10 +77,18 @@ angular.module('ts.services.activity', [
                                 result[activity._id] = activity;
                                 return result;
                             }, {});
+
+                            if(!$rootScope.activityList.length) $rootScope.hints = '没找到任何活动';
+                            else $rootScope.hints = '';
+
+                            console.log('[ActivityService] activities result', $rootScope.activityList, $rootScope.activityMap);
                         }
                         if(success) success(data, status);
                     })
-                    .error(error);
+                    .error(function(data, status){
+                        $rootScope.hints = '拉取活动失败';
+                        if(error) error(data, status);
+                    });
             }
 
             function getActivity(aid, success, error){

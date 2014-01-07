@@ -4,7 +4,7 @@
     <title>教师空间</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/teacherSpace.min.css?20140101001" rel="stylesheet">
+    <link href="css/teacherSpace.min.css?20140107001" rel="stylesheet">
 </head>
 <body class="fixedTopNavbar" ng-controller="MainController">
 
@@ -20,7 +20,7 @@
                     <li ng-class="{active:mode()=='manager'}"><a ng-click="gotoMode('manager')">管理活动</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a ng-click="showLoginModal()">{{username || '登录'}}</a></li>
+                    <li><a ng-click="showLoginModal()">{{nickname || '登录'}}</a></li>
                 </ul>
             </div>
         </div>
@@ -74,9 +74,10 @@
         </div>
 
         <!-- 活动列表和内容 -->
-        <div class="row" id="activityList" ng-controller="ActivityListController">
+        <div class="row" id="activityList">
+            <div class="emptyTips" ng-show="hints">{{hints}}</div>
             <!-- 活動列表 -->
-            <div class="col-sm-3">
+            <div class="col-sm-3" id="activitiesWrapper" ng-controller="ActivityListController">
                 <div class="panel-group" id="activities">
                     <div class="panel panel-default activityGroup" ng-repeat="item in activityList">
                         <div data-toggle="collapse" data-parent="#activities" ng-href="#{{item.date}}" class="panel-heading">
@@ -96,7 +97,7 @@
                 </div>
             </div>
             <!-- 活動詳情 -->
-            <div class="col-sm-8" ng-controller="ActivityDetailController">
+            <div class="col-sm-8" id="activityDetailWrapper" ng-controller="ActivityDetailController">
                 <div id="activityDetail" ng-show="selectedActivity">
                     <h3>{{selectedActivity.info.title}}</h3>
                     <p>状态：{{selectedActivity.active ? '开放' : '关闭'}}的活动</p>
@@ -257,6 +258,6 @@
     <script src="lib/angular/angular_1.2.6.js"></script>
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/teacherSpace.min.js?20140101001"></script>
+    <script src="js/teacherSpace.min.js?20140106001"></script>
 </body>
 </html>
