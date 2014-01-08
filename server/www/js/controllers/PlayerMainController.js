@@ -6,6 +6,7 @@ angular.module('ap.controllers.main', [
         '$rootScope', '$scope', '$location', 'ActivityService', 'UserService',
         function($rootScope, $scope, $location, ActivityService, UserService){
             $rootScope.username = UserService.nick();
+            $rootScope.userCount = 0;
             $rootScope.resources = {};
             $rootScope.presources = [];
             $scope.selectedResource = null;
@@ -70,10 +71,21 @@ angular.module('ap.controllers.main', [
                                 date.setMilliseconds(0);
                                 return date.getTime();
                             });
-
+                            //另外单独过滤过图片和视频这些可以预览大图的资源，用来做上下翻页用
                             $rootScope.presources = _.filter($rootScope.activity.resources, function(resource){
                                 return resource.type == 1 || resource.type == 2;
                             });
+
+                            //计算用户数
+                            if($rootScope.activity.active){
+                                $rootScope.userCount = $rootScope.activity.users.participators.length;
+                            }
+                            else{
+                                var users = _.countBy($rootScope.selectedActivity.resources, function(resource){
+                                    return resource.user;
+                                });
+                                $rootScope.userCount = _.keys(users).length;
+                            }
                         }
                         else{
                             //TODO handle error
