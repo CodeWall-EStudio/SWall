@@ -8,7 +8,6 @@
         'ts.controllers.activityDetail',
         'ts.controllers.activityPanel',
         'ts.controllers.loginForm',
-        'ts.directives.ngEnter',
-        'ts.directives.activityDate'
+        'ts.directives.ngEnter'
     ]);
 })();

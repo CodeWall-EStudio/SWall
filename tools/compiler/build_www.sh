@@ -17,7 +17,6 @@ java -jar $JS_COMPILER --js $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput
 					   --js $WWW_DIR/js/controllers/NavigatorController.js \
 					   --js $WWW_DIR/js/controllers/ToolbarController.js \
 					   --js $WWW_DIR/js/directives/ngEnter.js \
-					   --js $WWW_DIR/js/directives/activityDate.js \
 					   --js $WWW_DIR/js/teacherSpace.js \
  					   --js_output_file $WWW_DIR/js/teacherSpace.min.js
 

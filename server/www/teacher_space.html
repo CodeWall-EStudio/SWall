@@ -83,7 +83,7 @@
                 <div class="panel-group" id="activities">
                     <div class="panel panel-default activityGroup" ng-repeat="item in activityList">
                         <div data-toggle="collapse" data-parent="#activities" ng-href="#{{item.date}}" class="panel-heading">
-                            <h4 class="panel-title" activity-date></h4>
+                            <h4 class="panel-title">{{item.activities[0].info.date | date:'yyyy年MM月dd日'}}</h4>
                         </div>
                         <div id="{{item.date}}" class="panel-collapse collapse" ng-class="{in:$first}">
                             <div class="list-group">
@@ -258,6 +258,6 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/teacherSpace.min.js?20140107001"></script>
+    <script src="js/teacherSpace.min.js?20140108001"></script>
 </body>
 </html>
