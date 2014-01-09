@@ -70,8 +70,7 @@ function verifyEncodeKey(encodeKey, callback){
  */
 function response401IfUnauthoirzed(req, res, callback){
     var k = 'skey',
-        //這裏是爲了方便調試，正式環境里應該只從cookie里讀
-        encodeKey = req.cookies[k] || req.body[k] || req.query[k];
+        encodeKey = req.cookies[k];
 
     verifyEncodeKey(encodeKey, function(error, statusCode, userInfo){
         if(error || statusCode!=200 || !userInfo || !userInfo['loginName']){

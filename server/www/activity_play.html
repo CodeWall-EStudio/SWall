@@ -14,7 +14,7 @@
     <div id="topNavBar" class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand">展示活动：{{activity.info.title}}</a>
+                <a class="navbar-brand">{{activity.active ? '展示' : '回放'}}活动：{{activity.info.title}}</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
@@ -27,8 +27,8 @@
     <!-- 活动信息 -->
     <div class="row" id="activityInfo">
         <div class="col-sm-4 section1">
-            <p>活动日期：{{activityDate}}</p>
-            <p>开始时间：{{activityTime}}</p>
+            <p>活动日期：{{activity.info.date | date:'yyyy年MM月dd日'}}</p>
+            <p>开始时间：{{activity.info.date | date:'HH:mm'}}</p>
             <p ng-switch on="activity.info.type">
                 活动类型：
                 <span ng-switch-when="1">公开课</span>
@@ -43,18 +43,22 @@
             <p>课题：{{activity.info.domain}}</p>
         </div>
         <div class="col-sm-4 section3">
-            <p>用户：</p>
-            <p>资源：</p>
+            <p>
+                用户：
+                <span ng-show="activity.active">当前{{userCount}}位参与者在线</span>
+                <span ng-hide="activity.active">共{{userCount}}位参与者</span>
+            </p>
+            <p>资源：共上传{{activity.resources.length}}个资源</p>
             <p>活动简介：{{activity.info.desc}}</p>
         </div>
     </div>
 
     <!-- 主要内容 -->
-    <div class="row" id="mainContent">
+    <div class="row hbox full" id="mainContent">
         <!-- 侧边栏 -->
         <div class="col-sm-2 sidebar">
             <!-- 参与活动的用户列表 -->
-            <div class="userlist">
+            <div class="userlist full">
                 用户：
                 <ul>
                     <li ng-repeat="uid in activity.users.participators">{{uid}}</li>
@@ -64,45 +68,63 @@
             <div class="stat"></div>
         </div>
         <!-- 时间线和资源列表 -->
-        <div class="col-sm-11 timeline">
-            <div class="resourceGroup" ng-repeat="group in resources">
+        <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
+            <!-- 按时间（同一分钟内）分组资源 -->
+            <div class="resourceGroup" ng-repeat="group in resources" ng-init="$groupIndex=$index">
                 <div class="time">{{group[0].date | date:'hh:mm'}}</div>
                 <div class="resource">
                     <div class="line"></div>
-                    <div class="resourceItem" ng-repeat="resource in group">
-                        <div class="thumb" ng-hide="resource.type==0"></div>
+                    <div class="resourceItem" ng-repeat="resource in group"
+                         ng-click="showResourceDetail(resource)"
+                         ng-switch on="resource.type">
+                        <div class="thumb imageThumb" ng-switch-when="1">
+                            <img ng-src="{{resource.content}}">
+                        </div>
+                        <div class="thumb videoThumb" ng-switch-when="2"></div>
                         <div class="content">
-                            <div ng-switch on="resource.type">
-                                <span ng-switch-when="0">文字</span>
-                                <span ng-switch-when="1">图片</span>
-                                <span ng-switch-when="2">视频</span>
-                                <span ng-switch-when="3">音频</span>
-                                <span>{{resource.user}}</span>
-                            </div>
+                            <span ng-switch-when="0">文字</span>
+                            <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="2">视频</span>
+                            <span ng-switch-when="3">音频</span>
+                            <span>{{resource.user}}</span>
                             <div class="textContent" ng-show="resource.type==0">{{resource.content}}</div>
                             <div class="comment">{{resource.comment}}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--
-            <div class="resourceItem" ng-repeat="resource in activity.resources">
-                <div class="time">{{resource.date | date:'hh:mm'}}</div>
-                <div class="resource">
-                    <div class="thumb" ng-hide="resource.type==0"></div>
-                    <div class="content">
-                        <div ng-switch on="resource.type">
-                            <span ng-switch-when="0">文字</span>
-                            <span ng-switch-when="1">图片</span>
-                            <span ng-switch-when="2">视频</span>
-                            <span ng-switch-when="3">音频</span>
-                            <span>{{resource.user}}</span>
-                        </div>
-                        <div class="textContent" ng-show="resource.type==0">{{resource.content}}</div>
-                        <div class="comment">{{resource.comment}}</div>
+        </div>
+        <!-- 资源预览 -->
+        <div id="preview" class="vbox" ng-class="{shown:selectedResource}">
+            <div class="toolbar">
+                <button type="button" class="btn btn-link" ng-click="hideResourceDetail()">x</button>
+            </div>
+            <div class="hbox full content">
+                <button type="button" class="btn btn-link"
+                        ng-disabled="!hasPreviousPreviewableResource()"
+                        ng-click="selectPreviousPreviewableResource()">
+                    上一页
+                </button>
+                <div class="media full" ng-switch on="selectedResource.type">
+                    <div ng-switch-when="1" class="image">
+                        <img ng-src="{{selectedResource.content}}">
                     </div>
+                    <div ng-switch-when="2" class="video">
+
+                    </div>
+                    <div>
+                        <span ng-switch-when="1">图片</span>
+                        <span ng-switch-when="2">视频</span>
+                        <span>{{selectedResource.user}}</span>
+                    </div>
+                    <div>{{selectedResource.comment}}</div>
                 </div>
-            </div>-->
+                <button type="button" class="btn btn-link"
+                        ng-disabled="!hasNextPreviewableResource()"
+                        ng-click="selectNextPreviewableResource()">
+                    下一页
+                </button>
+            </div>
         </div>
     </div>
 
