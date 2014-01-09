@@ -2,8 +2,6 @@ package com.swall.tra;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.*;
@@ -20,16 +17,17 @@ import com.swall.tra.adapter.ActivityResourceAdapter;
 import com.swall.tra.model.ResourceInfo;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
+import com.swall.tra.network.ActionService;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
+import com.swall.tra.utils.Utils;
 import com.swall.tra.widget.CustomDialog;
+import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 /**
  * Created by pxz on 13-12-28.
@@ -46,6 +44,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private View mBtnPhoto;
     private View mBtnVideo;
     private View mBtnText;
+    private String mFilePath;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +53,11 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         initViews();
         initClickListeners();
         initIntents();
+
+
+        UmengUpdateAgent.update(this);
+
+        UmengUpdateAgent.setUpdateAutoPopup(true);
     }
 
     private void initData() {
@@ -104,7 +108,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             intent.putExtra(Intent.EXTRA_TITLE, "新媒体教研");
             startActivity(intent);
         }else if(info.type == ServiceManager.Constants.UPLOAD_TYPE_IMAGE){
-            String url = info.content;
+            String url = ActionService.getUrlWithSKEY(info.content);
             if(url.startsWith("http")){
                 Intent i = new Intent(this,ImageViewActivity.class);
                 i.putExtra("url",url);
@@ -121,8 +125,12 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         @Override
         public void onReceive(int action, Bundle data) {
             // TODO
-            Toast.makeText(CurrentTRAActivity.this, "上传完成", Toast.LENGTH_SHORT).show();
-            fetchCurrentActivity();
+            if(data != null && data.containsKey("result")){
+                Toast.makeText(CurrentTRAActivity.this, "上传完成", Toast.LENGTH_SHORT).show();
+                fetchCurrentActivity();
+            }else{
+                Toast.makeText(CurrentTRAActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
+            }
         }
     };;
     private AlertDialog mDialog;
@@ -191,7 +199,8 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private void initIntents(){
         mTakePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         mTakePicIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 100);
-        mTakePicIntent.putExtra(MediaStore.EXTRA_OUTPUT,new File(getFilesDir(), "tmp.jpg"));
+        mFilePath = Utils.getExternalDir()+"/"+ System.currentTimeMillis()+".jpg";
+        mTakePicIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mFilePath)));
 
 
         mTakeVideoRecordIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -293,7 +302,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         switch(requestCode){
 //            case R.id.btnDraw:// 涂鸦和拍照是同一类型
             case REQUEST_ID_PHOTO:
-                if(resultCode == Activity.RESULT_OK && data.getExtras() != null){
+                if(resultCode == Activity.RESULT_OK){
                     doUpload(data, ServiceManager.Constants.UPLOAD_TYPE_IMAGE, ServiceManager.Constants.ACTION_UPLOAD_PIC);
                 }else{
 //                    Toast.makeText(this,"cancel",Toast.LENGTH_SHORT).show();
@@ -355,17 +364,24 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 break;
             case ServiceManager.Constants.ACTION_UPLOAD_PIC:{
                 Bitmap bitmap=null;
-                File f= new File(getFilesDir(),"tmp.jpg");
+                String filePath = mFilePath;
+//                filePath = Utils.getExternalDir()+"videoEngine.log";
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                try {
-                    bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
-                    dataToTranfer = bitmap;
+                defaultRequestData.putString("filePath",filePath);
+
+//                try {
+//                    bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+//                    dataToTranfer = bitmap;
 //                    dataToTranfer = (Bitmap) data.getExtras().get("data");
-                } catch (FileNotFoundException e) {
-                    dataToTranfer = (Bitmap)data.getExtras().get("data");
-                    e.printStackTrace();
-                }
+//                } catch (FileNotFoundException e) {
+//                    dataToTranfer = (Bitmap)data.getExtras().get("data");
+//                    Toast.makeText(CurrentTRAActivity.this,"存储空间不足",Toast.LENGTH_SHORT).show();
+//                    e.printStackTrace();
+//                } catch(OutOfMemoryError error){
+//                    Toast.makeText(CurrentTRAActivity.this,"内存不足",Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
 
                 break;
             }

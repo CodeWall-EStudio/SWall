@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
+import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
 
 
         showProgressDialog();
+
 
     }
 
@@ -109,6 +111,9 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     }
 
     private void initTabs() {
+
+        UmengUpdateAgent.setUpdateAutoPopup(true);
+        UmengUpdateAgent.update(this);
         if(!mTabInited){
             mTabInited = true;
         }else{

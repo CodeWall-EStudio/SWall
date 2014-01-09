@@ -28,6 +28,7 @@ public class ServiceManager {
 
         //public static final String URL_PREFIX = "http://54.251.49.104:8080/";
         public static final String URL_PREFIX = "http://115.28.55.91:8080/";
+//        public static final String URL_PREFIX = "http://szone.71xiaoxue.com/";
         public static final String KEY_LOGIN_SUCCESS = "success";
         public static final String KEY_LOGIN_RESULT_OBJECT = "resultObject";
         public static final String KEY_RESULT = "result";

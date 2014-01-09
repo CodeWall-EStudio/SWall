@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.swall.tra.utils.AccountDatabaseHelper;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,17 @@ public abstract class ActionService {
             sRequestCookies.put("Cookie","skey="+sEncodeKey);
         }
         return sRequestCookies;
+    }
+
+    public static String getUrlWithSKEY(String url) {
+        URI uri = URI.create(url);
+        if(url.indexOf("?") != -1){
+            url += "?";
+        }else{
+            url += "&";
+        }
+
+        return url + "skey="+sEncodeKey;
     }
     protected String TAG;
     public static String sEncodeKey;
@@ -78,4 +90,5 @@ public abstract class ActionService {
         });
     }
     public abstract int[] getActionList();
+
 }

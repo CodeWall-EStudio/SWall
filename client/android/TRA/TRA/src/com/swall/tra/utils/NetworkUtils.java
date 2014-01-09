@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.swall.tra.network.ActionService;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
  */
 public class NetworkUtils {
     public static class StringRequestWithParams extends StringRequest{
+
         private Map<String,String> params;
         public StringRequestWithParams(int method, String url,Map<String,String> params, Response.Listener<String> listener, Response.ErrorListener errorListener) {
             super(method, url, listener, errorListener);
@@ -81,25 +83,69 @@ public class NetworkUtils {
 
         private final Response.Listener<String> mListener;
 
-        public MultipartRequest(String url,String encodeKey,byte[] data,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
+        public MultipartRequest(String url,String encodeKey,byte[] data, File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
             super(Method.POST, url, errorListener);
             mListener = listener;
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            String fileName = "x.jpg";
+            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            String fileName = System.currentTimeMillis()+"x";
             if(contentType.getMimeType().indexOf("3gp")!=-1){
-                fileName = "x.3gp";
+                fileName += ".3gp";
+            }else{
+                fileName += ".jpeg";
+            }
+            builder.addTextBody("media", "1");
+            builder.addTextBody("name",fileName);
+            builder.addTextBody("skey",""+encodeKey);
+//            builder.addTextBody("file",fileName);
+//            builder.setCharset(Charset.forName("UTF-8"));
+            if(file != null && file.exists()){
+                builder.addBinaryBody("file",file, ContentType.create("image/jpeg"),fileName);
+            }else{
+                builder.addBinaryBody("file",data, contentType,fileName);
+            }
+            builder.setBoundary("----WebKitFormBoundaryOZP8ZyAfN79iuKUB--");
+            mEntity = builder.build();
+
+            setRetryPolicy(new RetryPolicy() {
+                @Override
+                public int getCurrentTimeout() {
+                    return 100000;
+                }
+
+                @Override
+                public int getCurrentRetryCount() {
+                    return 0;
+                }
+
+                @Override
+                public void retry(VolleyError error) throws VolleyError {
+
+                }
+            });
+        }
+        public MultipartRequest(String url,String encodeKey,File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
+            super(Method.POST, url, errorListener);
+            mListener = listener;
+
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            String fileName = System.currentTimeMillis()+"x";
+            if(contentType.getMimeType().indexOf("3gp")!=-1){
+                fileName += ".3gp";
+            }else{
+                fileName += ".jpg";
             }
             builder.addTextBody("media", "1");
             builder.addTextBody("name","noname");
             builder.addTextBody("encodeKey",encodeKey);
-            builder.addTextBody("file",fileName);
-            builder.setCharset(Charset.forName("UTF-8"));
-            builder.addBinaryBody("fileUpload",data, contentType,fileName);
+            builder.addTextBody("file", fileName);
+//            builder.setCharset(Charset.forName("UTF-8"));
+            builder.addBinaryBody("fileUpload",file, contentType,fileName);
             builder.setBoundary("------WebKitFormBoundarymilpfzFmBW97xGu4--");
             mEntity = builder.build();
 
-        }
+        } 
 /*
         public MultipartRequest(String url, Response.ErrorListener errorListener, Response.Listener<String> listener, File file, String stringPart)
         {

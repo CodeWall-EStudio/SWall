@@ -13,6 +13,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.swall.tra.R;
 import com.swall.tra.model.ResourceInfo;
 import com.swall.tra.model.TRAInfo;
+import com.swall.tra.network.ActionService;
 import com.swall.tra.network.MyVolley;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.DateUtil;
@@ -162,7 +163,7 @@ public class ActivityResourceAdapter extends BaseAdapter {
                 if(!TextUtils.isEmpty(item.content) && item.content.startsWith("http")){
                     textView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
-                    imageView.setImageUrl(item.content, MyVolley.getImageLoader());
+                    imageView.setImageUrl(ActionService.getUrlWithSKEY(item.content), MyVolley.getImageLoader());
                 }else{
                     textView.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);

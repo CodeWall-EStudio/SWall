@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.NetworkUtils;
 import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
@@ -26,6 +27,9 @@ import java.util.Map;
  * Created by pxz on 13-12-13.
  */
 public class UploadService extends ActionService {
+
+//    private static final String MAIN_URL = "http://szone.codewalle.com/";
+    private static final String MAIN_URL = "http://szone.71xiaoxue.com/";
 
     public UploadService(Context context,ServiceManager manager) {
         super(context, manager);
@@ -60,7 +64,7 @@ public class UploadService extends ActionService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest jor = new JsonObjectRequest(
+        MyJsonObjectRequest jor = new MyJsonObjectRequest(
                 Request.Method.POST,
                 ServiceManager.Constants.getPostResourceUrl(activityId, uid),
                 object,
@@ -92,11 +96,14 @@ public class UploadService extends ActionService {
 
     private void uploadResourceExtra(final int action, final Bundle data, final ActionListener listener,final int type){
         byte[] bytes = null;
+        String filePath = data.getString("filePath");;
         ContentType contentType = ContentType.MULTIPART_FORM_DATA;
         switch(action){
             case ServiceManager.Constants.ACTION_UPLOAD_PIC:
+                /*
                 Bitmap bitmap = (Bitmap)data.get("data");
                 bytes = NetworkUtils.bitmap2Bytes(bitmap);
+                */
                 contentType = ContentType.create("imag/jpg");
                 break;
             case ServiceManager.Constants.ACTION_UPLOAD_VIDEO:
@@ -117,30 +124,37 @@ public class UploadService extends ActionService {
                 break;
 
         }
-        doUpload("http://szone.71xiaoxue.com/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
+//        doUpload("http://szone.codewalle.com/upload?fid=0&csrf_test_name=null",
+//        doUpload("http://szone.71xiaoxue.com/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
+        doUpload(MAIN_URL + "/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
+
                 bytes,
+                filePath,
                 new ActionListener(null) {//此处不应该用ActionListener
                     @Override
                     public void onReceive(int action, Bundle data2) {
                         boolean error = true;
                         if(action == 0 && data2 != null){
                             String jsonString = data2.getString("data");
+                            /*
+                            *{"code":"200","msg":"\u4e0a\u4f20\u6210\u529f!","data":{"fid":292,"jsonrpc":"2.0","error":{"code":0,"message":"\u4e0a\u4f20\u6210\u529f!"}},"elapsed_time":"0.3787","memory_usage":"3.71MB","profiler":"{profiler}"}
+                            * */
+
                             try {
-                                JSONArray arr = new JSONArray(jsonString);
-                                if(arr.length() > 0){
-                                    JSONObject object = arr.getJSONObject(0);
-                                    String filePath = object.getString("filename");
-                                    String fullFilePath = ServiceManager.Constants.getUploadedFilPath(filePath);
+                                JSONObject object = new JSONObject(jsonString);
+                                JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
+                                long fid = JSONUtils.getLong(resultData,"fid",0);
+                                String fullFilePath = MAIN_URL+"/download/media?id="+fid;
+//                                    String fullFilePath = ServiceManager.Constants.getUploadedFilPath(filePath);
                                     upload(action,
                                             type,
                                             fullFilePath,
                                             data.getString(ServiceManager.Constants.KEY_USER_NAME,"admin"),
                                             data.getString("id"),
                                             listener
-                                            );
+                                    );
                                     error = false;
 
-                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -165,7 +179,7 @@ public class UploadService extends ActionService {
     }
 
 
-    private void doUpload(String postUrl,byte[] data, final ActionListener listener,ContentType contentType){
+    private void doUpload(String postUrl,byte[] data, String filePath, final ActionListener listener,ContentType contentType){
 
         /*
         Map<String,String> params = new HashMap<String,String>(3);
@@ -194,10 +208,17 @@ public class UploadService extends ActionService {
                   
         );
         */
+
+        File file = null;
+        if(filePath != null){
+            file = new File(filePath);
+        }
+
         NetworkUtils.MultipartRequest req =  new NetworkUtils.MultipartRequest(
                 postUrl,
                 sEncodeKey,
                 data,
+                file,
                 contentType,
                 new Response.Listener<String>() {
                     @Override
@@ -215,6 +236,7 @@ public class UploadService extends ActionService {
                     }
                 }
         );
+
         RequestQueue rq = MyVolley.getRequestQueue();
         rq.add(req);
         rq.start();
