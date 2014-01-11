@@ -12,7 +12,7 @@ angular.module('ts.services.user', [
             function hasLoggedIn(){
                 var uid = UtilsService.cookie.get('uid'),
                     skey = UtilsService.cookie.get('skey');
-                return uid && skey;
+                return Boolean(uid && skey);
             }
 
             function nick(){
@@ -45,11 +45,19 @@ angular.module('ts.services.user', [
                     .error(handleResponse);
             }
 
+            function logout(){
+                var d = (new Date()).toGMTString();
+                document.cookie = 'uin=; path=/; expires=' + d;
+                document.cookie = 'skey=; path=/; expires=' + d;
+                localStorage.removeItem('login_result');
+            }
+
             return {
                 uid: uid,
                 hasLoggedIn: hasLoggedIn,
                 nick: nick,
-                login: login
+                login: login,
+                logout: logout
             };
         }
     ]);

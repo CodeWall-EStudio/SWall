@@ -93,11 +93,11 @@ body{
     margin-right: 10px;
 }
 #timeline .imageThumb{
-    max-width: 200px;
-    max-height: 200px;
 }
 #timeline .imageThumb img{
     border-radius: 6px;
+    max-width: 200px;
+    max-height: 200px;
 }
 #timeline .videoThumb{
     background-color: #CCC;

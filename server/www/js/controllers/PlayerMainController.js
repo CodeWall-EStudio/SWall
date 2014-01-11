@@ -56,6 +56,7 @@ angular.module('ap.controllers.main', [
                         console.log('[PlayerMainController] get activity success', status, data);
                         if(status == 200 && !data.c){
                             $rootScope.activity = data.r;
+                            $rootScope.activity.resources.reverse();
 
                             /**
                              * 处理资源，将同一分钟内的活动归到一组
@@ -65,12 +66,18 @@ angular.module('ap.controllers.main', [
                              *      ...
                              * }
                              */
-                            $rootScope.resources = _.groupBy($rootScope.activity.resources, function(resource){
-                                var date = new Date(resource.date);
-                                date.setSeconds(0);
-                                date.setMilliseconds(0);
-                                return date.getTime();
-                            });
+                             var groupedResources = _.map(
+                                _.groupBy($rootScope.activity.resources, function(resource){
+                                    var date = new Date(resource.date);
+                                    date.setSeconds(0);
+                                    date.setMilliseconds(0);
+                                    return date.getTime();
+                                }),
+                                function(resources, ts){
+                                    return {ts:ts, resources:resources};
+                                }
+                            );
+                            $rootScope.resources = groupedResources;
                             //另外单独过滤过图片和视频这些可以预览大图的资源，用来做上下翻页用
                             $rootScope.presources = _.filter($rootScope.activity.resources, function(resource){
                                 return resource.type == 1 || resource.type == 2;

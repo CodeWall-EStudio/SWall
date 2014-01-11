@@ -71,10 +71,10 @@
         <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup" ng-repeat="group in resources" ng-init="$groupIndex=$index">
-                <div class="time">{{group[0].date | date:'hh:mm'}}</div>
+                <div class="time">{{group.ts | date:'hh:mm'}}</div>
                 <div class="resource">
                     <div class="line"></div>
-                    <div class="resourceItem" ng-repeat="resource in group"
+                    <div class="resourceItem" ng-repeat="resource in group.resources"
                          ng-click="showResourceDetail(resource)"
                          ng-switch on="resource.type">
                         <div class="thumb imageThumb" ng-switch-when="1">
