@@ -105,19 +105,21 @@
                         ng-click="selectPreviousPreviewableResource()">
                     上一页
                 </button>
-                <div class="media full" ng-switch on="selectedResource.type">
-                    <div ng-switch-when="1" class="image">
-                        <img ng-src="{{selectedResource.content}}">
-                    </div>
-                    <div ng-switch-when="2" class="video">
+                <div class="mediaContent full" ng-switch on="selectedResource.type">
+                    <div class="contentWrapper">
+                        <div ng-switch-when="1" class="image">
+                            <img ng-src="{{selectedResource.content}}">
+                        </div>
+                        <div ng-switch-when="2" class="video">
 
+                        </div>
+                        <div>
+                            <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="2">视频</span>
+                            <span>{{selectedResource.user}}</span>
+                        </div>
+                        <div>{{selectedResource.comment}}</div>
                     </div>
-                    <div>
-                        <span ng-switch-when="1">图片</span>
-                        <span ng-switch-when="2">视频</span>
-                        <span>{{selectedResource.user}}</span>
-                    </div>
-                    <div>{{selectedResource.comment}}</div>
                 </div>
                 <button type="button" class="btn btn-link"
                         ng-disabled="!hasNextPreviewableResource()"

@@ -53,7 +53,8 @@ body{
 
 #timeline{
     position: relative;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     width: 82%;
 }
 #timeline .resourceGroup{
@@ -105,7 +106,10 @@ body{
     height: 100px;
 }
 #timeline .content{
-
+    width: 100%;
+}
+#timeline .textContent{
+    word-wrap: break-word;
 }
 #timeline .comment{
     color: #999;
@@ -134,4 +138,11 @@ body{
 }
 #preview .content .ctrl{
     padding: 10px;
+}
+#preview .mediaContent{
+    text-align: center;
+}
+#preview .contentWrapper{
+    display: inline-block;
+    text-align: left;
 }
