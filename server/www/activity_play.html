@@ -111,7 +111,7 @@
                             <img ng-src="{{selectedResource.content}}">
                         </div>
                         <div ng-switch-when="2" class="video">
-
+                            <video autoplay controls src="{{selectedResource.content}}"></video>
                         </div>
                         <div>
                             <span ng-switch-when="1">图片</span>

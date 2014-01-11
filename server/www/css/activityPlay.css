@@ -142,7 +142,7 @@ body{
 #preview .mediaContent{
     text-align: center;
 }
-#preview .mediaContent img{
+#preview .mediaContent img, #preview .mediaContent video{
     max-width: 760px;
 }
 #preview .contentWrapper{
