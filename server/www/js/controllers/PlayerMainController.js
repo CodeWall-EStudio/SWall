@@ -5,6 +5,8 @@ angular.module('ap.controllers.main', [
     .controller('PlayerMainController', [
         '$rootScope', '$scope', '$location', 'ActivityService', 'UserService',
         function($rootScope, $scope, $location, ActivityService, UserService){
+            var autoRefreshTimeout = 0;
+
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
             $rootScope.rawResources = [];
@@ -12,6 +14,7 @@ angular.module('ap.controllers.main', [
             $rootScope.presources = [];
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
+            $scope.autoRefresh = true;
 
             $scope.showResourceDetail = function(resource){
                 if(resource.type){
@@ -44,6 +47,19 @@ angular.module('ap.controllers.main', [
                 clearSelection();
             };
 
+            $scope.toggleAuthRefresh = function(){
+                $scope.autoRefresh = !$scope.autoRefresh;
+                if($scope.autoRefresh){
+                    getActivity();
+                }
+                else{
+                    if(autoRefreshTimeout) {
+                        clearTimeout(autoRefreshTimeout);
+                        autoRefreshTimeout = 0;
+                    }
+                }
+            };
+
             function clearSelection(){
                 $scope.selectedResource = null;
                 $scope.selectedRIndex = -1;
@@ -64,9 +80,11 @@ angular.module('ap.controllers.main', [
                                 $rootScope.userCount = $rootScope.activity.users.participators.length;
 
                                 //如果是正在展示的活動，則固定每5s刷一次資源列表
-                                setTimeout(function(){
-                                    getActivity();
-                                }, 5000);
+                                if($scope.autoRefresh){
+                                    autoRefreshTimeout = setTimeout(function(){
+                                        getActivity();
+                                    }, 5000);
+                                }
                             }
                             else{
                                 var users = _.countBy($rootScope.selectedActivity.resources, function(resource){

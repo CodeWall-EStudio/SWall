@@ -27,6 +27,10 @@ body{
 #activityInfo .section1{
     font-size: 18px;
 }
+#activityInfo .section1 .autoRefreshSwitch{
+    font-size: 14px;
+    color: #666;
+}
 
 #mainContent{
     position: relative;

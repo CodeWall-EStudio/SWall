@@ -34,6 +34,11 @@
                 <span ng-switch-when="1">公开课</span>
                 <span ng-switch-default>其他</span>
             </p>
+            <p class="autoRefreshSwitch">
+                自动刷新：
+                <span>{{autoRefresh ? '已打开' : '已关闭'}}</span>
+                <button type="button" class="btn btn-link" ng-click="toggleAuthRefresh()">{{autoRefresh ? '关闭' : '打开'}}</button>
+            </p>
         </div>
         <div class="col-sm-4 section2">
             <p>出课教师：{{activity.info.teacher}}</p>

@@ -7,6 +7,8 @@ angular.module('ts.services.activity', [
         '$rootScope', '$http', 'UtilsService', 'UserService', 'BACKEND_SERVER',
         function($rootScope, $http, UtilsService, UserService, BACKEND_SERVER)
         {
+            var fieldset = document.getElementById('activityDetailButtons');
+
             $rootScope.activityList = [];
             $rootScope.activityMap = {};
             $rootScope.selectedActivity = null;
@@ -46,7 +48,7 @@ angular.module('ts.services.activity', [
                 //cleanup first
                 $rootScope.activityList = [];
                 $rootScope.activityMap = {};
-                $rootScope.hints = '请稍候...';
+                showWaitHints();
 
                 params = params || {};
                 if($rootScope.mode() == 'manager'){
@@ -82,15 +84,15 @@ angular.module('ts.services.activity', [
                                 return result;
                             }, {});
 
-                            if(!$rootScope.activityList.length) $rootScope.hints = '没找到任何活动';
-                            else $rootScope.hints = '';
+                            if(!$rootScope.activityList.length) showEmptyActivitiesHints();
+                            else clearHints();
 
                             console.log('[ActivityService] activities result', $rootScope.activityList, $rootScope.activityMap);
                         }
                         if(success) success(data, status);
                     })
                     .error(function(data, status){
-                        $rootScope.hints = '拉取活动失败';
+                        showFetchActivitiesErrorHints();
                         if(error) error(data, status);
                     });
             }
@@ -113,14 +115,17 @@ angular.module('ts.services.activity', [
                     )
                     .success(function(data, status){
                         if(data && !data.c && data.r){
+                            clearHints();
                             insertActivityToRootScope(data.r[0]);
                         }
+                        clearHints();
                         if(success) success(data, status);
                     })
                     .error(error);
             }
 
             function updateActivity(activityID, params, success, error){
+                disableButtons();
                 var body = UtilsService.object.toUrlencodedString(params);
                 $http.put(
                         BACKEND_SERVER + '/activities/' + activityID,
@@ -134,9 +139,13 @@ angular.module('ts.services.activity', [
                         if(data && !data.c && data.r){
                             updateActivityInRootScope(data.r);
                         }
+                        enableButtons();
                         if(success) success(data, status);
                     })
-                    .error(error);
+                    .error(function(data, status){
+                        enableButtons();
+                        if(error) error(data, status);
+                    });
             }
 
             function closeActivity(activityID, success, error){
@@ -144,21 +153,21 @@ angular.module('ts.services.activity', [
             }
 
             function deleteActivity(activityID, success, error){
-                /*$http.delete(
-                        BACKEND_SERVER + '/activities/' + activityID,
-                        null,
-                        {
-                            responseType: 'json'
-                        }
-                    )
+                disableButtons();
+                $http({method:'DELETE', url:BACKEND_SERVER+'/activities/'+activityID})
                     .success(function(data, status){
                         if(data && !data.c){
                             selectActivity();
-                            //delete $rootScope.activityMap[activityID];
-                            //TODO 從activityList里找出對應的活動並刪除之
+                            removeActivityFromRootScope(activityID);
                         }
+                        enableButtons();
+                        if(!$rootScope.activityList.length) showEmptyActivitiesHints();
+                        if(success) success(data, status);
                     })
-                    .error(error);*/
+                    .error(function(data, status){
+                        enableButtons();
+                        if(error) error(data, status);
+                    });
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,6 +216,24 @@ angular.module('ts.services.activity', [
                 }
             }
 
+            function removeActivityFromRootScope(activityID){
+                //delete activity from activityMap
+                delete $rootScope.activityMap[activityID];
+                //delete activity from activityList
+                for(var i=0; i<$rootScope.activityList.length; ++i){
+                    for(var j=0; j<$rootScope.activityList[i].activities.length; ++j){
+                        var activity = $rootScope.activityList[i].activities[j];
+                        if(activity._id == activityID){
+                            $rootScope.activityList[i].activities.splice(j, 1);
+                            if(!$rootScope.activityList[i].activities.length){
+                                $rootScope.activityList.splice(i, 1);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
             function getDateKeyFromActivity(activity){
                 var date = new Date(activity.info.date);
                 date.setHours(0);
@@ -214,6 +241,26 @@ angular.module('ts.services.activity', [
                 date.setSeconds(0);
                 date.setMilliseconds(0);
                 return date.getTime().toString();
+            }
+
+            function disableButtons(){
+                fieldset.setAttribute('disabled', 'disabled');
+            }
+            function enableButtons(){
+                fieldset.removeAttribute('disabled');
+            }
+
+            function clearHints(){
+                $rootScope.hints = '';
+            }
+            function showWaitHints(){
+                $rootScope.hints = '请稍后...';
+            }
+            function showEmptyActivitiesHints(){
+                $rootScope.hints = '没找到任何活动';
+            }
+            function showFetchActivitiesErrorHints(){
+                $rootScope.hints = '拉取活动失败';
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
