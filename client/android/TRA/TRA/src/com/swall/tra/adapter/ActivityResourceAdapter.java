@@ -38,7 +38,11 @@ public class ActivityResourceAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return mInfo.resources.get(position);
+        // 倒序获取
+        int size = mInfo.resources.size();
+        int p2 = size - position - 1;
+        if(p2 < 0 || p2 >= size) return null;
+        return mInfo.resources.get(p2);
     }
 
     @Override
@@ -178,7 +182,7 @@ public class ActivityResourceAdapter extends BaseAdapter {
                 textView.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);
                 commentTextView.setVisibility(View.GONE);
-                textView.setText("发了一个视频"+item.content+(TextUtils.isEmpty(item.comment)?"":"并评论:\n"+item.comment));
+                textView.setText("发表了视频"+item.content+(TextUtils.isEmpty(item.comment)?"":"并评论:\n"+item.comment));
             }
             commentTextView.setText(TextUtils.isEmpty(item.comment)?"发表了图片":("发表了图片并评论："+item.comment));
 

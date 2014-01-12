@@ -155,6 +155,8 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
 
 
         ((RadioGroup)findViewById(R.id.env_rg)).setOnCheckedChangeListener(this);
+
+        setBackConfirm(true);
     }
 
     @Override

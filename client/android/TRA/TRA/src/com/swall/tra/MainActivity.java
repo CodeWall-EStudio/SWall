@@ -42,6 +42,8 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
 
         UmengUpdateAgent.setUpdateAutoPopup(true);
         UmengUpdateAgent.update(this);
+
+        setBackConfirm(true);
     }
 
     private void showProgressDialog() {

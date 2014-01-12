@@ -76,7 +76,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         if(mInfo == null){
             fetchCurrentActivity();
         }else{
-
+/*
             // header view
             View headerView = getLayoutInflater().inflate(R.layout.tra_info_detail,null,false);
             TextView name = (TextView)headerView.findViewById(R.id.tra_name);
@@ -86,8 +86,9 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             time.setText(mInfo.getTimeFormated());
             desc.setText(mInfo.getAllDesc());
             mListView.addHeaderView(headerView);
-
+*/
             mTitleTips.setText(mInfo.title);
+
         }
 
         mListView.setAdapter(mAdapter);

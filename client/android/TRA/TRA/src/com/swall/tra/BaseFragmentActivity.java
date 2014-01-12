@@ -7,8 +7,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -23,6 +27,7 @@ import com.umeng.analytics.MobclickAgent;
  * Created by pxz on 13-12-28.
  */
 public class BaseFragmentActivity extends SherlockFragmentActivity{
+    private static final int MESSAGE_CONFIRM_QUIT = 1;
     public TRAApplication app;
     protected String TAG;
     protected AccountInfo currentAccount;
@@ -31,9 +36,29 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     private boolean mShowQuitButton;
     protected MenuItem mMenuItemQuit;
     private AlertDialog mQuitProgramConfirmDialog;
-
-
-
+    private boolean mBackConfirm;
+    private long mLastBackTime;
+    private final long DOUBLE_BACK_QUIT_INTERVAL = 2500;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case MESSAGE_CONFIRM_QUIT:
+                    if(mLastBackTime == 0){
+                        mLastBackTime = System.currentTimeMillis();
+                        Toast.makeText(BaseFragmentActivity.this, "再按一次返回键退出", Toast.LENGTH_SHORT).show();
+                    }else{
+                        if(System.currentTimeMillis() - mLastBackTime <= DOUBLE_BACK_QUIT_INTERVAL){
+                            finish();
+                        }else{
+                            mLastBackTime = System.currentTimeMillis();
+                            Toast.makeText(BaseFragmentActivity.this,"再按一次返回键退出",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    break;
+            }
+        }
+    };
 
 
     public String getCurrentAcccountName(){
@@ -109,9 +134,25 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
 
         showQuitButton();
 
+        setBackConfirm(false);
+
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if(mBackConfirm && keyCode == KeyEvent.KEYCODE_BACK){
+            mHandler.sendEmptyMessage(MESSAGE_CONFIRM_QUIT);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
 
+
+    public void setBackConfirm(boolean backConfirm){
+        mBackConfirm = backConfirm;
+    }
 
     public void showQuitButton(){
         mShowQuitButton = true;
@@ -119,7 +160,6 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     public void hideQuitButton(){
         mShowQuitButton = false;
         invalidateOptionsMenu();
-
     }
 
     @Override
