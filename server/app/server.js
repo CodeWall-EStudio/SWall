@@ -44,7 +44,7 @@ app.use(customHeaders);
 app.use(express.cookieParser());
 app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
 app.use(connect.compress());
-app.use('/static', express.static(__dirname + '/../www'));
+app.use('/static', express.static(__dirname + '/../www'), {maxAge:1000*3600*24*30/*one month*/});
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

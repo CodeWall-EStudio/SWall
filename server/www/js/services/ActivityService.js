@@ -30,7 +30,8 @@ angular.module('ts.services.activity', [
             }
 
             function fetchActivityConfig(success, error){
-                $http.get(BACKEND_SERVER + '/activities/config', null, {responseType:'json'})
+                var ts = new Date().getTime();
+                $http.get(BACKEND_SERVER + '/activities/config?_=' + ts, null, {responseType:'json'})
                     .success(function(data, status){
                         console.log('[ActivityService] activity config =', data);
                         if(success) success(data, status);
@@ -51,6 +52,9 @@ angular.module('ts.services.activity', [
                 if($rootScope.mode() == 'manager'){
                     params['creator'] = UserService.uid();
                 }
+
+                params['_'] = new Date().getTime();
+
                 console.log('[ActivityService] fetching activities with', params);
                 //构造搜索请求
                 $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
@@ -139,6 +143,24 @@ angular.module('ts.services.activity', [
                 updateActivity(activityID, {status:'closed'}, success, error);
             }
 
+            function deleteActivity(activityID, success, error){
+                /*$http.delete(
+                        BACKEND_SERVER + '/activities/' + activityID,
+                        null,
+                        {
+                            responseType: 'json'
+                        }
+                    )
+                    .success(function(data, status){
+                        if(data && !data.c){
+                            selectActivity();
+                            //delete $rootScope.activityMap[activityID];
+                            //TODO 從activityList里找出對應的活動並刪除之
+                        }
+                    })
+                    .error(error);*/
+            }
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Helper methods
 
@@ -204,6 +226,7 @@ angular.module('ts.services.activity', [
                 createActivity:         createActivity,
                 updateActivity:         updateActivity,
                 closeActivity:          closeActivity,
+                deleteActivity:         deleteActivity,
                 fetchActivityConfig:    fetchActivityConfig
             };
         }
