@@ -71,10 +71,10 @@
         <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup" ng-repeat="group in resources" ng-init="$groupIndex=$index">
-                <div class="time">{{group[0].date | date:'hh:mm'}}</div>
+                <div class="time">{{group.ts | date:'hh:mm'}}</div>
                 <div class="resource">
                     <div class="line"></div>
-                    <div class="resourceItem" ng-repeat="resource in group"
+                    <div class="resourceItem" ng-repeat="resource in group.resources"
                          ng-click="showResourceDetail(resource)"
                          ng-switch on="resource.type">
                         <div class="thumb imageThumb" ng-switch-when="1">
@@ -105,19 +105,21 @@
                         ng-click="selectPreviousPreviewableResource()">
                     上一页
                 </button>
-                <div class="media full" ng-switch on="selectedResource.type">
-                    <div ng-switch-when="1" class="image">
-                        <img ng-src="{{selectedResource.content}}">
+                <div class="mediaContent full" ng-switch on="selectedResource.type">
+                    <div class="contentWrapper">
+                        <div ng-switch-when="1" class="image">
+                            <img ng-src="{{selectedResource.content}}">
+                        </div>
+                        <div ng-switch-when="2" class="video">
+                            <video autoplay controls src="{{selectedResource.content}}"></video>
+                        </div>
+                        <div>
+                            <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="2">视频</span>
+                            <span>{{selectedResource.user}}</span>
+                        </div>
+                        <div>{{selectedResource.comment}}</div>
                     </div>
-                    <div ng-switch-when="2" class="video">
-
-                    </div>
-                    <div>
-                        <span ng-switch-when="1">图片</span>
-                        <span ng-switch-when="2">视频</span>
-                        <span>{{selectedResource.user}}</span>
-                    </div>
-                    <div>{{selectedResource.comment}}</div>
                 </div>
                 <button type="button" class="btn btn-link"
                         ng-disabled="!hasNextPreviewableResource()"

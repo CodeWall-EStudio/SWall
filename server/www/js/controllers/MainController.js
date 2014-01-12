@@ -5,15 +5,9 @@ angular.module('ts.controllers.main', [
     ])
     .controller('MainController', [
         '$rootScope', '$scope', '$http', '$location', 'UserService', 'ActivityService',
-        'EVENT_LOGIN', 'EVENT_LOGIN_CLICK', 'EVENT_MODE_CHANGE',
+        'EVENT_LOGIN', 'CMD_SHOW_LOGIN_PANEL', 'EVENT_MODE_CHANGE',
         function($rootScope, $scope, $http, $location, UserService, ActivityService,
-            EVENT_LOGIN, EVENT_LOGIN_CLICK, EVENT_MODE_CHANGE){
-
-            $rootScope.$on(EVENT_LOGIN, function(event, status){
-                if(status == 200){
-                    $rootScope.fetchActivities();
-                }
-            });
+            EVENT_LOGIN, CMD_SHOW_LOGIN_PANEL, EVENT_MODE_CHANGE){
 
             /**
              * 拉取活動列表
@@ -27,7 +21,7 @@ angular.module('ts.controllers.main', [
             };
 
             $rootScope.showLoginModal = function(){
-                $rootScope.$emit(EVENT_LOGIN_CLICK);
+                $rootScope.$emit(CMD_SHOW_LOGIN_PANEL);
             };
 
             /**
@@ -48,12 +42,16 @@ angular.module('ts.controllers.main', [
                 }
             };
 
+            //登錄成功後拉取活動列表
+            $rootScope.$on(EVENT_LOGIN, function(event, status){
+                if(status == 200){
+                    $rootScope.fetchActivities();
+                }
+            });
+
             function main(){
                 if(UserService.hasLoggedIn()){
                     $rootScope.fetchActivities();
-                }
-                else{
-                    $rootScope.showLoginModal();
                 }
             }
             main();

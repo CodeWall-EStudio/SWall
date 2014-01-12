@@ -1,9 +1,10 @@
 angular.module('ts.controllers.loginForm', [
+        'ts.utils.constants',
         'ts.services.user'
     ])
     .controller('LoginFormController', [
-        '$rootScope', '$scope', 'UserService',
-        function($rootScope, $scope, UserService){
+        '$rootScope', '$scope', 'UserService', 'CMD_SHOW_LOGIN_PANEL',
+        function($rootScope, $scope, UserService, CMD_SHOW_LOGIN_PANEL){
             $scope.uid = '';
             $scope.pwd = '';
             $scope.errMsg = '';
@@ -31,5 +32,19 @@ angular.module('ts.controllers.loginForm', [
                     else $scope.errMsg = '请输入密码'; }
                 else $scope.errMsg = '请输入帐号名';
             };
+
+            $rootScope.$on(CMD_SHOW_LOGIN_PANEL, function(){
+                if(UserService.hasLoggedIn()){
+                    if(confirm('确定要退出登录吗？')){
+                        UserService.logout();
+                    }
+                    else return;
+                }
+                $('#loginModal').modal('show');
+            });
+
+            if(!UserService.hasLoggedIn()){
+                $('#loginModal').modal('show');
+            }
         }
     ]);
