@@ -36,7 +36,9 @@ angular.module('ts.controllers.activityDetail', [
             };
 
             $scope.deleteActivity = function(){
-
+                if(confirm('確定要刪除活動？')){
+                    ActivityService.deleteActivity($rootScope.selectedActivity._id);
+                }
             };
 
             $scope.handlePlayBtnClick = function(){

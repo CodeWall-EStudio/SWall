@@ -104,14 +104,18 @@
                     <h3>{{selectedActivity.info.title}}</h3>
                     <p>状态：{{selectedActivity.active ? '开放' : '关闭'}}的活动</p>
                     <p>
-                        <button type="button" class="btn btn-primary" ng-click="handlePlayBtnClick()">
-                            {{selectedActivity.active ? '展示' : '回放'}}
-                        </button>
-                        <span ng-show="mode() == 'manager'">
-                            <button type="button" class="btn btn-default" ng-click="editActivity()">编辑</button>
-                            <button type="button" class="btn btn-warning" ng-click="closeActivity()" ng-show="selectedActivity.active">关闭</button>
-                            <button type="button" class="btn btn-danger" ng-click="deleteActivity()">删除</button>
-                        </span>
+                        <form>
+                            <fieldset id="activityDetailButtons">
+                                <button type="button" class="btn btn-primary" ng-click="handlePlayBtnClick()">
+                                    {{selectedActivity.active ? '展示' : '回放'}}
+                                </button>
+                                <span ng-show="mode() == 'manager'">
+                                    <button type="button" class="btn btn-default" ng-click="editActivity()">编辑</button>
+                                    <button type="button" class="btn btn-warning" ng-click="closeActivity()" ng-show="selectedActivity.active">关闭</button>
+                                    <button type="button" class="btn btn-danger" ng-click="deleteActivity()">删除</button>
+                                </span>
+                            </fieldset>
+                        </form>
                     </p>
                     <p ng-switch on="selectedActivity.info.type">
                         活动类型：

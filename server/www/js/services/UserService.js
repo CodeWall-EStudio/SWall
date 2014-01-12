@@ -52,12 +52,17 @@ angular.module('ts.services.user', [
                 localStorage.removeItem('login_result');
             }
 
+            function fetchProfile(uid){
+
+            }
+
             return {
-                uid: uid,
-                hasLoggedIn: hasLoggedIn,
-                nick: nick,
-                login: login,
-                logout: logout
+                uid:            uid,
+                hasLoggedIn:    hasLoggedIn,
+                nick:           nick,
+                login:          login,
+                logout:         logout,
+                fetchProfile:   fetchProfile
             };
         }
     ]);

@@ -9,7 +9,7 @@ var fs      = require('fs'),
     utf8    = require('./app_modules/utf8');
 
 
-var PORT = 8080,
+var PORT = 8090,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/';
 
 
@@ -44,7 +44,7 @@ app.use(customHeaders);
 app.use(express.cookieParser());
 app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
 app.use(connect.compress());
-app.use('/static', express.static(__dirname + '/../www'));
+app.use(express.static(__dirname + '/../www'));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ app.get('/activities', function(req, res){
             .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
             .limit(count)
             .skip(index)
-            .sort({'info.date':1, 'info.title':1});
+            .sort({'info.date':-1, 'info.title':1});
 
         cursor.count(false, function(err, total){ //先看看总共有多少条活动
             var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
