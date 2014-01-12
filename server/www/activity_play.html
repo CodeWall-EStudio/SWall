@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140107001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140112001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -70,13 +70,27 @@
                 </ul>
             </div>
             <!-- 统计信息入口 -->
-            <div class="stat"></div>
+            <div class="stat">
+                <div>
+                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="stat=1">
+                        <img src="img/timestat_icon.png">
+                    </button>
+                </div>
+                <div>
+                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="stat=2">
+                        <img src="img/userstat_icon.png">
+                    </button>
+                </div>
+            </div>
         </div>
         <!-- 时间线和资源列表 -->
         <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup" ng-repeat="group in resources" ng-init="$groupIndex=$index">
-                <div class="time">{{group.ts | date:'hh:mm'}}</div>
+                <div class="time">
+                    <div class="hhmm">{{group.ts | date:'hh:mm'}}</div>
+                    <div class="ymd">{{group.ts | date:'yyyy-MM-dd'}}</div>
+                </div>
                 <div class="resource">
                     <div class="line"></div>
                     <div class="resourceItem" ng-repeat="resource in group.resources"
@@ -116,7 +130,7 @@
                             <img ng-src="{{selectedResource.content}}">
                         </div>
                         <div ng-switch-when="2" class="video">
-                            <video autoplay controls src="{{selectedResource.content}}"></video>
+                            <video autoplay controls id="videoPlayer"></video>
                         </div>
                         <div>
                             <span ng-switch-when="1">图片</span>
@@ -135,8 +149,28 @@
         </div>
     </div>
 
+    <div class="modal fade" id="bigPicModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title">
+                        {{stat == 1 ? '按时间统计资源数' : '按用户统计资源数'}}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <img ng-show="stat == 1" src="img/timestat.png">
+                    <img ng-show="stat == 2" src="img/userstat.png">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/activityPlay.min.js?20140107001"></script>
+    <script src="js/activityPlay.min.js?20140112001"></script>
 </body>
 </html>

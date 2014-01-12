@@ -98,12 +98,15 @@ angular.module('ts.services.activity', [
             }
 
             function getActivity(aid, success, error){
-                $http.get(BACKEND_SERVER + '/activities/' + aid, {responseType:'json'})
+                var ts = new Date().getTime();
+                $http.get(BACKEND_SERVER + '/activities/' + aid + '?_=' + ts, {responseType:'json'})
                     .success(success)
                     .error(error);
             }
 
             function createActivity(params, success, error){
+                params = params || {};
+                params['_'] = new Date().getTime();
                 var body = UtilsService.object.toUrlencodedString(params);
                 $http.post(
                         BACKEND_SERVER + '/activities',
@@ -126,6 +129,8 @@ angular.module('ts.services.activity', [
 
             function updateActivity(activityID, params, success, error){
                 disableButtons();
+                params = params || {};
+                params['_'] = new Date().getTime();
                 var body = UtilsService.object.toUrlencodedString(params);
                 $http.put(
                         BACKEND_SERVER + '/activities/' + activityID,
@@ -154,7 +159,7 @@ angular.module('ts.services.activity', [
 
             function deleteActivity(activityID, success, error){
                 disableButtons();
-                $http({method:'DELETE', url:BACKEND_SERVER+'/activities/'+activityID})
+                $http({method:'DELETE', url:BACKEND_SERVER+'/activities/'+activityID+'?_='+new Date().getTime()})
                     .success(function(data, status){
                         if(data && !data.c){
                             selectActivity();
@@ -254,7 +259,7 @@ angular.module('ts.services.activity', [
                 $rootScope.hints = '';
             }
             function showWaitHints(){
-                $rootScope.hints = '请稍后...';
+                $rootScope.hints = '请稍候...';
             }
             function showEmptyActivitiesHints(){
                 $rootScope.hints = '没找到任何活动';

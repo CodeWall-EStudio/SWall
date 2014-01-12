@@ -16,6 +16,15 @@ angular.module('ap.controllers.main', [
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
 
+            $scope.$watch('selectedResource', function(newValue){
+                if(newValue && newValue.type == 2){
+                    setTimeout(function(){
+                        var el = document.getElementById('videoPlayer');
+                        el.src = newValue.content;
+                    }, 100);
+                }
+            });
+
             $scope.showResourceDetail = function(resource){
                 if(resource.type){
                     $scope.selectedResource = resource;
@@ -73,10 +82,11 @@ angular.module('ap.controllers.main', [
                         console.log('[PlayerMainController] get activity success', status, data);
                         if(status == 200 && !data.c){
                             $rootScope.activity = data.r;
-                            processFetchedResources(data.r);
+                            //processFetchedResources(data.r);
+                            addFetchedResourcesToRootScope($rootScope.activity.resources);
 
-                            //计算用户数
                             if($rootScope.activity.active){
+                                //计算用户数
                                 $rootScope.userCount = $rootScope.activity.users.participators.length;
 
                                 //如果是正在展示的活動，則固定每5s刷一次資源列表
@@ -87,6 +97,7 @@ angular.module('ap.controllers.main', [
                                 }
                             }
                             else{
+                                //计算用户数
                                 var users = _.countBy($rootScope.selectedActivity.resources, function(resource){
                                     return resource.user;
                                 });
@@ -103,6 +114,41 @@ angular.module('ap.controllers.main', [
                     }
                 );
                 console.log('[PlayerMainController] getting info of activity ' + aid);
+            }
+
+            function addFetchedResourcesToRootScope(resources){
+                //过滤出新的资源
+                var localLatestGroup = $rootScope.resources[0],
+                    localLatestTs = localLatestGroup ? localLatestGroup.resources[0].date : 0,
+                    newResources = _.filter(resources, function(resource){ return resource.date > localLatestTs; });
+                console.log('new resources', newResources);
+
+                //把新资源插入到按分钟分组的资源分组里
+                for(var i=0; i<newResources.length; ++i){
+                    //计算新资源的时间戳（以每分钟为单位）
+                    var r = newResources[i],
+                        d = new Date(r.date);
+                    d.setSeconds(0);
+                    d.setMilliseconds(0);
+                    var ts = d.getTime();
+
+                    if($rootScope.resources[0] && $rootScope.resources[0].ts == ts){
+                        //如果新资源的时间戳和本地最新的资源分钟时间戳一样，则插入到该分组中
+                        $rootScope.resources[0].resources.splice(0, 0, r);
+                    }
+                    else{
+                        //否则插入一个新的分组
+                        $rootScope.resources.splice(0, 0, {ts:ts, resources:[r]});
+                    }
+
+                    //另外单独过滤出图片和视频这些可以预览大图的资源，用来做上下翻页
+                    if(r.type == 1 || r.type == 2){
+                        $rootScope.presources.splice(0, 0, r);
+                    }
+                }
+
+                console.log('resources', $rootScope.resources);
+                console.log('presources', $rootScope.presources);
             }
 
             function processFetchedResources(activity){
@@ -126,6 +172,8 @@ angular.module('ap.controllers.main', [
                     return resource.type == 1 || resource.type == 2;
                 });
             }
+
+            window.rs = $rootScope;
 
             getActivity();
         }
