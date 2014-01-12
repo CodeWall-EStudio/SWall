@@ -2,10 +2,12 @@ package com.swall.tra;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,17 +24,18 @@ import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.Utils;
 import com.swall.tra.widget.CustomDialog;
-import com.umeng.update.UmengUpdateAgent;
+import com.swall.tra.widget.UploadResourceProgressDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by pxz on 13-12-28.
  */
-public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterView.OnItemClickListener, View.OnClickListener, DialogInterface.OnDismissListener {
     private static final int REQUEST_ID_PHOTO = 0x01;
     private static final int REQUEST_ID_VIDEO = 0x02;
     private static final int REQUEST_ID_TEXT = 0x03;
@@ -44,7 +47,9 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private View mBtnPhoto;
     private View mBtnVideo;
     private View mBtnText;
-    private String mFilePath;
+    private String mPicFilePath;
+    private String mVedioFilePath;
+    private ProgressDialog mUploadingDialog;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +60,6 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         initIntents();
 
 
-        UmengUpdateAgent.update(this);
-
-        UmengUpdateAgent.setUpdateAutoPopup(true);
     }
 
     private void initData() {
@@ -101,6 +103,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         ResourceInfo info = (ResourceInfo)parent.getAdapter().getItem(position);
+        if(info==null)return;
         if(info.type == ServiceManager.Constants.UPLOAD_TYPE_VIDEO){
             Uri uri = Uri.parse(info.content);
             Intent intent = new Intent(Intent.ACTION_VIEW)
@@ -124,6 +127,9 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private ActionListener mUploadListener = new ActionListener(this) {
         @Override
         public void onReceive(int action, Bundle data) {
+            if( null != mUploadingDialog && mUploadingDialog.isShowing()){
+                mUploadingDialog.dismiss();
+            }
             // TODO
             if(data != null && data.containsKey("result")){
                 Toast.makeText(CurrentTRAActivity.this, "上传完成", Toast.LENGTH_SHORT).show();
@@ -195,15 +201,25 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
         mBtnQuit.setOnClickListener(this);
     }
-
+    public String getUriPath(String postFix){
+        File f = new File(Utils.getExternalDir()+"/tra/");
+        if(!f.exists()){
+            f.mkdir();
+        }
+        return Utils.getExternalDir()+"/tra/"+System.currentTimeMillis()+postFix;
+    }
     private void initIntents(){
         mTakePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         mTakePicIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 100);
-        mFilePath = Utils.getExternalDir()+"/"+ System.currentTimeMillis()+".jpg";
-        mTakePicIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mFilePath)));
+//        mPicFilePath = Utils.getExternalDir()+"/"+ System.currentTimeMillis()+".jpg";
+//        mTakePicIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mPicFilePath)));
 
 
         mTakeVideoRecordIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        mTakeVideoRecordIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 100);
+        mTakeVideoRecordIntent.putExtra(MediaStore.EXTRA_SHOW_ACTION_ICONS,true);
+//        mVedioFilePath = Utils.getExternalDir()+"/"+ System.currentTimeMillis()+".3gp";
+//        mTakeVideoRecordIntent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mVedioFilePath)));
 
         // 录像过程中按home ,再次进入时不需再显示
         mTakePicIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -226,10 +242,22 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         switch (viewId) {
             case R.id.btnPhoto:
                 i = mTakePicIntent;
+                mPicFilePath = getUriPath(".jpg");
+                if(mPicFilePath == null){
+                    Toast.makeText(this,"存储空间不足.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                i.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mPicFilePath)));
                 reqId = REQUEST_ID_PHOTO;
                 break;
             case R.id.btnRecordVideo:
                 i = mTakeVideoRecordIntent;
+                mVedioFilePath = getUriPath(".3gp");
+                if(mVedioFilePath == null){
+                    Toast.makeText(this,"存储空间不足.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                i.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(new File(mVedioFilePath)));
                 reqId = REQUEST_ID_VIDEO;
                 break;
             case R.id.btnText:
@@ -357,18 +385,35 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     }
 
     private void doUpload(Intent data, int uploadTypeVideo,int action) {
+        mUploadingDialog = new ProgressDialog(this);
         Parcelable dataToTranfer = null;
         switch (action){
-            case  ServiceManager.Constants.ACTION_UPLOAD_VIDEO:
-                dataToTranfer = data.getData();
+            case  ServiceManager.Constants.ACTION_UPLOAD_VIDEO:{
+//                Bitmap bitmap=null;
+//                String filePath = mPicFilePath;
+//                filePath = Utils.getExternalDir()+"videoEngine.log";
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                UploadResourceProgressDialog dialog = new UploadResourceProgressDialog(this,action,mVedioFilePath);
+                dialog.setOnDismissListener(this);
+                dialog.setCancelable(false);
+                dialog.show();
+//                dataToTranfer = data.getData();
+            }
                 break;
             case ServiceManager.Constants.ACTION_UPLOAD_PIC:{
-                Bitmap bitmap=null;
-                String filePath = mFilePath;
+//                Bitmap bitmap=null;
+//                String filePath2 = mPicFilePath;
 //                filePath = Utils.getExternalDir()+"videoEngine.log";
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                defaultRequestData.putString("filePath",filePath);
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+
+                UploadResourceProgressDialog dialog = new UploadResourceProgressDialog(this,action,mPicFilePath);
+                dialog.setOnDismissListener(this);
+                dialog.setCancelable(false);
+                dialog.show();
+
 
 //                try {
 //                    bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
@@ -388,9 +433,6 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             case ServiceManager.Constants.ACTION_UPLOAD_AUDIO:// TODO
                 return;
         }
-        defaultRequestData.putString("id",mInfo.id);
-        defaultRequestData.putParcelable("data",dataToTranfer);
-        app.doAction(action,defaultRequestData,mUploadListener);
     }
 
     CustomDialog mQuitConfirmDialog;
@@ -448,5 +490,17 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 .setCancelable(false)
                 .create();
         mQuitDialog.show();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        UploadResourceProgressDialog upd = (UploadResourceProgressDialog)dialog;
+        if(upd == null)return;
+        int action = upd.getAction();
+        // TODO
+        defaultRequestData.putString("filePath",upd.getFilePath());
+        defaultRequestData.putString("comment",upd.getCommentText());
+        defaultRequestData.putString("id", mInfo.id);
+        app.doAction(action,defaultRequestData,mUploadListener);
     }
 }

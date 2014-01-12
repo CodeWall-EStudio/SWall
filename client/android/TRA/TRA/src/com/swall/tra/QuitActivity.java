@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.swall.tra.model.AccountInfo;
+import com.swall.tra.network.ServiceManager;
 
 /**
  * Created by pxz on 14-1-1.
@@ -36,7 +38,7 @@ public class QuitActivity extends BaseFragmentActivity implements View.OnClickLi
     }
 
     private void gotoLogin() {
-        app.updateCurrentAccount(new AccountInfo("", "","",""));
+        app.updateCurrentAccount(null);
         Intent intent = new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|
             Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

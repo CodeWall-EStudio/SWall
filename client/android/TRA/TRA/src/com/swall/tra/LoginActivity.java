@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ActionListener;
@@ -21,7 +22,7 @@ import org.json.JSONObject;
 /**
  * Created by pxz on 13-12-28.
  */
-public class LoginActivity extends BaseFragmentActivity implements View.OnClickListener, InputMethodRelativeLayout.onSizeChangedListenner {
+public class LoginActivity extends BaseFragmentActivity implements View.OnClickListener, InputMethodRelativeLayout.onSizeChangedListenner, RadioGroup.OnCheckedChangeListener {
 
     ActionListener listener = new ActionListener(LoginActivity.this) {
         @Override
@@ -100,6 +101,7 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
     private AlertDialog mProgressDialog;
     private InputMethodRelativeLayout mRootLayout;
     private ImageView mSchoolNameView;
+    private RadioGroup mEnvRg;
 
 
     private void updateAccounts(Bundle data) {
@@ -127,6 +129,18 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
         mRootLayout = (InputMethodRelativeLayout)findViewById(R.id.root);
         mSchoolNameView = (ImageView)findViewById(R.id.login_school_name);
 
+        mEnvRg = (RadioGroup)findViewById(R.id.env_rg);
+
+
+        mSchoolNameView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mEnvRg.setVisibility(View.VISIBLE);
+                mSchoolNameView.setOnLongClickListener(null);
+                return true;
+            }
+        });
+
         mRootLayout.setOnSizeChangedListenner(this);
         findViewById(R.id.login_button).setOnClickListener(this);
 
@@ -136,6 +150,11 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
                 .create();
 
         app.doAction(ServiceManager.Constants.ACTION_GET_ACCOUNTS,null,null);
+
+
+
+
+        ((RadioGroup)findViewById(R.id.env_rg)).setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -194,6 +213,24 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
             mSchoolNameView.setImageResource(R.drawable.login_school_input);
         }else{
             mSchoolNameView.setImageResource(R.drawable.login_school_normal);
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch(checkedId){
+            case R.id.testEnv:
+                app.changeEnv(ServiceManager.Constants.ENV_TEST);
+                break;
+            case R.id.publishEnv:
+                app.changeEnv(ServiceManager.Constants.ENV_PUBLISH);
+                break;
+            case R.id.devEnv:
+                app.changeEnv(ServiceManager.Constants.ENV_DEV);
+            default:
+                break;
+
+
         }
     }
 }

@@ -16,7 +16,7 @@ import com.swall.tra.R;
  * Created by pxz on 14-1-1.
  */
 public class CustomDialog extends Dialog implements View.OnClickListener {
-    private TextView mPostiveButton;
+    protected TextView mPostiveButton;
     private TextView mNegativeButton;
     private TextView mContentTextView;
 
@@ -40,7 +40,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         setupContentView();
     }
 
-    private void setupContentView() {
+    protected void setupContentView() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.custom_dialog);
         mPostiveButton = (TextView) findViewById(R.id.btn_positive);

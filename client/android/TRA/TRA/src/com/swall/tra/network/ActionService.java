@@ -2,6 +2,7 @@ package com.swall.tra.network;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import com.swall.tra.utils.AccountDatabaseHelper;
 
 import java.lang.ref.WeakReference;
@@ -32,8 +33,14 @@ public abstract class ActionService {
 
         return url + "skey="+sEncodeKey;
     }
+    public static void setEncodeKey(String encodeKey){
+        sEncodeKey = encodeKey;
+        if(TextUtils.isEmpty(encodeKey)){
+            sRequestCookies.clear();
+        }
+    }
     protected String TAG;
-    public static String sEncodeKey;
+    protected static String sEncodeKey;
     protected WeakReference<Context> contextRef;
     protected WeakReference<ServiceManager> managerRef;
     public ActionService(Context context, ServiceManager manager){

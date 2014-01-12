@@ -28,9 +28,6 @@ import java.util.Map;
  */
 public class UploadService extends ActionService {
 
-//    private static final String MAIN_URL = "http://szone.codewalle.com/";
-    private static final String MAIN_URL = "http://szone.71xiaoxue.com/";
-
     public UploadService(Context context,ServiceManager manager) {
         super(context, manager);
     }
@@ -55,12 +52,13 @@ public class UploadService extends ActionService {
         }
     }
 
-    private void upload(final int action,int type,String content,String uid,String activityId,final ActionListener listener){
+    private void upload(final int action,int type,String content,String comment,String uid,String activityId,final ActionListener listener){
         RequestQueue rq = MyVolley.getRequestQueue();
         JSONObject object = new JSONObject();
         try {
             object.put("type",type);
             object.put("content",content);
+            object.put("comment",comment);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -91,12 +89,13 @@ public class UploadService extends ActionService {
     }
 
     private void uploadText(final int action,final Bundle data,final ActionListener callback) {
-        upload(action, ServiceManager.Constants.UPLOAD_TYPE_TEXT,data.getString("text"),data.getString(ServiceManager.Constants.KEY_USER_NAME,"admin"),data.getString("id"),callback);
+        upload(action, ServiceManager.Constants.UPLOAD_TYPE_TEXT,data.getString("text"),"",data.getString(ServiceManager.Constants.KEY_USER_NAME,"admin"),data.getString("id"),callback);
     }
 
     private void uploadResourceExtra(final int action, final Bundle data, final ActionListener listener,final int type){
         byte[] bytes = null;
-        String filePath = data.getString("filePath");;
+        String filePath = data.getString("filePath");
+        final String comment = data.getString("comment");
         ContentType contentType = ContentType.MULTIPART_FORM_DATA;
         switch(action){
             case ServiceManager.Constants.ACTION_UPLOAD_PIC:
@@ -111,7 +110,8 @@ public class UploadService extends ActionService {
                 FileInputStream fis;
                 try {
                     Uri uri = (Uri)data.get("data");
-                    fis = new FileInputStream(new File(getFilePathFromContentUri(uri, contextRef.get().getContentResolver())));
+//                    fis = new FileInputStream(new File(getFilePathFromContentUri(uri, contextRef.get().getContentResolver())));
+                    fis = new FileInputStream(new File(filePath));
                     byte[] buf = new byte[1024];
                     int n;
                     while (-1 != (n = fis.read(buf)))
@@ -124,10 +124,9 @@ public class UploadService extends ActionService {
                 break;
 
         }
-//        doUpload("http://szone.codewalle.com/upload?fid=0&csrf_test_name=null",
-//        doUpload("http://szone.71xiaoxue.com/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
-        doUpload(MAIN_URL + "/upload",//ServiceManager.Constants.URL_PREFIX + "resources",
 
+        doUpload(ServiceManager.Constants.getUploadUrl(),
+                comment,
                 bytes,
                 filePath,
                 new ActionListener(null) {//此处不应该用ActionListener
@@ -136,6 +135,16 @@ public class UploadService extends ActionService {
                         boolean error = true;
                         if(action == 0 && data2 != null){
                             String jsonString = data2.getString("data");
+                            // 处理php notice..
+                            jsonString = jsonString.trim();
+                            if(jsonString.indexOf("<") == 0){
+                                String s = jsonString;
+                                s = s.replaceAll("\r\n","");
+                                s = s.replaceAll("\n","");
+                                jsonString = s.replaceAll("\\<div[^>]*>.*</div>","");
+                            }
+
+
                             /*
                             *{"code":"200","msg":"\u4e0a\u4f20\u6210\u529f!","data":{"fid":292,"jsonrpc":"2.0","error":{"code":0,"message":"\u4e0a\u4f20\u6210\u529f!"}},"elapsed_time":"0.3787","memory_usage":"3.71MB","profiler":"{profiler}"}
                             * */
@@ -144,11 +153,12 @@ public class UploadService extends ActionService {
                                 JSONObject object = new JSONObject(jsonString);
                                 JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
                                 long fid = JSONUtils.getLong(resultData,"fid",0);
-                                String fullFilePath = MAIN_URL+"/download/media?id="+fid;
+                                String fullFilePath = ServiceManager.Constants.getResourceUrl(fid);
 //                                    String fullFilePath = ServiceManager.Constants.getUploadedFilPath(filePath);
                                     upload(action,
                                             type,
                                             fullFilePath,
+                                            comment,
                                             data.getString(ServiceManager.Constants.KEY_USER_NAME,"admin"),
                                             data.getString("id"),
                                             listener
@@ -179,7 +189,7 @@ public class UploadService extends ActionService {
     }
 
 
-    private void doUpload(String postUrl,byte[] data, String filePath, final ActionListener listener,ContentType contentType){
+    private void doUpload(String postUrl,String comment,byte[] data, String filePath, final ActionListener listener,ContentType contentType){
 
         /*
         Map<String,String> params = new HashMap<String,String>(3);

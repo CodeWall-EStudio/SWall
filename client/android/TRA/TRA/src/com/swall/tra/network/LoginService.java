@@ -29,12 +29,6 @@ import java.util.Map;
  * Created by pxz on 13-12-13.
  */
 public class LoginService extends ActionService {
-    private static final String URL_PREFIX = "http://codewall.com/";
-    private static final String URL_LOGIN = URL_PREFIX+"login";
-
-    private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
-
-
     private ArrayList<ActionListener> tmpListenerList = new ArrayList<ActionListener>(5);
     private boolean isLoginProcessing = false;
 
@@ -172,7 +166,7 @@ public class LoginService extends ActionService {
 
             NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
                     Request.Method.POST,
-                    LOGIN_URL,params,
+                    Constants.getLoginUrl(),params,
                     new Response.Listener<String>() {
                         public void onResponse(String response) {
                             Bundle result = new Bundle();

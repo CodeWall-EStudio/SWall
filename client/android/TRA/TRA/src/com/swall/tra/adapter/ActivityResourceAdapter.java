@@ -101,11 +101,13 @@ public class ActivityResourceAdapter extends BaseAdapter {
         private final TextView dateTime;
         private final NetworkImageView imageView;
         private final TextView textView;
+        private final TextView commentTextView;
 //        private final View joined;
 
         public ViewHolder(View convertView) {
             name = (TextView) convertView.findViewById(R.id.item_resource_owner);
             textView = (TextView)convertView.findViewById(R.id.item_resource_text);
+            commentTextView = (TextView)convertView.findViewById(R.id.item_resource_comment);
             imageView = (NetworkImageView)convertView.findViewById(R.id.item_resource_image);
             dateTime = (TextView)convertView.findViewById(R.id.item_resource_time);
 //            joined = convertView.findViewById(R.id.tra_joined);
@@ -158,22 +160,27 @@ public class ActivityResourceAdapter extends BaseAdapter {
             if(item.type  == ITEM_TYPE_TEXT){
                 textView.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);
+                commentTextView.setVisibility(View.GONE);
                 textView.setText(item.content);
             }else if(item.type == ServiceManager.Constants.UPLOAD_TYPE_IMAGE){
                 if(!TextUtils.isEmpty(item.content) && item.content.startsWith("http")){
                     textView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
+                    commentTextView.setVisibility(View.VISIBLE);
                     imageView.setImageUrl(ActionService.getUrlWithSKEY(item.content), MyVolley.getImageLoader());
                 }else{
                     textView.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);
+                    commentTextView.setVisibility(View.GONE);
                     textView.setText("数据错误");
                 }
             }else if(item.type == ServiceManager.Constants.UPLOAD_TYPE_VIDEO){
                 textView.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);
-                textView.setText("视频: "+item.content);
+                commentTextView.setVisibility(View.GONE);
+                textView.setText("发了一个视频"+item.content+(TextUtils.isEmpty(item.comment)?"":"并评论:\n"+item.comment));
             }
+            commentTextView.setText(TextUtils.isEmpty(item.comment)?"发表了图片":("发表了图片并评论："+item.comment));
 
         }
     }

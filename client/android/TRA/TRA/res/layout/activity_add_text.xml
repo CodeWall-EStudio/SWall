@@ -31,11 +31,11 @@
     <EditText
             android:gravity="top"
             android:padding="20dp"
+            android:background="@android:color/white"
             android:hint="输入文字..."
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
             android:id="@+id/editText"
             android:layout_below="@+id/linearLayout"
             android:layout_alignParentLeft="true"

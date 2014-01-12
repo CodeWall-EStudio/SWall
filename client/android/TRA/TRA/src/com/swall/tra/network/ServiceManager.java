@@ -24,23 +24,66 @@ public class ServiceManager {
         return mDBHelper;
     }
 
+
+
     public static class Constants{
 
-        //public static final String URL_PREFIX = "http://54.251.49.104:8080/";
-        public static final String URL_PREFIX = "http://115.28.55.91:8080/";
-//        public static final String URL_PREFIX = "http://szone.71xiaoxue.com/";
+
+        // TODO 此处不应该可改，仅为环境配置临时使之可改
+        public static String RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+        public static String DATA_URL_PREFIX = "http://115.28.55.91:8080/";
+
+
+        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
+
         public static final String KEY_LOGIN_SUCCESS = "success";
         public static final String KEY_LOGIN_RESULT_OBJECT = "resultObject";
         public static final String KEY_RESULT = "result";
 
+        public static final int ENV_TEST = 1;
+        public static final int ENV_PUBLISH = 2;
+        public static final int ENV_DEV = 3;
+
+        /*
+    正式环境：
+    数据：media.71xiaoxue.com
+    资源：szone.71xiaoxue.com
+
+    测试环境:
+    数据: swall.71xiaoxue.com
+    资源: szone.71xiaoxue.com
+
+    开发环境:
+    数据：http://115.28.55.91:8080/
+    资源：http://szone.71xiaoxue.com/
+        **/
+        public static void setEnv(int env){
+            switch (env){
+                case Constants.ENV_PUBLISH:
+                    DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
+                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    break;
+                case Constants.ENV_TEST:
+                    DATA_URL_PREFIX = "http://swall.71xiaoxue.com/";
+                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    break;
+                case Constants.ENV_DEV:
+                    DATA_URL_PREFIX = "http://115.28.55.91:8080/";
+                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    break;
+            }
+        }
+        public static String getLoginUrl() {
+            return LOGIN_URL;
+        }
         public static String getPostResourceUrl(String aid, String uid){
-            String url =  URL_PREFIX + String.format("activities/%s/resources?uid=%s",aid,URLEncoder.encode(uid));//TODO
+            String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s",aid,URLEncoder.encode(uid));//TODO
             Log.w("SWall",url);
             return url;
         }
 
         public static String getActivitiesListUrl(String uid,boolean isActive,int index,boolean joined){
-            String url =  URL_PREFIX + String.format("activities?uid=%s&status=%s&index=%d&authorize=%s&t=%d",
+            String url =  DATA_URL_PREFIX + String.format("activities?uid=%s&status=%s&index=%d&authorize=%s&t=%d",
                     URLEncoder.encode(uid),
                     (isActive ? "active" : "closed"),
                     index,
@@ -51,21 +94,32 @@ public class ServiceManager {
         }
 
         public static String getJoinUrl(String userName, String id) {
-            String url = URL_PREFIX + String.format("activities/%s/participators?uid=%s",id,URLEncoder.encode(userName));
+            String url = DATA_URL_PREFIX + String.format("activities/%s/participators?uid=%s",id,URLEncoder.encode(userName));
             Log.w("SWall", url);
             return url;
         }
 
         public static String getQuitUrl(String uid, String aid) {
-            String url = URL_PREFIX + String.format("activities/%s/participators/%s?uid=%s",aid,URLEncoder.encode(uid), URLEncoder.encode(uid));
+            String url = DATA_URL_PREFIX + String.format("activities/%s/participators/%s?uid=%s",aid,URLEncoder.encode(uid), URLEncoder.encode(uid));
             Log.w("Swall",url);
             return url;
         }
 
 
         public static String getPostUrl(String uid,String activityId){
-            String url = URL_PREFIX + String.format("activity");
+            String url = DATA_URL_PREFIX + String.format("activity");
             return url;
+        }
+        public static String getUploadedFilPath(String filePath) {
+            return DATA_URL_PREFIX +"resources/"+filePath;
+        }
+
+        public static String getUploadUrl() {
+            return RESOURCE_MAIN_URL + "upload/";
+        }
+
+        public static String getResourceUrl(long fid) {
+            return RESOURCE_MAIN_URL +"/download/media?id="+fid;
         }
 
         public static final String KEY_USER_NAME            = "userName";
@@ -104,9 +158,6 @@ public class ServiceManager {
         public static final int UPLOAD_TYPE_VIDEO = 2;
         public static final int UPLOAD_TYPE_AUDIO = 3;
 
-        public static String getUploadedFilPath(String filePath) {
-            return URL_PREFIX+"resources/"+filePath;
-        }
     }
 
     WeakReference<Context> appContextRef;
@@ -119,6 +170,8 @@ public class ServiceManager {
         actionMap = new SparseArray<ActionService>();
         listeners = new SparseArray<ArrayList<ActionListener>>();
         mDBHelper = new AccountDatabaseHelper(context);
+
+        Constants.setEnv(Constants.ENV_PUBLISH);
 
     }
 

@@ -77,6 +77,7 @@ public class NetworkUtils {
 
     public static class MultipartRequest extends Request<String> {
 
+        private File mFile;//保存，以备删除
         private HttpEntity mEntity;
         private static final String FILE_PART_NAME = "file";
         private static final String STRING_PART_NAME = "text";
@@ -92,19 +93,26 @@ public class NetworkUtils {
             String fileName = System.currentTimeMillis()+"x";
             if(contentType.getMimeType().indexOf("3gp")!=-1){
                 fileName += ".3gp";
+                if(file != null && file.exists()){
+                    mFile = file;
+                    builder.addBinaryBody("file",file, ContentType.create("video/3gp"),fileName);
+                }else{
+                    builder.addBinaryBody("file",data, contentType,fileName);
+                }
             }else{
                 fileName += ".jpeg";
+                if(file != null && file.exists()){
+                    mFile = file;
+                    builder.addBinaryBody("file",file, ContentType.create("image/jpeg"),fileName);
+                }else{
+                    builder.addBinaryBody("file",data, contentType,fileName);
+                }
             }
             builder.addTextBody("media", "1");
             builder.addTextBody("name",fileName);
             builder.addTextBody("skey",""+encodeKey);
 //            builder.addTextBody("file",fileName);
 //            builder.setCharset(Charset.forName("UTF-8"));
-            if(file != null && file.exists()){
-                builder.addBinaryBody("file",file, ContentType.create("image/jpeg"),fileName);
-            }else{
-                builder.addBinaryBody("file",data, contentType,fileName);
-            }
             builder.setBoundary("----WebKitFormBoundaryOZP8ZyAfN79iuKUB--");
             mEntity = builder.build();
 
@@ -196,7 +204,16 @@ public class NetworkUtils {
         @Override
         protected void deliverResponse(String response)
         {
+            deleteFile();
             mListener.onResponse(response);
+        }
+
+        private void deleteFile() {
+            if(mFile != null && mFile.exists()){
+                try{
+                mFile.delete();
+                }catch(Throwable tr){}
+            }
         }
 
         @Override

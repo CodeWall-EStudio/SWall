@@ -5,10 +5,10 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
-    <com.android.volley.toolbox.NetworkImageView
+    <com.swall.tra.widget.ImageViewTouch
             android:id="@+id/imageview"
-
             android:scaleType="fitCenter"
+            android:clickable="true"
             android:layout_width="fill_parent"
             android:layout_centerInParent="true"
             android:layout_height="fill_parent"/>

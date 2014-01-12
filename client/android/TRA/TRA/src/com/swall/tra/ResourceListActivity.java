@@ -36,6 +36,7 @@ public class ResourceListActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         ResourceInfo info = (ResourceInfo)getListAdapter().getItem(position);
+        if(info == null)return;
         if(info.type == ServiceManager.Constants.UPLOAD_TYPE_VIDEO){
             Uri uri = Uri.parse(info.content);
             Intent intent = new Intent(Intent.ACTION_VIEW)

@@ -39,3 +39,10 @@
 -dontwarn org.apache.http.annotation.ThreadSafe
 -dontwarn org.apache.http.annotation.Immutable
 -dontwarn org.apache.http.annotation.NotThreadSafe
+
+# 以下类过滤不混淆
+-keep public class * extends com.umeng.**
+# 以下包不进行过滤
+-keep class com.umeng.** { *; }
+
+-keep class com.swall.tra.R$*

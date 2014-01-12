@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
+import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
 
 import java.util.*;
@@ -73,6 +74,8 @@ public class TRAApplication extends Application {
         super.onCreate();
         initServices();
         initVolley();
+
+
     }
 
     private void initVolley() {
@@ -121,17 +124,22 @@ public class TRAApplication extends Application {
         return sInstance;
     }
 
+
+    private AccountInfo mAccountInfo;
     // ###########
     public AccountInfo getCachedAccount(){
-        Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY});
-        String name = data.get(KEY_USER_NAME);
-        String password = data.get(KEY_USER_PASSWORD);
-        String showName = data.get(KEY_SHOW_NAME);
-        String encodeKey = data.get(KEY_ENCODE_KEY);
-        if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password)){
-            return new AccountInfo("","","","");
+        if(mAccountInfo == null){
+            Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY});
+            String name = data.get(KEY_USER_NAME);
+            String password = data.get(KEY_USER_PASSWORD);
+            String showName = data.get(KEY_SHOW_NAME);
+            String encodeKey = data.get(KEY_ENCODE_KEY);
+            if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password)){
+                return new AccountInfo("","","","");
+            }
+            mAccountInfo = new AccountInfo(name,password,showName,encodeKey);
         }
-        return new AccountInfo(name,password,showName,encodeKey);
+        return mAccountInfo;
     }
 
     public void updateCurrentAccount(AccountInfo account){
@@ -141,14 +149,20 @@ public class TRAApplication extends Application {
     public void updateCurrentAccount(AccountInfo account,boolean autoLogin){
         if(account == null){
             account = new AccountInfo("","","","");
+            mAccountInfo = null;
+        }else{
+            mAccountInfo = account;
         }
-        ActionService.sEncodeKey = account.encodeKey;
+        ActionService.setEncodeKey(account.encodeKey);
         saveMappingData(CACHED_USER_DATA,
                 new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_AUTO_LOGIN,KEY_SHOW_NAME,KEY_ENCODE_KEY},
                 new String[]{account.userName,account.password,autoLogin?"true":"false",account.showName,account.encodeKey}
         );
     }
 
+    public void changeEnv(int env) {
+        ServiceManager.Constants.setEnv(env);
+    }
 
 
     // ############ 基本接口，后续可换为 SQLite ####################
@@ -220,6 +234,7 @@ public class TRAApplication extends Application {
     private SharedPreferences.Editor getSharedPreferencesEditor(String name){
         return getSharedPreferences(name).edit();
     }
+
     // ############ 基本接口END  ####################
 
 }

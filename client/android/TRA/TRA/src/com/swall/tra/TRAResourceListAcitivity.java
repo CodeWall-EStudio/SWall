@@ -62,6 +62,7 @@ public class TRAResourceListAcitivity extends BaseFragmentActivity implements Ad
 
             mTitleTips.setText(mInfo.title);
         }
+        mListView.setAdapter(mAdapter);
 
     }
 
@@ -69,6 +70,7 @@ public class TRAResourceListAcitivity extends BaseFragmentActivity implements Ad
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
         ResourceInfo info = (ResourceInfo)parent.getAdapter().getItem(position);
+        if(info == null)return;
         if(info.type == ServiceManager.Constants.UPLOAD_TYPE_VIDEO){
             Uri uri = Uri.parse(info.content);
             Intent intent = new Intent(Intent.ACTION_VIEW)

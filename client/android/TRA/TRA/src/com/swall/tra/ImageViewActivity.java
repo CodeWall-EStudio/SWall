@@ -8,12 +8,14 @@ import com.swall.tra.network.MyVolley;
 /**
  * Created by pxz on 13-12-25.
  */
-public class ImageViewActivity extends Activity {
+public class ImageViewActivity extends BaseFragmentActivity {
     private NetworkImageView mImageVIew;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_viewer);
+
+        hideQuitButton();
         mImageVIew = (NetworkImageView)findViewById(R.id.imageview);
         mImageVIew.setImageUrl(getIntent().getStringExtra("url"), MyVolley.getImageLoader());
     }
