@@ -31,59 +31,13 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
             switch (action){
                 case ServiceManager.Constants.ACTION_LOGIN:
                     dismissLoginProgressDialog();
-/***
- {
- resultMsg: ""
- resultObject: {
- email: null
- userId: "067b298a-ffc0-4873-ad9d-0cf7019f25bc"
- encodeKey: "3E4367206D767A9CFED014CC6ABE9E3A880B7105B1DCF1C82985B68F8D51B47C16991B72FA1F0F98B5A5E206055830A30FCDD1F03A15D8700DAB02150502B206B435ED085D836AF98F3F1C933A062482"
- gender: 0
- userName: "赵永红"
- }-
- success: true
- }
- *******/
-
-                    boolean success = true;
-                    if(data != null && data.getBoolean(ServiceManager.Constants.KEY_STATUS,false)){
-                        /*
-                        SharedPreferences prefs = getSharedPreferences(SettingActivity.PRE_NAME, Context.MODE_PRIVATE);
-                        boolean autoLogin =prefs.getBoolean("auto_login", true);
-                        mLoginData.putBoolean(ServiceManager.Constants.KEY_AUT_LOGIN,autoLogin);
-                        app.doAction(ServiceManager.Constants.ACTION_UPDATE_ACCOUNT,mLoginData,null);
-                        */
-                        String result = data.getString(ServiceManager.Constants.KEY_RESULT);
-                        JSONObject o = null;
-                        try {
-                            o = new JSONObject(result);
-                            if(o != null){
-                                JSONObject resultObject = JSONUtils.getJSONObject(o, ServiceManager.Constants.KEY_LOGIN_RESULT_OBJECT,new JSONObject());
-                                String showName = JSONUtils.getString(resultObject,"userName","");
-                                String encodeKey = JSONUtils.getString(resultObject,"encodeKey","");
-                                String userName = mEtUserName.getText().toString();
-                                String pwd = mEtPassword.getText().toString();
-                                if(TextUtils.isEmpty(encodeKey)){
-                                    success = false;
-                                }else{
-                                    app.updateCurrentAccount(new AccountInfo(userName,pwd,showName,encodeKey),true);
-                                    startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                    Log.i(TAG, "login success");
-                                    finish();
-                                }
-                            }else{
-                                success =false;
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            success = false;
-                        }
-
-                    }else{
-                        success =false;
-                    }
-                    if(!success){
+                    if(data == null || !data.getBoolean(ServiceManager.Constants.KEY_STATUS,false)){
+                        // login fail
                         enableLoginActoins();
+                    }else{
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        Log.i(TAG, "login success");
+                        finish();
                     }
                     break;
                 case ServiceManager.Constants.ACTION_GET_ACCOUNTS:

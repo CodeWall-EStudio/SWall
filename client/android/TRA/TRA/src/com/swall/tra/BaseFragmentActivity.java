@@ -30,7 +30,6 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     private static final int MESSAGE_CONFIRM_QUIT = 1;
     public TRAApplication app;
     protected String TAG;
-    protected AccountInfo currentAccount;
     private View mTitleView;
     protected Bundle defaultRequestData;
     private boolean mShowQuitButton;
@@ -61,8 +60,11 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     };
 
 
+    protected AccountInfo getCurrentAccount(){
+        return app.getCachedAccount();
+    }
     public String getCurrentAcccountName(){
-        return currentAccount.userName;
+        return getCurrentAccount().userName;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mQuitProgramConfirmDialog.dismiss();
-                            app.updateCurrentAccount(new AccountInfo("", "","",""));
+                            app.updateCurrentAccount(null);
                             finish();
                         }
                     })
@@ -116,9 +118,8 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
         app = TRAApplication.getApp();
         TAG = getClass().getName();
         //Log.i("SWall",TAG+":onCreate");
-        currentAccount = app.getCachedAccount();
         defaultRequestData = new Bundle();
-        defaultRequestData.putString(ServiceManager.Constants.KEY_USER_NAME,currentAccount.userName);
+        defaultRequestData.putString(ServiceManager.Constants.KEY_USER_NAME,getCurrentAccount().userName);
 
 
         ActionBar actionBar = getSupportActionBar();

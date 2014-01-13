@@ -1,6 +1,7 @@
 package com.swall.tra.network;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,10 +13,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.swall.tra.MainActivity;
 import com.swall.tra.TRAApplication;
 import com.swall.tra.model.AccountInfo;
 import static com.swall.tra.network.ServiceManager.Constants;
 
+import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.NetworkUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,8 +147,8 @@ public class LoginService extends ActionService {
 
 
     private void doLogin(Bundle data,final ActionListener listener){
-        String userName = data.getString(Constants.KEY_USER_NAME);
-        String password = data.getString(Constants.KEY_PASSWORD);
+        final String userName = data.getString(Constants.KEY_USER_NAME);
+        final String password = data.getString(Constants.KEY_PASSWORD);
         if(TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)){
             if(listener != null){
                 listener.onReceive(Constants.ACTION_LOGIN, null);
@@ -170,8 +173,31 @@ public class LoginService extends ActionService {
                     new Response.Listener<String>() {
                         public void onResponse(String response) {
                             Bundle result = new Bundle();
-                            result.putBoolean(Constants.KEY_STATUS,true);
-                            result.putString("result",response);
+                            result.putString(TRAApplication.KEY_USER_NAME,userName);
+                            result.putString(TRAApplication.KEY_USER_PASSWORD,password);
+                            boolean success = true;
+                            JSONObject o = null;
+                            try {
+                                o = new JSONObject(response);
+                                if(o != null){
+                                    JSONObject resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
+                                    String showName = JSONUtils.getString(resultObject,"userName","");
+                                    String encodeKey = JSONUtils.getString(resultObject,"encodeKey","");
+                                    if(TextUtils.isEmpty(encodeKey)){
+                                        success = false;
+                                    }else{
+                                        result.putString(TRAApplication.KEY_SHOW_NAME,showName);
+                                        result.putString(TRAApplication.KEY_ENCODE_KEY,encodeKey);
+                                        result.putLong(TRAApplication.KEY_LOGIN_TIME,System.currentTimeMillis());
+                                    }
+                                }else{
+                                    success =false;
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                success = false;
+                            }
+                            result.putBoolean(ServiceManager.Constants.KEY_STATUS,success);
                             notifyListener(Constants.ACTION_LOGIN,result,tmpListenerList);
                             tmpListenerList.clear();
 

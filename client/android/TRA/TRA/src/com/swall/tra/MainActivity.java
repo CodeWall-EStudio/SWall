@@ -3,10 +3,13 @@ package com.swall.tra;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
@@ -22,10 +25,12 @@ import java.util.Map;
  * Created by ippan on 13-12-24.
  */
 public class MainActivity extends BaseFragmentActivity  implements TabHost.TabContentFactory,  TabHost.OnTabChangeListener {
+    private static final int RETRY_FETCH_CURRENT = 1;
     private TabHost mTabHost;
     private Map<String,TabFrame> mTabFrames = new HashMap<String,TabFrame>();
     private ProgressDialog mProgressDialog;
     private boolean mTabInited = false;
+    private int mRetryCount = 0;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +69,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
 
     private void fetchCurrentActivity() {
 
-        app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
+        boolean sent = app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
             @Override
             public void onReceive(int action, Bundle data) {
                 if(isFinishing()){
@@ -74,8 +79,12 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
 
 
                 String result = "";
-                if(data!=null)result = data.getString("result","");
-                // TODO
+                if(data == null){
+                    // 网络原因获取失败，需重新获取
+                    retryFetchCurrentActivity();
+                    return;
+                }
+                result = data.getString("result");
                 try {
                     JSONObject object = new JSONObject(result);
                     if(JSONUtils.getInt(object,"c",-1) == 0){
@@ -91,6 +100,30 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
                 initTabs();
             }
         });
+        if(!sent){
+
+        }
+    }
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch(msg.what){
+                case RETRY_FETCH_CURRENT:
+                    fetchCurrentActivity();
+                    break;
+            }
+        }
+    };
+    private void retryFetchCurrentActivity() {
+        mRetryCount ++ ;
+        if(mRetryCount > 4){
+            Toast.makeText(this,"网络不可用，请检查网络连接",Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        Toast.makeText(this,"网络连接有问题，3秒后重连..."+mRetryCount,Toast.LENGTH_SHORT).show();
+        mHandler.sendEmptyMessageDelayed(RETRY_FETCH_CURRENT,3000);
     }
 
     private void dismissProgressDialog() {
@@ -189,6 +222,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeMessages(RETRY_FETCH_CURRENT);
         for(TabFrame tf:mTabFrames.values()){
             tf.onDestroy();
         }

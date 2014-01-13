@@ -20,7 +20,7 @@ public class QuitActivity extends BaseFragmentActivity implements View.OnClickLi
 
         findViewById(R.id.btnBack).setOnClickListener(this);
         findViewById(R.id.btnQuit).setOnClickListener(this);
-        ((TextView)findViewById(R.id.username)).setText(currentAccount.showName);
+        ((TextView)findViewById(R.id.username)).setText(getCurrentAccount().showName);
 
         hideQuitButton();
     }

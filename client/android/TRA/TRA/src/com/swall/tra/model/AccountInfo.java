@@ -8,10 +8,19 @@ public class AccountInfo {
     public String password;
     public String showName;
     public String encodeKey;
+    private long mTime;
+
     public AccountInfo(String userName,String password,String showName,String encodeKey){
         this.userName = userName;
         this.password = password;
         this.showName = showName;
         this.encodeKey = encodeKey;
+    }
+
+    public void setTime(long time) {
+        mTime = time;
+    }
+    public long getTime(){
+        return mTime;
     }
 }

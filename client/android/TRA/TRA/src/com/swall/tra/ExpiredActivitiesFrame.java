@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.swall.tra.adapter.ActivitiesListAdapter;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
@@ -25,7 +27,17 @@ public class ExpiredActivitiesFrame extends TabFrame implements AdapterView.OnIt
         mView = inflater.inflate(R.layout.activities_list,null);
 
 
-        mListView = (ListView)findViewById(R.id.listview);
+//        mListView = (ListView)findViewById(R.id.listview);
+        pullToRefreshListView = (PullToRefreshListView)findViewById(R.id.listview);
+        mListView = pullToRefreshListView.getRefreshableView();
+        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                app.doAction(ServiceManager.Constants.ACTION_GET_EXPIRED_ACTIVITIES, defaultRequestData, listListener);
+            }
+        });
+
+
         mAdapter = new ActivitiesListAdapter(getActivity());
         mListView.setAdapter(mAdapter);
 
@@ -34,9 +46,10 @@ public class ExpiredActivitiesFrame extends TabFrame implements AdapterView.OnIt
         listListener = new ActionListener(getActivity()) {
             @Override
             public void onReceive(int action, Bundle data) {
+                pullToRefreshListView.onRefreshComplete();
                 if(data == null){
                     // TODO
-                    // showEmptyOrShowError()
+//                    showEmptyOrShowError()
                     return;
                 }
                 String str = data.getString("result");
@@ -61,6 +74,7 @@ public class ExpiredActivitiesFrame extends TabFrame implements AdapterView.OnIt
     private ListView mListView;
     private ActivitiesListAdapter mAdapter;
     private ActionListener listListener;
+    private PullToRefreshListView pullToRefreshListView;
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {

@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.swall.tra.adapter.ActivitiesListAdapter;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
@@ -44,7 +46,16 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         mView = inflater.inflate(R.layout.activities_list,null);
 
 
-        mListView = (ListView)findViewById(R.id.listview);
+//        mListView = (ListView)findViewById(R.id.listview);
+        pullToRefreshListView = (PullToRefreshListView)findViewById(R.id.listview);
+        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                mHandler.sendEmptyMessage(MSG_REFRESH);
+            }
+        });
+
+        mListView = pullToRefreshListView.getRefreshableView();
         mAdapter = new ActivitiesListAdapter(getActivity());
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
@@ -52,6 +63,7 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         listListener = new ActionListener(getActivity()) {
             @Override
             public void onReceive(int action, Bundle data) {
+                pullToRefreshListView.onRefreshComplete();
                 if(data == null){
                     // TODO
                     showEmptyOrShowError();
@@ -86,6 +98,8 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         if(activity == null || activity.isFinishing()){
             return;
         }
+        Toast.makeText(getActivity(),"暂无数据，请稍后下拉刷新...",Toast.LENGTH_LONG).show();
+        /*
         mAutoRetryCount ++;
         if(RETRY_MAX > mAutoRetryCount){
             Toast.makeText(getActivity(),"暂无数据,5秒后重新刷新...",Toast.LENGTH_SHORT).show();
@@ -95,6 +109,7 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
             Toast.makeText(getActivity(),"无数据，请稍候再打开本程序",Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
+        */
     }
 
 
@@ -108,6 +123,7 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
     private ListView mListView;
     private ActivitiesListAdapter mAdapter;
     private ActionListener listListener;
+    private PullToRefreshListView pullToRefreshListView;
 
 
 

@@ -85,7 +85,7 @@ public class ActivitiesListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
     public void setJSONData(JSONArray array) {
-
+        infos.clear();
         BaseFragmentActivity activity = activityRef.get();
         String currentAccountName = activity.getCurrentAcccountName();
         for(int i=0;i<array.length();++i){

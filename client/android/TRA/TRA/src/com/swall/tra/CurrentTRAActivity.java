@@ -10,11 +10,14 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.*;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.swall.tra.adapter.ActivityResourceAdapter;
 import com.swall.tra.model.ResourceInfo;
 import com.swall.tra.model.TRAInfo;
@@ -50,6 +53,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private String mPicFilePath;
     private String mVedioFilePath;
     private ProgressDialog mUploadingDialog;
+    private PullToRefreshListView pullToRefreshListView;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +73,19 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
     private void initViews() {
         setContentView(R.layout.activity_current_tra);
-        mListView = (ListView)findViewById(R.id.listview);
+//        mListView = (ListView)findViewById(R.id.listview);
+        pullToRefreshListView = (PullToRefreshListView)findViewById(R.id.listview);
+        pullToRefreshListView.setPullToRefreshOverScrollEnabled(true);
+        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+//                Toast.makeText(CurrentTRAActivity.this,"pull down to refresh",Toast.LENGTH_SHORT).show();
+                fetchCurrentActivity();
+            }
+        });
+
+        mListView = pullToRefreshListView.getRefreshableView();
         mListView.setOnItemClickListener(this);
         mBtnQuit = findViewById(R.id.btnQuit);
         mTitleTips = (TextView)findViewById(R.id.title_tips);
@@ -160,14 +176,23 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
 
     private void fetchCurrentActivity() {
 
-        app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
+        boolean isSent = app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
             @Override
             public void onReceive(int action, Bundle data) {
                 String result = "";
                 if(data!=null)result = data.getString("result","");
+                pullToRefreshListView.onRefreshComplete();
                 dealWithData(result);
             }
         });
+        if(!isSent){
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    pullToRefreshListView.onRefreshComplete();
+                }
+            });
+        }
     }
 
     private void dealWithData(String str) {
@@ -450,7 +475,6 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         if(mQuitConfirmDialog == null){
             mQuitConfirmDialog = new CustomDialog(this);
             mQuitConfirmDialog.setCancelable(false);
-            mQuitConfirmDialog.setMessage("您确定要退出活动吗？");
             mQuitConfirmDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
                 @Override
@@ -466,6 +490,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 }
             });
         }
+        mQuitConfirmDialog.setMessage("您确定要退出活动吗？");
         mQuitConfirmDialog.show();
     }
 

@@ -18,7 +18,7 @@ import java.util.Map;
 public abstract class ActionService {
     protected static Map<String, String> sRequestCookies = new HashMap<String, String>();
     public static Map<String, String> getRequestHeaders(){
-        if(sRequestCookies.isEmpty()){
+        if(sRequestCookies.isEmpty() || TextUtils.isEmpty(sEncodeKey)){
             sRequestCookies.put(HttpHeaders.CACHE_CONTROL,"no-cache");
             sRequestCookies.put("Cookie","skey="+sEncodeKey);
         }
@@ -37,7 +37,7 @@ public abstract class ActionService {
     }
     public static void setEncodeKey(String encodeKey){
         sEncodeKey = encodeKey;
-        if(TextUtils.isEmpty(encodeKey)){
+        if(!TextUtils.isEmpty(encodeKey)){
             sRequestCookies.clear();
         }
     }
