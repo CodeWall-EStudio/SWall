@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import com.swall.tra.utils.AccountDatabaseHelper;
+import org.apache.http.HttpHeaders;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
@@ -18,6 +19,7 @@ public abstract class ActionService {
     protected static Map<String, String> sRequestCookies = new HashMap<String, String>();
     public static Map<String, String> getRequestHeaders(){
         if(sRequestCookies.isEmpty()){
+            sRequestCookies.put(HttpHeaders.CACHE_CONTROL,"no-cache");
             sRequestCookies.put("Cookie","skey="+sEncodeKey);
         }
         return sRequestCookies;
