@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.swall.tra.utils.JSONUtils;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
@@ -55,7 +56,7 @@ public class DataService extends ActionService{
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(!response.has("c")){
+                        if(!response.has("c") && JSONUtils.getInt(response,"c",-1) == 0){
                             notifyListener(action,null);
                             return;
                         }

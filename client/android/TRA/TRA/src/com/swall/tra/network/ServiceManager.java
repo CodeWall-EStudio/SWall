@@ -100,7 +100,11 @@ public class ServiceManager {
         }
 
         public static String getQuitUrl(String uid, String aid) {
-            String url = DATA_URL_PREFIX + String.format("activities/%s/participators/%s?uid=%s",aid,URLEncoder.encode(uid), URLEncoder.encode(uid));
+            String url = DATA_URL_PREFIX + String.format("activities/%s/participators/%s?uid=%s&t=%d",
+                    aid,
+                    URLEncoder.encode(uid),
+                    URLEncoder.encode(uid),
+                    System.currentTimeMillis());
             Log.w("Swall",url);
             return url;
         }

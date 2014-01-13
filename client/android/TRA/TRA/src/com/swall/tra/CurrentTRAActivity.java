@@ -477,9 +477,13 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             @Override
             public void onReceive(int action, Bundle data) {
 //                        fetchCurrentActivity();
-                mQuitConfirmDialog.dismiss();
-                gotoMainActivity();
 
+                mQuitConfirmDialog.dismiss();
+                if(data != null){
+                    gotoMainActivity();
+                }else{
+                    Toast.makeText(CurrentTRAActivity.this,"退出失败!",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

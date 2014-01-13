@@ -67,6 +67,9 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
         app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
             @Override
             public void onReceive(int action, Bundle data) {
+                if(isFinishing()){
+                    return;
+                }
                 dismissProgressDialog();
 
 

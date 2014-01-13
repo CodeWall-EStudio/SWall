@@ -25,7 +25,7 @@ public class MyVolley {
 
         // 使用 1/8 的可用内存为缓存
         int memClass = ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-        int cacheSize = memClass * 1024 * 1024 / 3;
+        int cacheSize = memClass * 1024 * 1024 / 8;
 
         int diskCaseSize = cacheSize * 10;
 
