@@ -4,7 +4,6 @@ var fs      = require('fs'),
     mongodb = require('mongodb'),
     _       = require('underscore')._,
     db      = require('./app_modules/db'),
-    user    = require('./app_modules/user').user,
     auth    = require('./app_modules/authentication').api,
     utf8    = require('./app_modules/utf8');
 
@@ -564,9 +563,10 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 临时的东东
+// 登錄與用戶相關
 
 
+//登錄
 app.put('/users/:uid/login', function(req, res){
     var uid = req.params['uid'],
         pwd = req.body['pwd'];
@@ -587,6 +587,30 @@ app.put('/users/:uid/login', function(req, res){
         }
     );
 });
+
+
+//獲取制定用戶的昵稱
+app.get('/users/:uid/profile', function(req, res){
+    var uid = req.params['uid'];
+    auth.getProfileOfUid(uid, function(err, reply){
+        if(err)         res.send(500);
+        else if(!reply) res.send(404);
+        else            res.json(200, JSON.parse(reply));
+    });
+});
+
+
+//獲取所有用戶的昵稱
+app.get('/users/profiles', function(req, res){
+    auth.fetchOrganizationTree(req.cookies['skey'], function(error, status, result){
+        if(!error && status == 200) res.json(200, result);
+        else res.json(500);
+    });
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 臨時的東東
 
 
 app.post('/resources', function(req, res){
