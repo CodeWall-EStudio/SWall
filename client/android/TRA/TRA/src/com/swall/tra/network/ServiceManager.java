@@ -77,7 +77,8 @@ public class ServiceManager {
             return LOGIN_URL;
         }
         public static String getPostResourceUrl(String aid, String uid){
-            String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s",aid,URLEncoder.encode(uid));//TODO
+            String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s&t=%d",aid,URLEncoder.encode(uid),
+                    System.currentTimeMillis());//TODO
             Log.w("SWall",url);
             return url;
         }
@@ -94,7 +95,8 @@ public class ServiceManager {
         }
 
         public static String getJoinUrl(String userName, String id) {
-            String url = DATA_URL_PREFIX + String.format("activities/%s/participators?uid=%s",id,URLEncoder.encode(userName));
+            String url = DATA_URL_PREFIX + String.format("activities/%s/participators?uid=%s&t=%d",id,URLEncoder.encode(userName),
+                    System.currentTimeMillis());
             Log.w("SWall", url);
             return url;
         }
@@ -111,15 +113,11 @@ public class ServiceManager {
 
 
         public static String getPostUrl(String uid,String activityId){
-            String url = DATA_URL_PREFIX + String.format("activity");
+            String url = DATA_URL_PREFIX + String.format("activity?t=%d",System.currentTimeMillis());
             return url;
         }
-        public static String getUploadedFilPath(String filePath) {
-            return DATA_URL_PREFIX +"resources/"+filePath;
-        }
-
         public static String getUploadUrl() {
-            return RESOURCE_MAIN_URL + "upload/";
+            return RESOURCE_MAIN_URL + String.format("upload/?t=%d",System.currentTimeMillis());
         }
 
         public static String getResourceUrl(long fid) {

@@ -154,7 +154,6 @@ public class UploadService extends ActionService {
                                 JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
                                 long fid = JSONUtils.getLong(resultData,"fid",0);
                                 String fullFilePath = ServiceManager.Constants.getResourceUrl(fid);
-//                                    String fullFilePath = ServiceManager.Constants.getUploadedFilPath(filePath);
                                     upload(action,
                                             type,
                                             fullFilePath,
