@@ -43,6 +43,7 @@ angular.module('ts.controllers.activityPanel', [
                 $scope.activity.info.date = dateToDatetimePickerValue(date);
                 datetimePicker.setAttribute('min', dateToDatetimePickerValue(now));
 
+                //初始化授權用戶
                 _.each($scope.activity.users.invitedUsers, function(item){
                     usersInput.tagsinput('add', item);
                 });
@@ -50,6 +51,11 @@ angular.module('ts.controllers.activityPanel', [
                 //show the panel's dom
                 $scope.showActivityPanel();
             });
+
+            function getNickForUid(uid){
+                var profile = $rootScope.profiles[uid];
+                return profile ? profile.nick + '(' + uid + ')' : uid;
+            }
 
             modal.on('hidden.bs.modal', function () {
                 //$scope.$apply(function(){

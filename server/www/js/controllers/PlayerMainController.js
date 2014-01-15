@@ -12,6 +12,7 @@ angular.module('ap.controllers.main', [
             $rootScope.rawResources = [];
             $rootScope.resources = [];
             $rootScope.presources = [];
+            $rootScope.profiles = {};
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
@@ -24,6 +25,13 @@ angular.module('ap.controllers.main', [
                     }, 100);
                 }
             });
+
+            $rootScope.uid2nick = function(uid){
+                if($rootScope.profiles[uid]){
+                    return $rootScope.profiles[uid].nick;
+                }
+                return uid;
+            };
 
             $scope.showResourceDetail = function(resource){
                 if(resource.type){
@@ -81,6 +89,7 @@ angular.module('ap.controllers.main', [
                     function(data, status){
                         console.log('[PlayerMainController] get activity success', status, data);
                         if(status == 200 && !data.c){
+                            $rootScope.profiles = data.profiles;
                             $rootScope.activity = data.r;
                             //processFetchedResources(data.r);
                             addFetchedResourcesToRootScope($rootScope.activity.resources);
@@ -98,7 +107,7 @@ angular.module('ap.controllers.main', [
                             }
                             else{
                                 //计算用户数
-                                var users = _.countBy($rootScope.selectedActivity.resources, function(resource){
+                                var users = _.countBy($rootScope.activity.resources, function(resource){
                                     return resource.user;
                                 });
                                 $rootScope.userCount = _.keys(users).length;

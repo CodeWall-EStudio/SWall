@@ -197,7 +197,20 @@ app.get('/activities', function(req, res){
             cursor.toArray(function(err, docs){
                 //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
                 if(err) res.json(500, {c:1, m:err.message});
-                else    res.json(200, {c:0, r:{activities:docs, more:hasMore}});
+                else{
+                    //獲取活動相關的用戶profile
+                    var allUids = [];
+                    _.each(docs, function(doc){
+                        allUids = _.union(allUids, getAllUidsOfActivity(doc));
+                    });
+                    auth.getProfilesOfUids(allUids, function(err, profiles){
+                        res.json(200, {c:0, r:{
+                            activities:docs,
+                            profiles: profiles,
+                            more:hasMore
+                        }});
+                    });
+                }
             });
         });
     });
@@ -223,26 +236,37 @@ app.get('/activities/config', function(req, res){
 app.get('/activities/:aid', function(req, res){
     auth.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
-            aid = new mongodb.ObjectID(req.params['aid']),
-            //找出特定id且是我創建的/我獲授權參與的/公開的
-            query = {
-                '_id': aid,
-                '$or': [
-                    {'users.creator': uid},
-                    {'users.invitedUsers': {'$in': ['*', uid]}}
-                ]
-            };
+            aid = new mongodb.ObjectID(req.params['aid']);
 
-        console.log('[server] find one document', query);
-        db.activityDataCollection.findOne(query, function(err, doc){
-            if(err) res.json(500, {c:1, m:err.message});
-            else{
-                if(!doc)    res.json(404, {c:0});
-                else        res.json(200, {c:0, r:doc});
-            }
+        getActivityByID(uid, aid, function(status, err, result){
+            res.json(status, result);
         });
     });
 });
+function getActivityByID(uid, aid, callback){
+    var query = {
+            '_id': aid,
+            '$or': [
+                {'users.creator': uid},
+                {'users.invitedUsers': {'$in': ['*', uid]}}
+            ]
+        };
+    console.log('[server] find one document', query);
+    db.activityDataCollection.findOne(query, function(err, doc){
+        if(!err){ //檢索活動沒錯誤
+            if(!doc){ //沒返回活動
+                callback(404, null, {c:0});
+            }
+            else { //有返回活動，繼續去拉取用戶信息
+                auth.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
+                    if(err) callback(500, err, {c:1, m:err.message}); //拉取用戶信息出錯
+                    else callback(200, null, {c:0, r:doc, profiles:profiles}); //正常
+                });
+            }
+        }
+        else callback(500, err, {c:1, m:err.message}); //檢索活動出錯
+    });
+}
 
 //删除活动
 app.delete('/activities/:aid', function(req, res){
@@ -334,9 +358,17 @@ app.put('/activities/:aid', function(req, res){
                 //最後更新一下這個活動
                 console.log('[server] update activity', updates);
                 //TODO 已经传入doc给findAndModify的话，应该就不会再搜索一次了吧？确定一下？
-                db.activityDataCollection.findAndModify(doc, null, {$set:updates}, {w:1, new:true}, function(err, doc){
+                /*db.activityDataCollection.findAndModify(doc, null, {$set:updates}, {w:1, new:true}, function(err, doc){
                     if(err) res.json(500, {c:1, m:err.message});
                     else    res.json(200, {c:0, r:doc});
+                });*/
+                db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){
+                    if(err) res.json(500, {c:1, m:err.message});
+                    else {
+                        getActivityByID(uid, aid, function(status, err, result){
+                            res.json(status, result);
+                        });
+                    }
                 });
             }
         });
@@ -381,10 +413,19 @@ app.post('/activities/:aid/participators', function(req, res){
             else if(doc)    res.json(403, {c:0}); //禁止同时加入多个活动
             else{
                 //好吧这用户还是挺老实的，我们现在把用户插到participators里
-                db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
+                /*db.activityDataCollection.findAndModify(findActivityQuery, null, updates, {w:1, new:true}, function(err, newDoc){
                     if(err)             res.json(500, {c:1, m:err.message});
                     else if(!newDoc)    res.json(401, {c:0});
                     else                res.json(201, {c:0, r:newDoc});
+                });*/
+                db.activityDataCollection.update(findActivityQuery, updates, {w:1}, function(err, count){
+                    if(err)         res.json(500, {c:1, m:err.message});
+                    else if(!count) res.json(401, {c:0});
+                    else {
+                        getActivityByID(uid, aid, function(status, err, result){
+                            res.json(status, result);
+                        });
+                    }
                 });
             }
         });
@@ -411,7 +452,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
         console.log('[server] quit activity', query);
         db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, newDoc){
             if(err)         res.json(500, {c:1, m:err.message});
-            else if(!newDoc)res.json(404, {c:0});
+            //else if(!newDoc)res.json(404, {c:0}); //p爺那邊希望用戶加沒加入活動，退出活動接口都一律返回200
             else            res.json(200, {c:0, r:newDoc});
         });
     });
@@ -449,10 +490,19 @@ app.post('/activities/:aid/resources', function(req, res){
                 updates = {'$push':{'resources':resource}};
 
             //找出活动并添加资源
-            db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, newDoc){
+            /*db.activityDataCollection.findAndModify(query, null, updates, {w:1, new:true}, function(err, newDoc){
                 if(err)         res.json(500, {c:1, m:err.message});
                 else if(!newDoc)res.json(404, {c:0});
                 else            res.json(201, {c:0, r:newDoc});
+            });*/
+            db.activityDataCollection.update(query, updates, {w:1}, function(err, count){
+                if(err)         res.json(500, {c:1, m:err.message});
+                else if(!count) res.json(404, {c:0});
+                else {
+                    getActivityByID(uid, aid, function(status, err, result){
+                        res.json(status, result);
+                    });
+                }
             });
         }
         else res.json(400, {c:20000, m:'Require Content'});
@@ -589,13 +639,13 @@ app.put('/users/:uid/login', function(req, res){
 });
 
 
-//獲取制定用戶的昵稱
+//獲取指定用戶的昵稱
 app.get('/users/:uid/profile', function(req, res){
     var uid = req.params['uid'];
     auth.getProfileOfUid(uid, function(err, reply){
         if(err)         res.send(500);
         else if(!reply) res.send(404);
-        else            res.json(200, JSON.parse(reply));
+        else            res.json(200, reply);
     });
 });
 
@@ -638,6 +688,16 @@ app.get('/resources/:filename', function(req, res){
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function getAllUidsOfActivity(activity){
+    return _.union(
+        [activity.users.creator], //創建者
+        activity.users.participators, //參與者
+        _.without(activity.users.invitedUsers, '*'), //除去*後的所有受邀者
+        _.pluck(activity.resources, 'user') //所有上傳過資源的用戶
+    );
+}
 
 
 app.listen(PORT);

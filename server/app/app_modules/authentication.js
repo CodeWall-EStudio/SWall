@@ -155,9 +155,23 @@ fetchOrganizationTreeEveryHour();
 
 
 function getProfileOfUid(uid, callback){
-    redisClient.get(uid, callback);
+    redisClient.get(uid, function(err, reply){
+        var json = reply ? JSON.parse(reply) : null;
+        callback(err, json);
+    });
 }
-
+function getProfilesOfUids(uids, callback){
+    if(!uids || !uids.length) callback(null, []);
+    else{
+        redisClient.mget(uids, function(err, reply){
+            var parsedProfiles = _.reduce(_.object(uids, reply), function(profiles, item, uid){
+                if(item) profiles[uid] = JSON.parse(item);
+                return profiles;
+            }, {});
+            callback(err, parsedProfiles);
+        });
+    }
+}
 
 function post(api, body, onData, onError){
     var options = {
@@ -190,5 +204,6 @@ exports.api = {
     verifyEncodeKey:            verifyEncodeKey,
     response401IfUnauthoirzed:  response401IfUnauthoirzed,
     fetchOrganizationTree:      fetchOrganizationTree,
-    getProfileOfUid:            getProfileOfUid
+    getProfileOfUid:            getProfileOfUid,
+    getProfilesOfUids:          getProfilesOfUids
 };
