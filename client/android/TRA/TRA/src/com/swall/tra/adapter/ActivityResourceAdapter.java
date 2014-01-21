@@ -17,6 +17,7 @@ import com.swall.tra.network.ActionService;
 import com.swall.tra.network.MyVolley;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.DateUtil;
+import com.swall.tra.utils.JSONUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -158,8 +159,9 @@ public class ActivityResourceAdapter extends BaseAdapter {
 */
 
         public void update(ResourceInfo item) {
-
-            name.setText(item.user);
+            JSONObject profile = JSONUtils.getJSONObject(mInfo.profilesObject, item.user, new JSONObject());
+            String showName = JSONUtils.getString(profile,"nick",item.user);
+            name.setText(showName);
             dateTime.setText(DateUtil.getDisplayTime(item.date,true));
             if(item.type  == ITEM_TYPE_TEXT){
                 textView.setVisibility(View.VISIBLE);

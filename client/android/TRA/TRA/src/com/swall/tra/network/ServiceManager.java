@@ -29,7 +29,7 @@ public class ServiceManager {
     public static class Constants{
 
 
-        public static final long MAX_LOGIN_EXPIRED_TIME = 1000 * 20;//23 * 60 * 60 * 1000;
+        public static final long MAX_LOGIN_EXPIRED_TIME = 23 * 60 * 60 * 1000;
         // TODO 此处不应该可改，仅为环境配置临时使之可改
         public static String RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
         public static String DATA_URL_PREFIX = "http://115.28.55.91:8080/";

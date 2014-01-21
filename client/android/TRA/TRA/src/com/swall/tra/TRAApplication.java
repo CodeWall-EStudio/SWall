@@ -78,6 +78,11 @@ public class TRAApplication extends Application {
     public boolean doAction(final int action,final Bundle data,final ActionListener listener){
         if(mAccountInfo != null &&
                 System.currentTimeMillis() - mAccountInfo.getTime() > ServiceManager.Constants.MAX_LOGIN_EXPIRED_TIME){
+            Toast.makeText(getApplicationContext(),"登录失败，请重新登录",Toast.LENGTH_LONG).show();
+            updateCurrentAccount(null);
+            startActivity(new Intent(getApplicationContext(),LoginActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            /*
             if(reloginingToast != null){
                 reloginingToast.cancel();
             }else{
@@ -105,6 +110,7 @@ public class TRAApplication extends Application {
                     }
                 });
             }
+            */
             return false;
         }else{
             return mServiceManager.doAction(action,data,listener);
@@ -117,8 +123,7 @@ public class TRAApplication extends Application {
         super.onCreate();
         initServices();
         initVolley();
-
-
+        updateCurrentAccount(getCachedAccount());
     }
 
     private void initVolley() {

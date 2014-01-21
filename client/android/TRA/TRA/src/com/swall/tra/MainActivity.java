@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TabHost;
@@ -117,7 +118,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     };
     private void retryFetchCurrentActivity() {
         mRetryCount ++ ;
-        if(mRetryCount > 4){
+        if(mRetryCount >= 4){
             Toast.makeText(this,"网络不可用，请检查网络连接",Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -133,11 +134,17 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     private boolean gotoCurrentTRAInfo(JSONObject object) {
         JSONObject resultObject = JSONUtils.getJSONObject(object,"r",null);
         if(resultObject != null){
+            JSONObject profiles = JSONUtils.getJSONObject(resultObject,"profiles",new JSONObject());
             JSONArray activities = JSONUtils.getJSONArray(resultObject,"activities",new JSONArray());
             if(activities.length() > 0){
                 JSONObject activity = JSONUtils.arrayGetJSONObject(activities,0);
                 if(activity == null){
                     return false;
+                }
+                try {
+                    activity.put("profiles",profiles);
+                } catch (JSONException e) {
+                    Log.e(TAG,"put profile failed ");
                 }
                 Intent i = new Intent(this, CurrentTRAActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);

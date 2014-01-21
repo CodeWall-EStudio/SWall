@@ -20,6 +20,7 @@ public class ResourceInfo {
     public String comment;  //应该不需要使用
     public long date;        // 创建时间
     public String resourceId;   // id
+    public String userName;
     public ResourceInfo(JSONObject object){
         user = JSONUtils.getString(object,"user","");
         activity = JSONUtils.getString(object,"activity","");

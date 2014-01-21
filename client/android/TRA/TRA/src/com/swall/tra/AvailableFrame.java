@@ -78,8 +78,8 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
                     JSONObject obj = new JSONObject(str);
                     JSONObject resultObject = JSONUtils.getJSONObject(obj, "r", new JSONObject());
 
-                    JSONArray array = JSONUtils.getJSONArray(resultObject, "activities", new JSONArray());
-                    mAdapter.setJSONData(array);
+//                    JSONArray array = JSONUtils.getJSONArray(resultObject, "activities", new JSONArray());
+                    mAdapter.setJSONData(resultObject);
                 } catch (JSONException e) {
                     // DO nothing
                     e.printStackTrace();

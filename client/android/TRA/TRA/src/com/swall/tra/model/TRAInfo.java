@@ -19,6 +19,7 @@ import java.util.Map;
  * TRA : Teaching and Researching Activity
  */
 public class TRAInfo {
+    public JSONObject profilesObject;
     public int type;
     private String mJsonString;
     private String mResourceDesc; //  xx人参与，10条文字，5张图片，3段视频，4段录音
@@ -35,8 +36,8 @@ public class TRAInfo {
     public long beginDate;
     public long createDate;
     public String teacher;
-    public int grade;
-    public int _class;
+    public String grade;
+    public String _class;
     public String subject;
     public String domain;
 
@@ -74,14 +75,16 @@ public class TRAInfo {
 
     /**
      *
-     * @param object
+     * @param activitiesObject
      */
 
-    public TRAInfo(JSONObject object){
+    public TRAInfo(JSONObject activitiesObject){
+
+        profilesObject = JSONUtils.getJSONObject(activitiesObject,"profiles",new JSONObject());
 
         mJoined = false;
 
-        JSONObject userObject = JSONUtils.getJSONObject(object,"users",new JSONObject());
+        JSONObject userObject = JSONUtils.getJSONObject(activitiesObject,"users",new JSONObject());
 
         creator = JSONUtils.getString(userObject,"creator","admin");
         JSONArray participatorArray = JSONUtils.getJSONArray(userObject,"participators",new JSONArray());
@@ -89,7 +92,7 @@ public class TRAInfo {
         JSONArray invitedUserArray = JSONUtils.getJSONArray(userObject,"invitedUsers",new JSONArray());
         invitedUsers = JSONUtils.JSONStringArrayToStringArray(invitedUserArray);
 
-        JSONArray resourceArray = JSONUtils.getJSONArray(object,"resources",new JSONArray());
+        JSONArray resourceArray = JSONUtils.getJSONArray(activitiesObject, "resources", new JSONArray());
         for(int i=0;i<resourceArray.length();++i){
             JSONObject resourceObject = JSONUtils.arrayGetJSONObject(resourceArray,i);
             if(resourceObject != null){
@@ -97,25 +100,27 @@ public class TRAInfo {
             }
         }
 
-        activeStatus = JSONUtils.getBoolean(object,"active",true);
-        id = JSONUtils.getString(object, "_id", "");
+        activeStatus = JSONUtils.getBoolean(activitiesObject,"active",true);
+        id = JSONUtils.getString(activitiesObject, "_id", "");
 
-        JSONObject infoObject = JSONUtils.getJSONObject(object,"info",new JSONObject());
+        JSONObject infoObject = JSONUtils.getJSONObject(activitiesObject,"info",new JSONObject());
 
         title = JSONUtils.getString(infoObject,"title","公开课");
         desc = JSONUtils.getString(infoObject,"desc","");
         createDate = JSONUtils.getLong(infoObject, "createDate", 0l);
         beginDate = JSONUtils.getLong(infoObject, "date", (new Time().toMillis(false) / 1000));;
         teacher = JSONUtils.getString(infoObject, "teacher", "待定");
-        _class = JSONUtils.getInt(infoObject,"class",1);
-        grade = JSONUtils.getInt(infoObject,"grade",1);
+        _class = JSONUtils.getString(infoObject,"class","");
+        grade = JSONUtils.getString(infoObject,"grade","");
+//        _class = JSONUtils.getInt(infoObject,"class",1);
+//        grade = JSONUtils.getInt(infoObject,"grade",1);
         subject = JSONUtils.getString(infoObject,"subject","");
         domain = JSONUtils.getString(infoObject, "domain", "");
         type = JSONUtils.getInt(infoObject,"type",1);
 
 
 
-        mJsonString = object.toString();
+        mJsonString = activitiesObject.toString();
         mTimeFormatted = DateUtil.getDisplayTime(beginDate,true);
 
         // init resrouce desc
@@ -134,7 +139,7 @@ public class TRAInfo {
                 "活动简介 : %s " +
                         "\n\n出课教师 : %s " +
                         "\n学科 : %s " +
-                        "\n年级 : %s年级" +
+                        "\n年级 : %s" +
                         "\n班级 : %s " +
                         "\n课题 : %s \n" +
                         "\n用户 : %d 位参与者" +
@@ -142,8 +147,11 @@ public class TRAInfo {
                 desc,
                 teacher,
                 subject,
-                getNumberString(grade),
-                getNumberString(grade,_class),
+                grade,
+                _class,
+//                getNumberString(grade),
+//                getNumberString(grade,_class),
+
                 domain,
                 participators.size(),
                 caculateResourceDesc(resources,"\n\t\t")

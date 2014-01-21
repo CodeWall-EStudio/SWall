@@ -70,26 +70,26 @@ public class ActivitiesListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setJSONData(String json) {
-        try {
-            setJSONData(new JSONArray(json));
-        } catch (JSONException e) {
-            // do nothing?
-            Log.e("JSON", "error", e);
-            // TODO report
-        }
-    }
 
     public void addTRAInfo(JSONObject object){
         infos.add(new TRAInfo(object));
         notifyDataSetChanged();
     }
-    public void setJSONData(JSONArray array) {
+    public void setJSONData(JSONObject sourceObject) {
+        JSONObject profiles = JSONUtils.getJSONObject(sourceObject,"profiles",new JSONObject());
+        JSONArray array = JSONUtils.getJSONArray(sourceObject,"activities",new JSONArray());
         infos.clear();
         BaseFragmentActivity activity = activityRef.get();
         String currentAccountName = activity.getCurrentAcccountName();
         for(int i=0;i<array.length();++i){
             JSONObject object = JSONUtils.arrayGetJSONObject(array, i);
+
+            try {
+                object.put("profiles",profiles);
+            } catch (JSONException e) {
+                Log.i("TRA","activitiesListAdapter put profiles failed");
+            }
+
             if(object != null){
                 TRAInfo info = new TRAInfo(object);
 

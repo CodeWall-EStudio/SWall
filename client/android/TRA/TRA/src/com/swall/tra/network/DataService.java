@@ -7,6 +7,7 @@ import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.swall.tra.utils.JSONUtils;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -165,7 +166,22 @@ public class DataService extends ActionService{
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO 分别处理网络错误
-                        notifyListener(action,null,listener);
+
+                        String str = error.toString();
+                        Log.e(TAG,action+" error:"+str,error);
+                        try{
+                            JSONObject response = new JSONObject(str);
+                            if(!response.has("r") ||  !response.has("c")){
+                                notifyListener(action,null,listener);
+                                return;
+                            }
+                            Bundle result = new Bundle();
+                            result.putString("result",response.toString());
+                            notifyListener(action,result,listener);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            notifyListener(action,null,listener);
+                        }
                     }
                 }
         );

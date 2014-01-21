@@ -204,10 +204,16 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             if(object.has("r")){
                 object = JSONUtils.getJSONObject(object, "r", new JSONObject());
                 JSONArray array = JSONUtils.getJSONArray(object,"activities",new JSONArray());
+                JSONObject profiles = JSONUtils.getJSONObject(object,"profiles",new JSONObject());
                 if(array.length() < 1){
                     return;
                 }else{
                     object = JSONUtils.arrayGetJSONObject(array,0);
+                    try{
+                        object.put("profiles",profiles);
+                    }catch (JSONException e){
+                        // do nothing
+                    }
                 }
             }
             mInfo = new TRAInfo(object);
@@ -507,7 +513,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 if(data != null){
                     gotoMainActivity();
                 }else{
-                    Toast.makeText(CurrentTRAActivity.this,"退出失败!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CurrentTRAActivity.this,"退出活动失败!",Toast.LENGTH_SHORT).show();
                 }
             }
         });
