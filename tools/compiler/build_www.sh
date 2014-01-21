@@ -4,8 +4,7 @@ JS_COMPILER=closure_compiler.jar
 CSS_COMPILER=closure-stylesheets.jar
 WWW_DIR=../../server/www
 
-java -jar $JS_COMPILER --js $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput.js \
-					   --js $WWW_DIR/js/utils/Constants.js \
+java -jar $JS_COMPILER --js $WWW_DIR/js/utils/Constants.js \
 					   --js $WWW_DIR/js/services/UtilsService.js \
 					   --js $WWW_DIR/js/services/UserService.js \
 					   --js $WWW_DIR/js/services/ActivityService.js \

@@ -1,6 +1,6 @@
 angular.module('ts.utils.constants', [])
     //env
-    .constant('BACKEND_SERVER', location.hostname == 'localhost' ? 'http://localhost:8080' : '')
+    .constant('BACKEND_SERVER', location.hostname == 'localhost' ? 'http://localhost:8090' : '')
 
     //event
     .constant('EVENT_LOGIN', 'event.login') //登录结果

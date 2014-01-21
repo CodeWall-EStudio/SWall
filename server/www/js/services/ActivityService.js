@@ -9,6 +9,7 @@ angular.module('ts.services.activity', [
         {
             var fieldset = document.getElementById('activityDetailButtons');
 
+            $rootScope.profiles = {};
             $rootScope.activityList = [];
             $rootScope.activityMap = {};
             $rootScope.selectedActivity = null;
@@ -62,6 +63,8 @@ angular.module('ts.services.activity', [
                 $http.get(BACKEND_SERVER + '/activities', {responseType:'json', params:params})
                     .success(function(data, status){
                         if(status === 200 && !data.c){
+                            $rootScope.profiles = data.r.profiles;
+
                             //处理活动列表
                             //CGI返回的活动列表 => [Activity, ...]
                             //按日期分组活动 => {date1:[Activity, ...], date2:[...]}
