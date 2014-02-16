@@ -91,7 +91,7 @@
                                    ng-repeat="activity in item.activities"
                                    ng-class="{active:selectedActivityID==activity._id}"
                                    ng-click="selectActivity(activity._id)">
-                                    {{activity.info.title}}
+                                    {{activity.info.title}} {{activity.info.date | date:'H:mm'}}
                                 </a>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
             <!-- 活動詳情 -->
             <div class="col-sm-8" id="activityDetailWrapper" ng-controller="ActivityDetailController">
                 <div id="activityDetail" ng-show="selectedActivity">
-                    <h3>{{selectedActivity.info.title}}</h3>
+                    <h3>{{selectedActivity.info.title}} {{selectedActivity.info.date | date:'H:mm'}}</h3>
                     <p>状态：{{selectedActivity.active ? '开放' : '关闭'}}的活动</p>
                     <p>
                         <form>
@@ -117,6 +117,8 @@
                             </fieldset>
                         </form>
                     </p>
+                    <p>活动创建人：{{profiles[selectedActivity.users.creator].nick}}</p>
+                    <br/>
                     <p ng-switch on="selectedActivity.info.type">
                         活动类型：
                         <span ng-switch-when="1">公开课</span>
@@ -130,8 +132,14 @@
                     <p>班级：{{selectedActivity.info.grade}}{{selectedActivity.info.class}}</p>
                     <p>课题：{{selectedActivity.info.domain}}</p>
                     <br/>
-                    <p>用户：{{userCount()}}位参与者</p>
-                    <p>资源：共{{selectedActivity.resources.length}}个资源</p>
+                    <p ng-show="selectedActivity.active">当前在线用户：{{participatorCount()}}位</p>
+                    <p>参与用户总数：{{uploadedUserCount()}}位</p>
+                    <!--<p>用户：{{userCount()}}位参与者</p>-->
+                    <br/>
+                    <p>资源总数：共{{selectedActivity.resources.length}}个</p>
+                    <p ng-show="selectedActivity.resources.length">
+                        资源明细：{{resourceCount(0)}}段文字, {{resourceCount(1)}}张图片, {{resourceCount(2)}}段视频
+                    </p>
                 </div>
             </div>
         </div>
@@ -247,6 +255,7 @@
                                     <div class="col-sm-10">
                                         <input type="text" id="na_users" data-role="tagsinput"
                                                ng-model="invitedUsers">
+                                        <div class="alert alert-info">输入用户登录名后回车向列表添加用户，输入*后回车表示设定该活动为公开活动。</div>
                                     </div>
                                 </div>
                             </fieldset>

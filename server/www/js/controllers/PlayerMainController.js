@@ -11,8 +11,9 @@ angular.module('ap.controllers.main', [
             $rootScope.userCount = 0;
             $rootScope.rawResources = [];
             $rootScope.resources = [];
-            $rootScope.presources = [];
+            $rootScope.presources = []; //previewable resources
             $rootScope.profiles = {};
+            $scope.selectedUser = null;
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
@@ -58,6 +59,54 @@ angular.module('ap.controllers.main', [
                     ++ $scope.selectedRIndex;
                     $scope.selectedResource = $rootScope.presources[$scope.selectedRIndex];
                 }
+            };
+
+            $scope.filterByUser = function(uid){
+                $scope.selectedUser = uid;
+
+                $('.resourceGroup').css('display', 'none');
+                setTimeout(function(){
+                    //刷新webkit box的高度
+                    $('.resourceGroup').css('display', '-webkit-box');
+                    $scope.$digest();
+                    refreshAllNextItemLineHeight();
+                }, 0);
+            };
+
+            $scope.nextLineHeight = function(gindex, rindex){
+                if(rindex){
+                    var el = $('.resourceItem[data-gindex="' + gindex + '"][data-rindex="' + rindex + '"]'),
+                        height = el.outerHeight();
+                    return height ? height - 3 : 0;
+                }
+                return 0;
+            };
+
+            $scope.isFirstResourceInGroup = function(gindex, rindex){
+                if(rindex == 0) return true;
+                else {
+                    //找出当前的资源节点
+                    var selector = '.resourceItem[data-gindex="' + gindex + '"][data-rindex="' + rindex + '"]',
+                        resourceEl = document.querySelector(selector);
+                    if(resourceEl){
+                        //找出其父节点和第一个可见的子节点
+                        var groupEl = resourceEl.parentElement,
+                            firstResourceEl = groupEl.querySelectorAll('.resourceItem:not(.ng-hide)')[0];
+                        return resourceEl == firstResourceEl;
+                    }
+                    return false;
+                }
+            };
+
+            $scope.resourceShouldBeVisible = function(resource){
+                return (!$scope.selectedUser || $scope.selectedUser == resource.user);
+            };
+
+            $scope.groupContainsResourceOfSelectedUser = function(group){
+                if(!$scope.selectedUser) return true;
+                return _.some(group.resources, function(resource){
+                    return resource.user == $scope.selectedUser;
+                });
             };
 
             $scope.hideResourceDetail = function(){
@@ -160,7 +209,7 @@ angular.module('ap.controllers.main', [
                 console.log('presources', $rootScope.presources);
             }
 
-            function processFetchedResources(activity){
+            /*function processFetchedResources(activity){
                 activity.resources.reverse();
                 //rawResources = [resource1, resource2, ...]
                 $rootScope.rawResources = activity.resources;
@@ -180,10 +229,37 @@ angular.module('ap.controllers.main', [
                 $rootScope.presources = _.filter($rootScope.rawResources, function(resource){
                     return resource.type == 1 || resource.type == 2;
                 });
-            }
+            }*/
 
             window.rs = $rootScope;
 
             getActivity();
         }
     ]);
+
+
+
+function onImgLoad(e){
+    var img = e.target,
+        item = $(img).parents('.resourceItem')[0],
+        gindex = parseInt(item.getAttribute('data-gindex')),
+        rindex = parseInt(item.getAttribute('data-rindex'));
+    updateNextItemLineHeight(gindex, rindex);
+}
+
+function updateNextItemLineHeight(gindex, rindex){
+    var thisResourceItem = $('.resourceItem[data-gindex="' + gindex + '"][data-rindex="' + rindex + '"]'),
+        nextLine = $('.resourceItem[data-gindex="' + gindex + '"][data-rindex="' + (rindex+1) + '"] .nextLine'),
+        thisHeight = thisResourceItem.outerHeight();
+    if(nextLine.length){
+        nextLine.height(thisHeight - 3);
+    }
+}
+
+function refreshAllNextItemLineHeight(){
+    _.each(rs.resources, function(group, g){
+        _.each(group.resources, function(item, r){
+            if(item.type !== 0) updateNextItemLineHeight(g, r);
+        });
+    })
+}

@@ -54,7 +54,7 @@
                 <span ng-hide="activity.active">共{{userCount}}位参与者</span>
             </p>
             <p>资源：共上传{{activity.resources.length}}个资源</p>
-            <p>活动简介：{{activity.info.desc}}</p>
+            <p style="max-height:4.2em; overflow:hidden;">活动简介：{{activity.info.desc}}</p>
         </div>
     </div>
 
@@ -64,9 +64,12 @@
         <div class="col-sm-2 sidebar">
             <!-- 参与活动的用户列表 -->
             <div class="userlist full">
-                用户：
                 <ul>
-                    <li ng-repeat="uid in activity.users.participators">{{uid2nick(uid)}}</li>
+                    <li ng-class="{selected: !selectedUser}"
+                        ng-click="filterByUser()">所有用户</li>
+                    <li ng-class="{selected: selectedUser==uid}"
+                        ng-repeat="uid in activity.users.participators"
+                        ng-click="filterByUser(uid)">{{uid2nick(uid)}}</li>
                 </ul>
             </div>
             <!-- 统计信息入口 -->
@@ -86,18 +89,24 @@
         <!-- 时间线和资源列表 -->
         <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
             <!-- 按时间（同一分钟内）分组资源 -->
-            <div class="resourceGroup" ng-repeat="group in resources" ng-init="$groupIndex=$index">
+            <div class="resourceGroup"
+                 ng-show="groupContainsResourceOfSelectedUser(group)"
+                 ng-repeat="group in resources"
+                 ng-init="$groupIndex=$index">
                 <div class="time">
-                    <div class="hhmm">{{group.ts | date:'hh:mm'}}</div>
+                    <div class="hhmm">{{group.ts | date:'HH:mm'}}</div>
                     <div class="ymd">{{group.ts | date:'yyyy-MM-dd'}}</div>
                 </div>
                 <div class="resource">
                     <div class="line"></div>
-                    <div class="resourceItem" ng-repeat="resource in group.resources"
+                    <div class="resourceItem" data-gindex="{{$groupIndex}}" data-rindex="{{$resourceIndex}}"
+                         ng-repeat="resource in group.resources"
+                         ng-init="$resourceIndex=$index"
+                         ng-show="resourceShouldBeVisible(resource)"
                          ng-click="showResourceDetail(resource)"
                          ng-switch on="resource.type">
                         <div class="thumb imageThumb" ng-switch-when="1">
-                            <img ng-src="{{resource.content}}">
+                            <img ng-src="{{resource.content}}" onload="onImgLoad(event)">
                         </div>
                         <div class="thumb videoThumb" ng-switch-when="2"></div>
                         <div class="content">
@@ -109,6 +118,9 @@
                             <div class="textContent" ng-show="resource.type==0">{{resource.content}}</div>
                             <div class="comment">{{resource.comment}}</div>
                         </div>
+                        <div class="nextLine"
+                             ng-hide="isFirstResourceInGroup($groupIndex, $resourceIndex)"
+                             style="height:{{nextLineHeight($groupIndex, $resourceIndex)}}px"></div>
                     </div>
                 </div>
             </div>
@@ -135,7 +147,7 @@
                         <div>
                             <span ng-switch-when="1">图片</span>
                             <span ng-switch-when="2">视频</span>
-                            <span>{{selectedResource.user}}</span>
+                            <span>{{uid2nick(selectedResource.user)}}</span>
                         </div>
                         <div>{{selectedResource.comment}}</div>
                     </div>

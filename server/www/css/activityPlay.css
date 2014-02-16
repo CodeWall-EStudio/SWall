@@ -50,6 +50,12 @@ body{
 #mainContent .userlist{
     padding: 10px;
 }
+#mainContent .userlist li{
+    cursor: pointer;
+}
+#mainContent .userlist li.selected{
+    color: #1C92F8;
+}
 #mainContent .stat{
     height: 200px;
     border-top: 1px solid rgb(211,214,218);
@@ -104,9 +110,19 @@ body{
     border-top: 3px dotted rgb(36,74,134);
 }
 #timeline .resourceItem{
+    position: relative;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
     padding: 10px 0;
+}
+#timeline .resourceItem .nextLine{
+    position: absolute;
+    width: 20px;
+    left: -30px;
+    bottom: 60px;
+    border: 3px dotted #244a86;
+    border-top: none;
+    border-right: none;
 }
 #timeline .thumb{
     border-radius: 6px;

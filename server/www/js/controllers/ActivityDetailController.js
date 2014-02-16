@@ -8,14 +8,38 @@ angular.module('ts.controllers.activityDetail', [
             $scope.userCount = function(){
                 if($rootScope.selectedActivity){
                     if($rootScope.selectedActivity.active){
-                        return $rootScope.selectedActivity.users.participators.length;
+                        //如果是开放的活动，则返回当前正在参与活动的用户数量
+                        return $scope.participatorCount();
                     }
                     else{
-                        var users = _.countBy($rootScope.selectedActivity.resources, function(resource){
-                            return resource.user;
-                        });
-                        return _.keys(users).length;
+                        //否则返回上传过资源的用户总数
+                        return $scope.uploadedUserCount();
                     }
+                }
+                return 0;
+            };
+
+            $scope.participatorCount = function(){
+                var a = $rootScope.selectedActivity;
+                return (a && a.active) ? a.users.participators.length : 0;
+            };
+
+            $scope.uploadedUserCount = function(){
+                if($rootScope.selectedActivity){
+                    var users = _.countBy($rootScope.selectedActivity.resources, function(resource){
+                        return resource.user;
+                    });
+                    return _.keys(users).length;
+                }
+                return 0;
+            };
+
+            $scope.resourceCount = function(type){
+                if($rootScope.selectedActivity && $rootScope.selectedActivity.resources){
+                    return _.reduce($rootScope.selectedActivity.resources, function(count, resource){
+                        if(resource.type == type) count += 1;
+                        return count;
+                    }, 0);
                 }
                 return 0;
             };

@@ -330,7 +330,7 @@ app.put('/activities/:aid', function(req, res){
                 if(doc.active){
                     if(status == 'closed'){
                         updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
-                        updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去 TODO 确认一下是不是有这个逻辑
+                        updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
                     }
 
                     if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
