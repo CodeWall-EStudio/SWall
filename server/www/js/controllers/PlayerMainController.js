@@ -9,6 +9,7 @@ angular.module('ap.controllers.main', [
 
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
+            $rootScope.uploadedUsers = []; //上傳過資源的用戶
             $rootScope.rawResources = [];
             $rootScope.resources = [];
             $rootScope.presources = []; //previewable resources
@@ -180,10 +181,9 @@ angular.module('ap.controllers.main', [
                     localLatestTs = localLatestGroup ? localLatestGroup.resources[0].date : 0,
                     newResources = _.filter(resources, function(resource){ return resource.date > localLatestTs; });
                 console.log('new resources', newResources);
-
-                //把新资源插入到按分钟分组的资源分组里
-                for(var i=0; i<newResources.length; ++i){
-                    //计算新资源的时间戳（以每分钟为单位）
+                for(var i=0; i<newResources.length; ++i)
+                {
+                    //计算新资源的时间戳（以每分钟为单位），把新资源插入到按分钟分组的资源分组里
                     var r = newResources[i],
                         d = new Date(r.date);
                     d.setSeconds(0);
@@ -199,37 +199,22 @@ angular.module('ap.controllers.main', [
                         $rootScope.resources.splice(0, 0, {ts:ts, resources:[r]});
                     }
 
-                    //另外单独过滤出图片和视频这些可以预览大图的资源，用来做上下翻页
+                    //单独过滤出图片和视频这些可以预览大图的资源，用来做上下翻页
                     if(r.type == 1 || r.type == 2){
                         $rootScope.presources.splice(0, 0, r);
                     }
+
+                    //取出上傳資源的用戶
+                    if($rootScope.uploadedUsers.indexOf(r.user) == -1){
+                        $rootScope.uploadedUsers.push(r.user);
+                        //TODO 排序？
+                    }
                 }
+
 
                 console.log('resources', $rootScope.resources);
                 console.log('presources', $rootScope.presources);
             }
-
-            /*function processFetchedResources(activity){
-                activity.resources.reverse();
-                //rawResources = [resource1, resource2, ...]
-                $rootScope.rawResources = activity.resources;
-                //resources = [{ts:int, resources:[...]}, ...]
-                $rootScope.resources = _.map(
-                    _.groupBy($rootScope.rawResources, function(resource){
-                        var date = new Date(resource.date);
-                        date.setSeconds(0);
-                        date.setMilliseconds(0);
-                        return date.getTime();
-                    }),
-                    function(resources, ts){
-                        return {ts:ts, resources:resources};
-                    }
-                );
-                //另外单独过滤过图片和视频这些可以预览大图的资源，用来做上下翻页用
-                $rootScope.presources = _.filter($rootScope.rawResources, function(resource){
-                    return resource.type == 1 || resource.type == 2;
-                });
-            }*/
 
             window.rs = $rootScope;
 
@@ -238,6 +223,7 @@ angular.module('ap.controllers.main', [
     ]);
 
 
+//圖片加載完成後，更新折線高度用的 //////////////////////////////////////////////////////////////////////////////////////////
 
 function onImgLoad(e){
     var img = e.target,

@@ -73,7 +73,7 @@ body{
     position: relative;
     overflow-x: hidden;
     overflow-y: scroll;
-    width: 82%;
+    /*width: 82%;*/
 }
 #timeline .resourceGroup{
     display: -webkit-box;
@@ -151,6 +151,10 @@ body{
 }
 #timeline .comment{
     color: #999;
+}
+
+#mainVideos{
+    border-left: 1px solid #d3d6da;
 }
 
 #preview{

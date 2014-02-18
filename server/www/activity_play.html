@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140112001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140219001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -68,7 +68,7 @@
                     <li ng-class="{selected: !selectedUser}"
                         ng-click="filterByUser()">所有用户</li>
                     <li ng-class="{selected: selectedUser==uid}"
-                        ng-repeat="uid in activity.users.participators"
+                        ng-repeat="uid in uploadedUsers"
                         ng-click="filterByUser(uid)">{{uid2nick(uid)}}</li>
                 </ul>
             </div>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <!-- 时间线和资源列表 -->
-        <div class="col-sm-11" id="timeline" ng-class="{min:selectedResource}">
+        <div class="col-sm-8" id="timeline" ng-class="{min:selectedResource}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup"
                  ng-show="groupContainsResourceOfSelectedUser(group)"
@@ -125,6 +125,8 @@
                 </div>
             </div>
         </div>
+        <!-- 主視頻 -->
+        <div class="col-sm-2" id="mainVideos">主視頻</div>
         <!-- 资源预览 -->
         <div id="preview" class="vbox" ng-class="{shown:selectedResource}">
             <div class="toolbar">
@@ -183,6 +185,6 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/activityPlay.min.js?20140112001"></script>
+    <script src="js/activityPlay.min.js?20140219001"></script>
 </body>
 </html>
