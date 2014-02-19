@@ -14,6 +14,16 @@ angular.module('ap.controllers.main', [
             $rootScope.resources = [];
             $rootScope.presources = []; //previewable resources
             $rootScope.profiles = {};
+
+            $rootScope.selectedMainVideo = null; //已选择的主视频
+            $rootScope.editingOrder = false; //编辑顺序模式
+            $rootScope.editingTime = false; //编辑时间模式
+            $rootScope.mainVideos = [ //主视频 TODO：按order排序
+                {name:'主视频1', src:'...', duration:100, order:1, startTime:100},
+                {name:'主视频2', src:'...', duration:100, order:2, startTime:100},
+                {name:'主视频3', src:'...', duration:100, order:3, startTime:100}
+            ];
+
             $scope.selectedUser = null;
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
@@ -33,6 +43,14 @@ angular.module('ap.controllers.main', [
                     return $rootScope.profiles[uid].nick;
                 }
                 return uid;
+            };
+
+            $scope.uploadMainVideo = function(){
+                //TODO show modal to upload main video
+            };
+
+            $scope.selectMainVideo = function(video){
+                $scope.selectedMainVideo = video;
             };
 
             $scope.showResourceDetail = function(resource){

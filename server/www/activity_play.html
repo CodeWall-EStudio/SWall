@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140219001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140219002" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -87,7 +87,8 @@
             </div>
         </div>
         <!-- 时间线和资源列表 -->
-        <div class="col-sm-8" id="timeline" ng-class="{min:selectedResource}">
+        <div id="timeline"
+             ng-class="{min:selectedResource, playMode:selectedMainVideo, 'col-sm-8':!selectedMainVideo, 'col-sm-5':selectedMainVideo}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup"
                  ng-show="groupContainsResourceOfSelectedUser(group)"
@@ -126,7 +127,82 @@
             </div>
         </div>
         <!-- 主視頻 -->
-        <div class="col-sm-2" id="mainVideos">主視頻</div>
+        <div id="mainVideos"
+             ng-class="{'col-sm-2':!selectedMainVideo, 'col-sm-5':selectedMainVideo}">
+            <!-- 缩略图模式 -->
+            <div class="thumbnailMode" ng-hide="selectedMainVideo">
+                <h4>主视频</h4>
+                <ul>
+                    <li ng-repeat="video in mainVideos">
+                        <a ng-click="selectMainVideo(video)">
+                            <div class="mainVideoThumb hbox center">{{video.name}}</div>
+                        </a>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-default" ng-click="uploadMainVideo()">
+                    <span class="glyphicon glyphicon-plus"></span> 添加主视频
+                </button>
+            </div>
+            <!-- 播放模式 -->
+            <div class="playMode" ng-show="selectedMainVideo">
+                <div ng-hide="editingOrder || editingTime">
+                    <div class="hbox">
+                        <h4>主视频</h4>
+                        <div class="closeBtn" ng-click="selectMainVideo()">x</div>
+                    </div>
+                    <div class="player">
+                        <div class="videoInfo">{{selectedMainVideo.name}}</div>
+                        <video controls></video>
+                    </div>
+                    <ul class="thumbnails">
+                        <li ng-repeat="video in mainVideos" ng-hide="video == selectedMainVideo">
+                            <a ng-click="selectMainVideo(video)">
+                                <div class="mainVideoThumb hbox center">{{video.name}}</div>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="controls">
+                        <button type="button" class="btn btn-default" ng-click="uploadMainVideo()">
+                            <span class="glyphicon glyphicon-plus"></span> 添加主视频
+                        </button>
+                        <button type="button" class="btn btn-default" ng-click="editingOrder=true">
+                            <span class="glyphicon glyphicon-pencil"></span> 编辑模式
+                        </button>
+                    </div>
+                </div>
+                <div ng-show="editingOrder && !editingTime">
+                    <div class="hbox">
+                        <h4>编辑主视频</h4>
+                    </div>
+                    <ul>
+                        <li ng-repeat="video in mainVideos">
+                            <a>{{video.name}}</a>
+                            <button type="button" class="btn btn-default">时间轴对齐</button>
+                            <button type="button" class="btn btn-default">上移</button>
+                            <button type="button" class="btn btn-default">下移</button>
+                        </li>
+                    </ul>
+                    <div class="controls">
+                        <button type="button" class="btn btn-default" ng-click="editingOrder=false">
+                            <span class="glyphicon glyphicon-floppy-disk"></span> 退出编辑
+                        </button>
+                    </div>
+                </div>
+                <div ng-show="editingTime">
+                    <div class="hbox">
+                        <h4>时间轴对齐：{{selectedMainVideo.name}}</h4>
+                    </div>
+                    <div class="controls">
+                        <button type="button" class="btn btn-default" ng-click="editingTime=false">
+                            <span class="glyphicon glyphicon-floppy-disk"></span> 保存
+                        </button>
+                        <button type="button" class="btn btn-default" ng-click="editingTime=false">
+                            <span class="glyphicon glyphicon-remove"></span> 返回
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- 资源预览 -->
         <div id="preview" class="vbox" ng-class="{shown:selectedResource}">
             <div class="toolbar">
@@ -185,6 +261,6 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/activityPlay.min.js?20140219001"></script>
+    <script src="js/activityPlay.min.js?20140219002"></script>
 </body>
 </html>

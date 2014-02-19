@@ -81,11 +81,15 @@ body{
 }
 #timeline .time{
     width: 30%;
+    min-width: 80px;
     text-align: right;
     border-right: 5px solid rgb(36,74,134);
     padding-top: 10px;
     padding-right: 10px;
     -webkit-transition: width 300ms;
+}
+#timeline.playMode .time{
+    width: 15%;
 }
 #timeline.min .time{
     width: 8%;
@@ -154,7 +158,44 @@ body{
 }
 
 #mainVideos{
+    overflow-y: scroll;
+    padding-bottom: 10px;
     border-left: 1px solid #d3d6da;
+}
+#mainVideos .mainVideoThumb{
+    width: 90%;
+    height: 80px;
+    border-radius: 6px;
+    background-color: #CCC;
+    margin-bottom: 10px;
+}
+#mainVideos .playMode h4{
+    -webkit-box-flex: 1;
+}
+#mainVideos .playMode .closeBtn{
+    padding: 5px 10px;
+}
+#mainVideos .playMode video{
+    width: 97%;
+    margin-bottom: 10px;
+}
+#mainVideos .player{
+    position: relative;
+}
+#mainVideos .player .videoInfo{
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+#mainvideos .thumbnails{
+    margin-bottom: 10px;
+}
+#mainVideos .thumbnails > li{
+    display: inline-block;
+    width: 25%;
+}
+#mainVideos .thumbnails .mainvideothumb{
+    width: auto;
 }
 
 #preview{
