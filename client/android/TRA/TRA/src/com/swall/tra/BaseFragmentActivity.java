@@ -1,11 +1,8 @@
 package com.swall.tra;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,8 +14,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.swall.tra.R;
-import com.swall.tra.TRAApplication;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
 import com.umeng.analytics.MobclickAgent;
@@ -33,7 +28,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     private View mTitleView;
     protected Bundle defaultRequestData;
     private boolean mShowQuitButton;
-    protected MenuItem mMenuItemQuit;
+    protected MenuItem mMenuItemSettings;
     private AlertDialog mQuitProgramConfirmDialog;
     private boolean mBackConfirm;
     private long mLastBackTime;
@@ -71,9 +66,10 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.clear();
         if(mShowQuitButton){
-            mMenuItemQuit = menu.add("注销帐号")
-                    .setIcon(R.drawable.logout_icon);
-            mMenuItemQuit.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            mMenuItemSettings = menu.add("设置")
+                     //.setIcon(R.drawable.logout_icon);
+                    .setIcon(R.drawable.setting_icon);
+            mMenuItemSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 //        menu.add("设置").setIcon(R.drawable.setting_icon);
         return super.onCreateOptionsMenu(menu);
@@ -81,9 +77,10 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        if(item == mMenuItemQuit){
+        if(item == mMenuItemSettings){
 //            confirnQuitProgram();
-            startActivity(new Intent(this,QuitActivity.class));
+//            startActivity(new Intent(this,QuitActivity.class));
+            startActivity(new Intent(this,SettingActivity.class));
         }
         return super.onMenuItemSelected(featureId, item);
     }

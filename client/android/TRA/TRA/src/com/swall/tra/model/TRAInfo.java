@@ -10,10 +10,7 @@ import com.swall.tra.utils.JSONUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TRA : Teaching and Researching Activity
@@ -46,6 +43,7 @@ public class TRAInfo {
     private boolean mJoined;
     private String mAllDesc;
     private String mLongDesc;
+    private long postParticipatorLength;
 /*
 {
       "users": {
@@ -71,7 +69,7 @@ public class TRAInfo {
       },
       "_id": "52b2f7b7dcd66b942728d8b4"
     }
- */
+*/
 
     /**
      *
@@ -130,11 +128,20 @@ public class TRAInfo {
         mLongDesc = mTimeFormatted+" "+mResourceDesc;
 
 
+        initAllDesc();
+
+    }
+
+    private void initAllDesc() {
         // init all desc
+
+
+
         StringBuilder sb = new StringBuilder();
         if(type == 1){
             sb.append("活动类型 : 公开课\n");// 不是1要怎么表示 ?
         }
+        String resourceDesc = caculateResourceDesc(resources,"\n\t\t");
         sb.append(String.format(
                 "活动简介 : %s " +
                         "\n\n出课教师 : %s " +
@@ -142,7 +149,8 @@ public class TRAInfo {
                         "\n年级 : %s" +
                         "\n班级 : %s " +
                         "\n课题 : %s \n" +
-                        "\n用户 : %d 位参与者" +
+                        "\n当前在线用户 : %d 位" +
+                        "\n参与用户总数 : %d 位\n" +
                         "\n资源 : \n\t\t%s",
                 desc,
                 teacher,
@@ -154,10 +162,10 @@ public class TRAInfo {
 
                 domain,
                 participators.size(),
-                caculateResourceDesc(resources,"\n\t\t")
+                postParticipatorLength,
+                resourceDesc
         ));
         mAllDesc = sb.toString();
-
     }
 
     private String getNumberString(int grade, int aClass) {
@@ -185,12 +193,15 @@ public class TRAInfo {
         return ""+d;
     }
 
-    private static String caculateResourceDesc(ArrayList<ResourceInfo> resources,String seperator) {
+    private String caculateResourceDesc(ArrayList<ResourceInfo> resources,String seperator) {
+        HashSet<String> tempHash = new HashSet<String>();
+
         int texts=0;
         int images = 0;
         int videos = 0;
         int audios = 0;
         for(ResourceInfo info:resources){
+            tempHash.add(info.user);
             switch (info.type){
                 case ResourceInfo.RESOURCE_TYPE_AUDIO:
                     audios++;
@@ -232,6 +243,7 @@ public class TRAInfo {
             result = result.substring(0,result.length()-(seperator.length()));
         }
 
+        postParticipatorLength = tempHash.size();
         return result;
 
     }
@@ -264,5 +276,21 @@ public class TRAInfo {
 
     public String getLongDesc() {
         return mLongDesc;
+    }
+
+    public String getTimeAndCreatorDesc() {
+        String res = "活动开始时间："+getTimeFormated()+"\n";
+        res += "活动创建人：" + getCreator();
+        return res;
+    }
+
+    private String getCreator() {
+        return getShowName(creator);
+    }
+
+    private String getShowName(String userName) {
+        JSONObject profile = JSONUtils.getJSONObject(profilesObject, userName, new JSONObject());
+        String showName = JSONUtils.getString(profile,"nick",userName);
+        return showName;
     }
 }

@@ -128,7 +128,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
             intent.putExtra(Intent.EXTRA_TITLE, "新媒体教研");
             startActivity(intent);
         }else if(info.type == ServiceManager.Constants.UPLOAD_TYPE_IMAGE){
-            String url = ActionService.getUrlWithSKEY(info.content);
+            String url = info.content;//ActionService.getUrlWithSKEY(info.content);
             if(url.startsWith("http")){
                 Intent i = new Intent(this,ImageViewActivity.class);
                 i.putExtra("url",url);

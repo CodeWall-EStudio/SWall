@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.toolbox.ImageLoader.ImageCache;
@@ -104,7 +105,11 @@ public class DiskLruImageCache implements ImageCache  {
             if ( in != null ) {
                 final BufferedInputStream buffIn =
                         new BufferedInputStream( in, IO_BUFFER_SIZE );
-                bitmap = BitmapFactory.decodeStream( buffIn );
+                try{
+                    bitmap = BitmapFactory.decodeStream( buffIn );
+                }catch(OutOfMemoryError error){
+                    bitmap = null;
+                }
             }
         } catch ( IOException e ) {
             e.printStackTrace();
@@ -138,6 +143,21 @@ public class DiskLruImageCache implements ImageCache  {
 
         return contained;
 
+    }
+
+    public String getCachedFilePath(String cacheKey){
+        return mDiskCache.getDirectory().getAbsolutePath()+"/"+cacheKey+".0";
+    }
+
+    public Uri getUri(String cacheKey){
+        String path = getCachedFilePath(cacheKey);
+        Log.i("SWall",path);
+        File file = new File(path);
+        if(file.exists()){
+            return Uri.fromFile(file);
+        }else{
+            return null;
+        }
     }
 
     public void clearCache() {

@@ -32,26 +32,49 @@
                     android:targetClass="com..enteach.LogoutActivity"
                     />
         </PreferenceScreen>
-        <CheckBoxPreference
-                android:key="auto_login"
-                android:title="自动登录"
-                android:defaultValue="true"
-                />
+        <!--<CheckBoxPreference-->
+                <!--android:key="auto_login"-->
+                <!--android:title="自动登录"-->
+                <!--android:defaultValue="true"-->
+                <!--/>-->
     </PreferenceCategory>
-    <PreferenceCategory
-            android:title="网络操作">
-        <CheckBoxPreference
-                android:key="none_wifi_forbidden"
-                android:title="@string/pref_none_wifi_forbidden"
-                android:defaultValue="true"
-                android:summary="@string/pref_none_wifi_forbidden_summary" />
 
+    <!--<PreferenceCategory-->
+            <!--android:title="网络操作">-->
+        <!--<CheckBoxPreference-->
+                <!--android:key="none_wifi_forbidden"-->
+                <!--android:title="@string/pref_none_wifi_forbidden"-->
+                <!--android:defaultValue="true"-->
+                <!--android:summary="@string/pref_none_wifi_forbidden_summary" />-->
+
+        <!--<CheckBoxPreference-->
+                <!--android:key="auto_download_in_wifi"-->
+                <!--android:title="@string/pref_auto_download"-->
+                <!--android:summary="@string/pref_auto_download_summary"-->
+                <!--android:defaultValue="true"/>-->
+    <!--</PreferenceCategory>-->
+    <PreferenceCategory
+            android:key="cache_mode"
+            android:title="存储" >
         <CheckBoxPreference
-                android:key="auto_download_in_wifi"
-                android:title="@string/pref_auto_download"
-                android:summary="@string/pref_auto_download_summary"
-                android:defaultValue="true"/>
+                android:key="save_images"
+                android:title="@string/pref_save_images"
+                android:defaultValue="true"
+                android:summary="@string/pref_save_images_summary" />
+        <ListPreference
+                android:dependency="save_images"
+                android:key="save_images_target"
+                android:title="@string/pref_save_target_title"
+                android:summary="@null"
+                android:entries="@array/entries_list_preference"
+                android:entryValues="@array/entryvalues_list_preference"
+                android:defaultValue="1"
+                android:dialogTitle="@string/pref_save_images" />
+        <Preference
+                android:title="@string/pref_clear_cache"
+                android:key="clear_cache" />
     </PreferenceCategory>
+
     <!--
     <PreferenceScreen
             android:title="@string/pref_log_out"

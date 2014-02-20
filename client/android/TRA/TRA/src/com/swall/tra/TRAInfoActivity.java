@@ -21,7 +21,7 @@ import org.json.JSONObject;
 public class TRAInfoActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     private TextView mName;
-    private TextView mTime;
+    private TextView mTimeAndCreator;
     private TextView mDesc;
     private View mJoinButton;
     private TRAInfo mInfo;
@@ -97,7 +97,7 @@ public class TRAInfoActivity extends BaseFragmentActivity implements View.OnClic
     private void initTRAInfo(TRAInfo info) {
         this.mInfo = info;
         mName.setText(info.title);
-        mTime.setText(info.getTimeFormated());
+        mTimeAndCreator.setText(info.getTimeAndCreatorDesc());//(info.getTimeFormated());
         mDesc.setText(info.getAllDesc());
         if(mInfo.activeStatus){
             mJoinButton.setVisibility(View.VISIBLE);
@@ -118,7 +118,7 @@ public class TRAInfoActivity extends BaseFragmentActivity implements View.OnClic
         mViewResourcesButton = findViewById(R.id.btn_view_resource);
 
         mName = (TextView)findViewById(R.id.tra_name);
-        mTime = (TextView)findViewById(R.id.tra_time);
+        mTimeAndCreator = (TextView)findViewById(R.id.tra_time_and_creator);
         mDesc = (TextView)findViewById(R.id.tra_intro);
 
 

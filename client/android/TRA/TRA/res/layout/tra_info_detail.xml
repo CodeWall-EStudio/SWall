@@ -19,15 +19,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="今天 2013年11月15日 10:00"
-            android:id="@+id/tra_time"
+            android:text="活动开始时间：今天 2013年11月15日 10:00\n活动创建人：张三"
+            android:id="@+id/tra_time_and_creator"
             android:layout_below="@+id/tra_name"
             android:layout_alignParentLeft="true"
             android:layout_alignBottom="@+id/textView"/>
 
     <TextView
             android:layout_width="fill_parent"
-            android:layout_below="@+id/tra_time"
+            android:layout_below="@+id/tra_time_and_creator"
             android:layout_marginTop="20dp"
             android:textSize="20dp"
             android:id="@+id/tra_intro"

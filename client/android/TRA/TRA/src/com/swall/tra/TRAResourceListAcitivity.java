@@ -1,6 +1,5 @@
 package com.swall.tra;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,7 +52,7 @@ public class TRAResourceListAcitivity extends BaseFragmentActivity implements Ad
             // header view
             View headerView = getLayoutInflater().inflate(R.layout.tra_info_detail,null,false);
             TextView name = (TextView)headerView.findViewById(R.id.tra_name);
-            TextView time = (TextView)headerView.findViewById(R.id.tra_time);
+            TextView time = (TextView)headerView.findViewById(R.id.tra_time_and_creator);
             TextView desc = (TextView)headerView.findViewById(R.id.tra_intro);
             name.setText(mInfo.title);
             time.setText(mInfo.getTimeFormated());

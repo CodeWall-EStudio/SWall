@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
+import com.android.volley.toolbox.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
 import com.umeng.update.UmengUpdateAgent;
@@ -123,7 +125,16 @@ public class TRAApplication extends Application {
         super.onCreate();
         initServices();
         initVolley();
+        initUIL();
         updateCurrentAccount(getCachedAccount());
+    }
+
+    private void initUIL() {
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+
+                .build();
+
+        com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
     }
 
     private void initVolley() {

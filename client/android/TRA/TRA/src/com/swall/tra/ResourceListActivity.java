@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import com.swall.tra.adapter.ActivityResourceAdapter;
@@ -29,6 +30,14 @@ public class ResourceListActivity extends ListActivity {
         mAdapter.setJSONData(str);
         setListAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+
+        getListView().setRecyclerListener(new AbsListView.RecyclerListener() {
+            @Override
+            public void onMovedToScrapHeap(View view) {
+                final ImageView imageView = (ImageView) view.findViewById(R.id.item_resource_image);
+                imageView.setImageBitmap(null);
+            }
+        });
 
     }
 

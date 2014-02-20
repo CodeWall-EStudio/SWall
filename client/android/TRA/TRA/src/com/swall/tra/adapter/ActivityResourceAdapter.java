@@ -1,6 +1,9 @@
 package com.swall.tra.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -18,10 +21,12 @@ import com.swall.tra.network.MyVolley;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.DateUtil;
 import com.swall.tra.utils.JSONUtils;
+import com.swall.tra.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -163,6 +168,8 @@ public class ActivityResourceAdapter extends BaseAdapter {
             String showName = JSONUtils.getString(profile,"nick",item.user);
             name.setText(showName);
             dateTime.setText(DateUtil.getDisplayTime(item.date,true));
+
+
             if(item.type  == ITEM_TYPE_TEXT){
                 textView.setVisibility(View.VISIBLE);
                 imageView.setVisibility(View.GONE);
@@ -173,7 +180,15 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     textView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
                     commentTextView.setVisibility(View.VISIBLE);
-                    imageView.setImageUrl(ActionService.getUrlWithSKEY(item.content), MyVolley.getImageLoader());
+
+                    //如果本地存在，拿本地图片，否则从网络获取
+                    File file = new File(Utils.getUrlFileName(item.content));
+                    if(file.exists()){
+                        imageView.setImageURI(Uri.fromFile(file));
+                        Log.i("SWall","local image");
+                    }else{
+                        imageView.setImageUrl(item.content/*ActionService.getUrlWithSKEY(item.content)*/, MyVolley.getImageLoader());
+                    }
                 }else{
                     textView.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);
