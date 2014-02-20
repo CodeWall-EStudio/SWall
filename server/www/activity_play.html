@@ -139,7 +139,9 @@
                         </a>
                     </li>
                 </ul>
-                <button type="button" class="btn btn-default" ng-click="uploadMainVideo()">
+                <button type="button" class="btn btn-default"
+                        data-toggle="modal" data-target="#uploadMainVideoModal"
+                        ng-click="uploadMainVideo()">
                     <span class="glyphicon glyphicon-plus"></span> 添加主视频
                 </button>
             </div>
@@ -162,7 +164,9 @@
                         </li>
                     </ul>
                     <div class="controls">
-                        <button type="button" class="btn btn-default" ng-click="uploadMainVideo()">
+                        <button type="button" class="btn btn-default"
+                                data-toggle="modal" data-target="#uploadMainVideoModal"
+                                ng-click="uploadMainVideo()">
                             <span class="glyphicon glyphicon-plus"></span> 添加主视频
                         </button>
                         <button type="button" class="btn btn-default" ng-click="editingOrder=true">
@@ -177,7 +181,7 @@
                     <ul>
                         <li ng-repeat="video in mainVideos">
                             <a>{{video.name}}</a>
-                            <button type="button" class="btn btn-default">时间轴对齐</button>
+                            <button type="button" class="btn btn-default" ng-click="enterEditTimeMode(video)">时间轴对齐</button>
                             <button type="button" class="btn btn-default">上移</button>
                             <button type="button" class="btn btn-default">下移</button>
                         </li>
@@ -193,10 +197,10 @@
                         <h4>时间轴对齐：{{selectedMainVideo.name}}</h4>
                     </div>
                     <div class="controls">
-                        <button type="button" class="btn btn-default" ng-click="editingTime=false">
+                        <button type="button" class="btn btn-default" ng-click="enterEditTimeMode()">
                             <span class="glyphicon glyphicon-floppy-disk"></span> 保存
                         </button>
-                        <button type="button" class="btn btn-default" ng-click="editingTime=false">
+                        <button type="button" class="btn btn-default" ng-click="enterEditTimeMode()">
                             <span class="glyphicon glyphicon-remove"></span> 返回
                         </button>
                     </div>
@@ -253,6 +257,34 @@
                     <img ng-show="stat == 2" src="img/userstat.png">
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="uploadMainVideoModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title">添加主视频</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="mainVideoName">主视频名</label>
+                            <input type="text" class="form-control" id="mainVideoName">
+                        </div>
+                        <div class="form-group">
+                            <label for="mainVideoFile">主视频文件</label>
+                            <input type="file" id="mainVideoFile">
+                            <p class="help-block">请选择主视频文件并点击“添加”按钮</p>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">添加</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                 </div>
             </div>

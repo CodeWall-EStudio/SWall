@@ -18,11 +18,11 @@ angular.module('ap.controllers.main', [
             $rootScope.selectedMainVideo = null; //已选择的主视频
             $rootScope.editingOrder = false; //编辑顺序模式
             $rootScope.editingTime = false; //编辑时间模式
-            $rootScope.mainVideos = [ //主视频 TODO：按order排序
+            $rootScope.mainVideos = [];/*[ //主视频 TODO：按order排序
                 {name:'主视频1', src:'...', duration:100, order:1, startTime:100},
                 {name:'主视频2', src:'...', duration:100, order:2, startTime:100},
                 {name:'主视频3', src:'...', duration:100, order:3, startTime:100}
-            ];
+            ];*/
 
             $scope.selectedUser = null;
             $scope.selectedResource = null;
@@ -51,6 +51,11 @@ angular.module('ap.controllers.main', [
 
             $scope.selectMainVideo = function(video){
                 $scope.selectedMainVideo = video;
+            };
+
+            $scope.enterEditTimeMode = function(video){
+                if(video) $scope.selectedMainVideo = video;
+                $rootScope.editingTime = video ? true : false;
             };
 
             $scope.showResourceDetail = function(resource){
@@ -159,8 +164,11 @@ angular.module('ap.controllers.main', [
                         if(status == 200 && !data.c){
                             $rootScope.profiles = data.profiles;
                             $rootScope.activity = data.r;
-                            //processFetchedResources(data.r);
                             addFetchedResourcesToRootScope($rootScope.activity.resources);
+
+                            if(!$rootScope.mainVideos.length){
+                                $rootScope.mainVideos = data.r.videos || [];
+                            }
 
                             if($rootScope.activity.active){
                                 //计算用户数
