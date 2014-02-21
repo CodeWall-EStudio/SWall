@@ -5,7 +5,9 @@ angular.module('ap.controllers.main', [
     .controller('PlayerMainController', [
         '$rootScope', '$scope', '$location', 'ActivityService', 'UserService',
         function($rootScope, $scope, $location, ActivityService, UserService){
-            var autoRefreshTimeout = 0;
+            var aid = $location.search()['aid'],
+                autoRefreshTimeout = 0,
+                player = document.getElementById('player');
 
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
@@ -16,13 +18,10 @@ angular.module('ap.controllers.main', [
             $rootScope.profiles = {};
 
             $rootScope.selectedMainVideo = null; //已选择的主视频
+            $rootScope.selectedMainVideoStartDate = new Date();
             $rootScope.editingOrder = false; //编辑顺序模式
             $rootScope.editingTime = false; //编辑时间模式
-            $rootScope.mainVideos = [];/*[ //主视频 TODO：按order排序
-                {name:'主视频1', src:'...', duration:100, order:1, startTime:100},
-                {name:'主视频2', src:'...', duration:100, order:2, startTime:100},
-                {name:'主视频3', src:'...', duration:100, order:3, startTime:100}
-            ];*/
+            $rootScope.mainVideos = [];
 
             $scope.selectedUser = null;
             $scope.selectedResource = null;
@@ -45,18 +44,103 @@ angular.module('ap.controllers.main', [
                 return uid;
             };
 
+            $rootScope.timelineStartTime = function(){
+                if($rootScope.resources[0] && $rootScope.selectedMainVideo){
+                    var r = $rootScope.resources[0].resources[0];
+                    return r.date;
+                }
+                return 0;
+            };
+
+            $rootScope.selectedMainVideoStartTime = function(){
+                var t = $rootScope.timelineStartTime();
+                if($rootScope.selectedMainVideo){
+                    t += $rootScope.selectedMainVideo.startTime*1000;
+                }
+                return t;
+            };
+
+            $rootScope.selectedMainVideoStopTime = function(){
+                if($rootScope.selectedMainVideo){
+                    return $rootScope.selectedMainVideoStartTime() + $rootScope.selectedMainVideo.duration*1000;
+                }
+                return 0;
+            };
+
             $scope.uploadMainVideo = function(){
                 //TODO show modal to upload main video
             };
 
             $scope.selectMainVideo = function(video){
-                $scope.selectedMainVideo = video;
+                $rootScope.selectedMainVideo = video;
+                player.pause();
             };
 
-            $scope.enterEditTimeMode = function(video){
-                if(video) $scope.selectedMainVideo = video;
-                $rootScope.editingTime = video ? true : false;
+            $scope.enterEditOrderMode = function(enter){
+                $rootScope.editingOrder = enter;
+                if(enter) player.pause();
+                else $scope.updateMainVideosOrder();
             };
+
+            $scope.enterEditTimeMode = function(video, save){
+                $rootScope.editingTime = video ? true : false;
+                if(video) $rootScope.selectedMainVideo = video;
+                else if(save) $scope.updateMainVideoTiming();
+            };
+
+            $scope.updateMainVideosLocalOrder = function(index, up){
+                var video = $rootScope.mainVideos.splice(index, 1)[0],
+                    pos = up ? index - 1 : index + 1;
+                $rootScope.mainVideos.splice(pos, 0, video);
+            };
+
+            $scope.updateMainVideosOrder = function(){
+                updateMainVideosInfo(
+                    $rootScope.mainVideos[0]['_id'],
+                    {orders: _.map($rootScope.mainVideos, function(video){
+                        return video['_id'];
+                    }).join(',')},
+                    function(xhr, e, json){
+                        console.log(xhr.status, json);
+                    },
+                    function(xhr, e){
+                        console.log(xhr.status, e);
+                    }
+                );
+            };
+
+            $scope.updateMainVideoTiming = function(){
+                updateMainVideosInfo(
+                    $rootScope.selectedMainVideo['_id'],
+                    {startTime: $rootScope.selectedMainVideo['startTime']},
+                    function(xhr, e, json){
+                        console.log(xhr.status, json);
+                    },
+                    function(xhr, e){
+                        console.log(xhr.status, e);
+                    }
+                );
+            };
+
+            function updateMainVideosInfo(vid, query, onData, onError){
+                var cgi = '/activities/' + aid + '/videos/' + vid,
+                    xhr = new XMLHttpRequest(),
+                    form = new FormData();
+
+                _.each(query, function(value, name){
+                    form.append(name, value);
+                });
+
+                console.log('updating main videos', cgi, query);
+                xhr.addEventListener('load', function(e){
+                    if(onData) onData(xhr, e, JSON.parse(xhr.responseText));
+                });
+                xhr.addEventListener('error', function(e){
+                    if(onError) onError(xhr, e);
+                });
+                xhr.open('PUT', cgi);
+                xhr.send(form);
+            }
 
             $scope.showResourceDetail = function(resource){
                 if(resource.type){
@@ -156,7 +240,6 @@ angular.module('ap.controllers.main', [
             }
 
             function getActivity(){
-                var aid = $location.search()['aid'];
                 ActivityService.getActivity(
                     aid,
                     function(data, status){
@@ -251,7 +334,7 @@ angular.module('ap.controllers.main', [
 
 //圖片加載完成後，更新折線高度用的 //////////////////////////////////////////////////////////////////////////////////////////
 
-function onImgLoad(e){
+/*function onImgLoad(e){
     var img = e.target,
         item = $(img).parents('.resourceItem')[0],
         gindex = parseInt(item.getAttribute('data-gindex')),
@@ -274,4 +357,4 @@ function refreshAllNextItemLineHeight(){
             if(item.type !== 0) updateNextItemLineHeight(g, r);
         });
     })
-}
+}*/

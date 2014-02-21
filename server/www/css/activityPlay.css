@@ -184,8 +184,10 @@ body{
 }
 #mainVideos .player .videoInfo{
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
+    right: 15px;
+    padding: 4px 8px;
 }
 #mainvideos .thumbnails{
     margin-bottom: 10px;

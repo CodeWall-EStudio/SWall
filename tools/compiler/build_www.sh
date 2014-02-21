@@ -24,6 +24,7 @@ java -jar $JS_COMPILER --js $WWW_DIR/js/utils/Constants.js \
 					   --js $WWW_DIR/js/services/UserService.js \
 					   --js $WWW_DIR/js/services/ActivityService.js \
 					   --js $WWW_DIR/js/controllers/PlayerMainController.js \
+					   --js $WWW_DIR/js/controllers/MainVideoUploaderController.js \
 					   --js $WWW_DIR/js/activityPlay.js \
  					   --js_output_file $WWW_DIR/js/activityPlay.min.js
 
