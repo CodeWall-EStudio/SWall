@@ -15,6 +15,12 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com', path:'/authenticationUse
 
 function login(username, password, callback){
     if(username && password){
+        /*//FOR LOCAL TESTING ONLY
+        callback(null, 200, {
+            uid: username,
+            skey: '----------',
+            nick: username
+        });*/
         post(
             GET_ENCODE_KEY_API,
             'loginName=' + username + '&password=' + password,
@@ -54,6 +60,7 @@ function login(username, password, callback){
  * @param {Function} callback function(error:Error, statusCode:int, userInfo:Object)
  */
 function verifyEncodeKey(encodeKey, callback){
+    //callback(null, 200, {loginName:'tangqihong'});
     if(encodeKey){
         post(
             GET_PROFILE_API,

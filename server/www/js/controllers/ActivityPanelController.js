@@ -1,16 +1,16 @@
 angular.module('ts.controllers.activityPanel', [
         'ts.utils.constants',
-        'ts.services.activity'
+        'ts.services.activity',
+        'ts.services.utils'
     ])
     .controller('ActivityPanelController', [
-        '$rootScope', '$scope', '$http', 'ActivityService', 'CMD_SHOW_ACTIVITY_PANEL',
-        function($rootScope, $scope, $http, ActivityService, CMD_SHOW_ACTIVITY_PANEL){
+        '$rootScope', '$scope', '$http', 'ActivityService', 'UtilsService', 'CMD_SHOW_ACTIVITY_PANEL',
+        function($rootScope, $scope, $http, ActivityService, UtilService, CMD_SHOW_ACTIVITY_PANEL){
             var modal                       = $('#createActivityModal'),
                 usersInput                  = $('input[data-role="tagsinput"]'),
                 datetimePicker              = document.getElementById('na_date'),
                 fieldset                    = document.getElementById('activityFormAllFields'),
                 fieldsetForOpenActivities   = document.getElementById('activityFormFieldsForOpenActivities'),
-                timezoneOffset              = (new Date()).getTimezoneOffset(),
                 defaults = {
                     panelTitle: '创建活动',
                     confirmBtnTitle: '创建活动',
@@ -40,8 +40,8 @@ angular.module('ts.controllers.activityPanel', [
                     date = (ts ? new Date(ts) : now);
                 date.setSeconds(0);
                 date.setMilliseconds(0);
-                $scope.activity.info.date = dateToDatetimePickerValue(date);
-                datetimePicker.setAttribute('min', dateToDatetimePickerValue(now));
+                $scope.activity.info.date = UtilService.time.dateToDatetimePickerValue(date);
+                datetimePicker.setAttribute('min', UtilService.time.dateToDatetimePickerValue(now));
 
                 //初始化授權用戶
                 _.each($scope.activity.users.invitedUsers, function(item){
@@ -88,7 +88,7 @@ angular.module('ts.controllers.activityPanel', [
                     title:      $scope.activity.info.title || '',
                     type:       $scope.activity.info.type|1,
                     desc:       $scope.activity.info.desc || '',
-                    date:       datetimePickerValueToTs($scope.activity.info.date),
+                    date:       UtilService.time.datetimePickerValueToTs($scope.activity.info.date),
                     teacher:    $scope.activity.info.teacher || '',
                     grade:      config.classes[$scope.grade].grade,
                     'class':    config.classes[$scope.grade].cls[$scope.cls],
@@ -114,7 +114,7 @@ angular.module('ts.controllers.activityPanel', [
                     params['title']     = $scope.activity.info.title || '';
                     params['type']      = $scope.activity.info.type || '';
                     params['desc']      = $scope.activity.info.desc || '';
-                    params['date']      = datetimePickerValueToTs($scope.activity.info.date);
+                    params['date']      = UtilService.time.datetimePickerValueToTs($scope.activity.info.date);
                     params['teacher']   = $scope.activity.info.teacher || '';
                     params['grade']     = config.classes[$scope.grade].grade || '';
                     params['class']     = config.classes[$scope.grade].cls[$scope.cls] || '';
@@ -187,16 +187,6 @@ angular.module('ts.controllers.activityPanel', [
                     date.setMilliseconds(0);
                 }
                 return date.toISOString().split('.')[0];
-            }
-
-            function datetimePickerValueToTs(value){
-                if(value){
-                    var tail = (value.split(':').length < 3) ? ':00.000Z' : '.000Z';
-                    var result = Date.parse(value + tail) + timezoneOffset * 60 * 1000;
-                    console.log(value, result, new Date(result));
-                    return result;
-                }
-                return 0;
             }
 
             fetchActivityConfig();

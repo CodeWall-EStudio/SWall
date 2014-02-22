@@ -9,7 +9,7 @@ var fs      = require('fs'),
 
 
 var PORT = 8090,
-    FILE_UPLOAD_DIRECTORY = '/root/tmp/';
+    FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
 var SHORT_STR_MAXLEN = 90,
@@ -357,11 +357,6 @@ app.put('/activities/:aid', function(req, res){
 
                 //最後更新一下這個活動
                 console.log('[server] update activity', updates);
-                //TODO 已经传入doc给findAndModify的话，应该就不会再搜索一次了吧？确定一下？
-                /*db.activityDataCollection.findAndModify(doc, null, {$set:updates}, {w:1, new:true}, function(err, doc){
-                    if(err) res.json(500, {c:1, m:err.message});
-                    else    res.json(200, {c:0, r:doc});
-                });*/
                 db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){
                     if(err) res.json(500, {c:1, m:err.message});
                     else {
@@ -577,6 +572,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 // /activities/:aid/stat/*
 
 
+//TODO 統計直接由前端做就可以了吧
 app.get('/activities/:aid/stat/topUsers', function(req, res){
     auth.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
@@ -609,6 +605,124 @@ app.get('/activities/:aid/stat/topUsers', function(req, res){
 
 app.get('/activities/:aid/stat/topTimes', function(req, res){
 
+});
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 主視頻相關
+
+
+app.post('/activities/:aid/videos', function(req, res){
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid         = userInfo['loginName'],
+            aid         = new mongodb.ObjectID(req.params['aid']),
+            src         = req.body['src'],
+            name        = req.body['name'],
+            rawOrder    = req.body['order'],
+            order       = rawOrder == undefined ? -1 : parseInt(rawOrder),//-1:push，others:insert
+            duration    = parseInt(req.body['duration']) || 0,
+            startTime   = parseInt(req.body['startTime']) || 0;
+
+        if(src && name && duration){
+            //必須是我創建的活動，先把活動揪出來
+            var query = {
+                '_id': aid,
+                'users.creator': uid
+            };
+            db.activityDataCollection.findOne(query, function(err, doc){
+                if(err)         res.json(500, {c:1, m:err.message});
+                else if(!doc)   res.json(404, {c:0});
+                else {
+                    if(!doc['videos']){
+                        doc['videos'] = [];
+                    }
+                    if(doc['videos'].length >= 4){
+                        res.json(403, {c:1, m:'main video already full'});
+                    }
+                    else {
+                        var video = {
+                            '_id': new mongodb.ObjectID(),
+                            name: name,
+                            src: src,
+                            duration: duration,
+                            startTime: startTime
+                        };
+
+                        //push or insert video into activity
+                        if(order < 0 || order >= doc['videos'].length) doc['videos'].push(video);
+                        else doc['videos'].splice(order, 0, video);
+
+                        db.activityDataCollection.save(doc, {w:1}, function(err){
+                            if(err) res.json(500, {c:1, m:err.message});
+                            else    res.json(201, {c:0, r:doc});
+                        });
+                    }
+                }
+            });
+        }
+        else res.json(400, {c:1});
+        //TODO 補齊錯誤碼和錯誤信息
+    });
+});
+
+
+app.put('/activities/:aid/videos/:vid', function(req, res){
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid         = userInfo['loginName'],
+            aid         = new mongodb.ObjectID(req.params['aid']),
+            vid         = req.params['vid'],
+            rawOrders   = req.body['orders'],
+            rawTime     = req.body['startTime'],
+            orders      = rawOrders ? rawOrders.split(',') : [],
+            startTime   = rawTime == undefined ? -1 : parseInt(rawTime);
+
+        //必须有orders或startTime其中只一个参数
+        if(orders.length || startTime >= 0){
+            var query = {
+                '_id': aid,
+                'users.creator': uid
+            };
+            db.activityDataCollection.findOne(query, function(err, doc){
+                if(err)         res.json(500, {c:1, m:err.message});
+                else if(!doc)   res.json(404, {c:0});
+                else {
+                    //先睇睇有没videos哈，没就唔洗白费心机搞了
+                    if(doc['videos']){
+                        //如果请求指定了新的顺序，则重新排列videos
+                        if(orders.length){
+                            var sorted = [];
+                            _.each(orders, function(videoID){
+                                var video = _.find(doc['videos'], function(v){
+                                    return v._id == videoID;
+                                });
+                                if(video) sorted.push(video);
+                            });
+                            doc['videos'] = sorted;
+                        }
+                        //如果请求指定了新的开始时间，则更新之
+                        if(startTime >= 0){
+                            _.some(doc['videos'], function(video, i){
+                                if(video._id == vid){
+                                    doc['videos'][i].startTime = startTime;
+                                    return true;
+                                }
+                                return false;
+                            });
+                        }
+
+                        //保存修改
+                        db.activityDataCollection.save(doc, {w:1}, function(err){
+                            if(err) res.json(500, {c:1, m:err.message});
+                            else    res.json(200, {c:0, r:doc});
+                        });
+                    }
+                    else res.json(200, {c:0, r:doc});
+                }
+            });
+        }
+        else res.json(400, {c:1});
+    });
 });
 
 

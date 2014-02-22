@@ -1,11 +1,14 @@
 angular.module('ap.controllers.main', [
         'ts.services.activity',
-        'ts.services.user'
+        'ts.services.user',
+        'ts.services.utils'
     ])
     .controller('PlayerMainController', [
-        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService',
-        function($rootScope, $scope, $location, ActivityService, UserService){
-            var autoRefreshTimeout = 0;
+        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService', 'UtilsService',
+        function($rootScope, $scope, $location, ActivityService, UserService, UtilsService){
+            var aid = $location.search()['aid'],
+                autoRefreshTimeout = 0,
+                player = document.getElementById('player');
 
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
@@ -13,16 +16,13 @@ angular.module('ap.controllers.main', [
             $rootScope.rawResources = [];
             $rootScope.resources = [];
             $rootScope.presources = []; //previewable resources
+            $rootScope.highlightResource = {}; //{g:int, r:int}
             $rootScope.profiles = {};
 
             $rootScope.selectedMainVideo = null; //已选择的主视频
             $rootScope.editingOrder = false; //编辑顺序模式
             $rootScope.editingTime = false; //编辑时间模式
-            $rootScope.mainVideos = [ //主视频 TODO：按order排序
-                {name:'主视频1', src:'...', duration:100, order:1, startTime:100},
-                {name:'主视频2', src:'...', duration:100, order:2, startTime:100},
-                {name:'主视频3', src:'...', duration:100, order:3, startTime:100}
-            ];
+            $rootScope.mainVideos = [];
 
             $scope.selectedUser = null;
             $scope.selectedResource = null;
@@ -45,13 +45,151 @@ angular.module('ap.controllers.main', [
                 return uid;
             };
 
-            $scope.uploadMainVideo = function(){
-                //TODO show modal to upload main video
+            //计算时间轴开始时间（也就是第一个资源上传的时间）
+            $rootScope.timelineStartTime = function(){
+                var group = _.last($rootScope.resources),
+                    res = group ? _.last(group.resources) : undefined;
+                if(res && $rootScope.selectedMainVideo){
+                    return res.date;
+                }
+                return 0;
+            };
+
+            $rootScope.selectedMainVideoStartTime = function(){
+                var t = $rootScope.timelineStartTime();
+                if($rootScope.selectedMainVideo){
+                    t += $rootScope.selectedMainVideo.startTime*1000;
+                }
+                return t;
+            };
+
+            $rootScope.selectedMainVideoStopTime = function(){
+                if($rootScope.selectedMainVideo){
+                    return $rootScope.selectedMainVideoStartTime() + $rootScope.selectedMainVideo.duration*1000;
+                }
+                return 0;
             };
 
             $scope.selectMainVideo = function(video){
-                $scope.selectedMainVideo = video;
+                player.pause();
+                $rootScope.selectedMainVideo = video;
+
+                var date = new Date($rootScope.selectedMainVideoStartTime());
+                $rootScope.selectedMainVideoStartDate = {
+                    y: date.getFullYear(),
+                    M: date.getMonth()+1,
+                    d: date.getDate(),
+                    h: date.getHours(),
+                    m: date.getMinutes(),
+                    s: date.getSeconds()
+                };
             };
+
+            $scope.toggleVideoPlayer = function(){
+                if(player.paused) player.play();
+                else player.pause();
+            };
+
+            $scope.enterEditOrderMode = function(enter){
+                $rootScope.editingOrder = enter;
+                if(enter) player.pause();
+                else $scope.updateMainVideosOrder();
+            };
+
+            $scope.enterEditTimeMode = function(video, save){
+                $rootScope.editingTime = video ? true : false;
+                if(video) $rootScope.selectedMainVideo = video;
+                else if(save) $scope.updateMainVideoTiming();
+            };
+
+            $scope.updateMainVideosLocalOrder = function(index, up){
+                var video = $rootScope.mainVideos.splice(index, 1)[0],
+                    pos = up ? index - 1 : index + 1;
+                $rootScope.mainVideos.splice(pos, 0, video);
+            };
+
+            $scope.updateMainVideosOrder = function(){
+                updateMainVideosInfo(
+                    $rootScope.mainVideos[0]['_id'],
+                    {orders: _.map($rootScope.mainVideos, function(video){
+                        return video['_id'];
+                    }).join(',')},
+                    function(xhr, e, json){
+                        console.log(xhr.status, json);
+                    },
+                    function(xhr, e){
+                        console.log(xhr.status, e);
+                    }
+                );
+            };
+
+            $scope.updateMainVideoTiming = function(){
+                var beginning = $rootScope.timelineStartTime(),
+                    beginDate = new Date(beginning),
+                    date = new Date();
+                date.setFullYear($rootScope.selectedMainVideoStartDate.y);
+                date.setMonth($rootScope.selectedMainVideoStartDate.M-1);
+                date.setDate($rootScope.selectedMainVideoStartDate.d);
+                date.setHours($rootScope.selectedMainVideoStartDate.h);
+                date.setMinutes($rootScope.selectedMainVideoStartDate.m);
+                date.setSeconds($rootScope.selectedMainVideoStartDate.s);
+                date.setMilliseconds(beginDate.getMilliseconds());
+
+                var startTime = (date.getTime() - beginning)/1000;
+                if(startTime >= 0){
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: date.getFullYear(),
+                        M: date.getMonth()+1,
+                        d: date.getDate(),
+                        h: date.getHours(),
+                        m: date.getMinutes(),
+                        s: date.getSeconds()
+                    };
+                    $rootScope.selectedMainVideo.startTime = startTime;
+                    updateMainVideosInfo(
+                        $rootScope.selectedMainVideo['_id'],
+                        {startTime: startTime},
+                        function(xhr, e, json){
+                            console.log(xhr.status, json);
+                        },
+                        function(xhr, e){
+                            console.log(xhr.status, e);
+                        }
+                    );
+                }
+                else {
+                    alert('主视频开始录制时间必须晚于时间轴开始时间！');
+                    var d = new Date($rootScope.selectedMainVideoStartTime());
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: d.getFullYear(),
+                        M: d.getMonth()+1,
+                        d: d.getDate(),
+                        h: d.getHours(),
+                        m: d.getMinutes(),
+                        s: d.getSeconds()
+                    };
+                }
+            };
+
+            function updateMainVideosInfo(vid, query, onData, onError){
+                var cgi = '/activities/' + aid + '/videos/' + vid,
+                    xhr = new XMLHttpRequest(),
+                    form = new FormData();
+
+                _.each(query, function(value, name){
+                    form.append(name, value);
+                });
+
+                console.log('updating main videos', cgi, query);
+                xhr.addEventListener('load', function(e){
+                    if(onData) onData(xhr, e, JSON.parse(xhr.responseText));
+                });
+                xhr.addEventListener('error', function(e){
+                    if(onError) onError(xhr, e);
+                });
+                xhr.open('PUT', cgi);
+                xhr.send(form);
+            }
 
             $scope.showResourceDetail = function(resource){
                 if(resource.type){
@@ -151,7 +289,6 @@ angular.module('ap.controllers.main', [
             }
 
             function getActivity(){
-                var aid = $location.search()['aid'];
                 ActivityService.getActivity(
                     aid,
                     function(data, status){
@@ -159,8 +296,11 @@ angular.module('ap.controllers.main', [
                         if(status == 200 && !data.c){
                             $rootScope.profiles = data.profiles;
                             $rootScope.activity = data.r;
-                            //processFetchedResources(data.r);
                             addFetchedResourcesToRootScope($rootScope.activity.resources);
+
+                            if(!$rootScope.mainVideos.length){
+                                $rootScope.mainVideos = data.r.videos || [];
+                            }
 
                             if($rootScope.activity.active){
                                 //计算用户数
@@ -234,16 +374,63 @@ angular.module('ap.controllers.main', [
                 console.log('presources', $rootScope.presources);
             }
 
+            function findClosestResourceTimestamp(ts){
+                //找出所有resource的时间戳，排序
+                var timestamps = _.map($('.resourceItem'), function(item){
+                    return parseInt(item.getAttribute('data-ts'));
+                }).sort();
+
+                //找出和ts最接近的时间戳，返回之
+                for(var i=0; i<timestamps.length; ++i){
+                    if(timestamps[i] >= ts){
+                        return timestamps[i-1];
+                    }
+                }
+                //否则返回最后一个时间戳
+                return _.last(timestamps);
+            }
+
+            function initializeTimelineSync(){
+                var video = document.querySelector('video');
+                //監聽視頻的播放時間，找出時間軸上對應的資源
+                video.addEventListener('timeupdate', function(e){
+                    var ts = $rootScope.selectedMainVideoStartTime() + video.currentTime*1000,
+                        closestResourceTs = findClosestResourceTimestamp(ts),
+                        res = $('.resourceItem[data-ts=' + closestResourceTs + ']'),
+                        group = res.parents('.resourceGroup'),
+                        g = parseInt(res.attr('data-gindex')),
+                        r = parseInt(res.attr('data-rindex')),
+                        timeline = $('#timeline');
+                    //如果播放時間到了另一個不同的資源上時
+                    if($rootScope.highlightResource.g !== g || $rootScope.highlightResource.r !== r){
+                        //滾到那資源上並高亮之
+                        timeline.scrollTop(timeline.scrollTop() + group.position().top + res.position().top);
+                        $rootScope.$apply(function(){
+                            $rootScope.highlightResource = {g:g, r:r};
+
+                            //hack，避免item高亮重繪出錯
+                            var width = timeline.width();
+                            timeline.width(width+1);
+                            setTimeout(function(){
+                                timeline.width(width);
+                            }, 0);
+                        });
+                    }
+                });
+            }
+
             window.rs = $rootScope;
+            window.utils = UtilsService;
 
             getActivity();
+            initializeTimelineSync();
         }
     ]);
 
 
 //圖片加載完成後，更新折線高度用的 //////////////////////////////////////////////////////////////////////////////////////////
 
-function onImgLoad(e){
+/*function onImgLoad(e){
     var img = e.target,
         item = $(img).parents('.resourceItem')[0],
         gindex = parseInt(item.getAttribute('data-gindex')),
@@ -266,4 +453,4 @@ function refreshAllNextItemLineHeight(){
             if(item.type !== 0) updateNextItemLineHeight(g, r);
         });
     })
-}
+}*/
