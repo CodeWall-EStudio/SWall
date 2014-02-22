@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140219002" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140222001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -100,11 +100,15 @@
                 </div>
                 <div class="resource">
                     <div class="line"></div>
-                    <div class="resourceItem" data-gindex="{{$groupIndex}}" data-rindex="{{$resourceIndex}}"
+                    <div class="resourceItem"
+                         data-gindex="{{$groupIndex}}"
+                         data-rindex="{{$resourceIndex}}"
+                         data-ts="{{resource.date}}"
                          ng-repeat="resource in group.resources"
                          ng-init="$resourceIndex=$index"
                          ng-show="resourceShouldBeVisible(resource)"
                          ng-click="showResourceDetail(resource)"
+                         ng-class="{highlight: highlightResource.g==$groupIndex && highlightResource.r==$resourceIndex}"
                          ng-switch on="resource.type">
                         <div class="thumb imageThumb" ng-switch-when="1">
                             <img ng-src="{{resource.content}}"><!--onload="onImgLoad(event)"-->
@@ -141,7 +145,7 @@
                 </ul>
                 <button type="button" class="btn btn-default"
                         data-toggle="modal" data-target="#uploadMainVideoModal"
-                        ng-disabled="mainVideos.length == 0 || mainVideos.length >= 4"
+                        ng-disabled="mainVideos.length >= 4"
                         ng-click="uploadMainVideo()">
                     <span class="glyphicon glyphicon-plus"></span> 添加主视频
                 </button>
@@ -156,6 +160,7 @@
                     <div class="player">
                         <div class="videoInfo">{{selectedMainVideo.name}}</div>
                         <video id="player" controls="controls"
+                               ng-click="toggleVideoPlayer()"
                                ng-src="{{selectedMainVideo.src}}"></video>
                     </div>
                     <ul class="thumbnails">
@@ -168,7 +173,7 @@
                     <div class="controls">
                         <button type="button" class="btn btn-default"
                                 data-toggle="modal" data-target="#uploadMainVideoModal"
-                                ng-disabled="mainVideos.length == 0 || mainVideos.length >= 4"
+                                ng-disabled="mainVideos.length >= 4"
                                 ng-click="uploadMainVideo()">
                             <span class="glyphicon glyphicon-plus"></span> 添加主视频
                         </button>
@@ -182,8 +187,9 @@
                         <h4>编辑主视频</h4>
                     </div>
                     <ul>
-                        <li ng-repeat="video in mainVideos">
+                        <li ng-repeat="video in mainVideos" class="hbox editOrderItem">
                             <a>{{video.name}}</a>
+                            <div></div>
                             <button type="button" class="btn btn-default" ng-click="enterEditTimeMode(video, false)">时间轴对齐</button>
                             <button type="button" class="btn btn-default"
                                     ng-disabled="$first"
@@ -209,10 +215,20 @@
                     </div>
                     <p>视频起始时间：{{selectedMainVideoStartTime() | date:'yyyy年MM月dd日 HH:mm:ss'}}</p>
                     <p>视频终止时间：{{selectedMainVideoStopTime() | date:'yyyy年MM月dd日 HH:mm:ss'}}</p>
-                    <p>视频总时长：{{selectedMainVideo.duration}}s</p>
+                    <p>视频总时长：{{selectedMainVideo.duration}}秒</p>
                     <br/>
                     <p>虚拟时间轴起始时间：{{timelineStartTime() | date:'yyyy年MM月dd日 HH:mm:ss'}}</p>
-                    <p>视频开始录制时间：<input type="datetime-local" id="mainVideoStartDate" ng-model="selectedMainVideoStartDate">
+                    <p>
+                        视频开始录制时间：
+                        <form class="form-inline" role="form">
+                            <div class="form-group"><input class="form-control dateInput" placeholder="年" ng-model="selectedMainVideoStartDate.y"></div>
+                            <div class="form-group"><input class="form-control dateInput" placeholder="月" ng-model="selectedMainVideoStartDate.M"></div>
+                            <div class="form-group"><input class="form-control dateInput" placeholder="日" ng-model="selectedMainVideoStartDate.d"></div>
+                            <div class="form-group"><input class="form-control dateInput" placeholder="时" ng-model="selectedMainVideoStartDate.h"></div>
+                            <div class="form-group"><input class="form-control dateInput" placeholder="分" ng-model="selectedMainVideoStartDate.m"></div>
+                            <div class="form-group"><input class="form-control dateInput" placeholder="秒" ng-model="selectedMainVideoStartDate.s"></div>
+                        </form>
+                    </p>
                     <div class="controls">
                         <button type="button" class="btn btn-default" ng-click="enterEditTimeMode(null, true)">
                             <span class="glyphicon glyphicon-floppy-disk"></span> 保存
@@ -316,6 +332,6 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/activityPlay.min.js?20140219002"></script>
+    <script src="js/activityPlay.min.js?20140222001"></script>
 </body>
 </html>

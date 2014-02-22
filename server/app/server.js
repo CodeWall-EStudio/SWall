@@ -9,7 +9,7 @@ var fs      = require('fs'),
 
 
 var PORT = 8090,
-    FILE_UPLOAD_DIRECTORY = /*'/root/tmp/'*/'/tmp/';
+    FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
 var SHORT_STR_MAXLEN = 90,
@@ -572,6 +572,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 // /activities/:aid/stat/*
 
 
+//TODO 統計直接由前端做就可以了吧
 app.get('/activities/:aid/stat/topUsers', function(req, res){
     auth.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],

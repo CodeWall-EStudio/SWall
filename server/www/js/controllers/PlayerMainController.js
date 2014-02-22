@@ -1,10 +1,11 @@
 angular.module('ap.controllers.main', [
         'ts.services.activity',
-        'ts.services.user'
+        'ts.services.user',
+        'ts.services.utils'
     ])
     .controller('PlayerMainController', [
-        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService',
-        function($rootScope, $scope, $location, ActivityService, UserService){
+        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService', 'UtilsService',
+        function($rootScope, $scope, $location, ActivityService, UserService, UtilsService){
             var aid = $location.search()['aid'],
                 autoRefreshTimeout = 0,
                 player = document.getElementById('player');
@@ -15,10 +16,10 @@ angular.module('ap.controllers.main', [
             $rootScope.rawResources = [];
             $rootScope.resources = [];
             $rootScope.presources = []; //previewable resources
+            $rootScope.highlightResource = {}; //{g:int, r:int}
             $rootScope.profiles = {};
 
             $rootScope.selectedMainVideo = null; //已选择的主视频
-            $rootScope.selectedMainVideoStartDate = new Date();
             $rootScope.editingOrder = false; //编辑顺序模式
             $rootScope.editingTime = false; //编辑时间模式
             $rootScope.mainVideos = [];
@@ -44,10 +45,12 @@ angular.module('ap.controllers.main', [
                 return uid;
             };
 
+            //计算时间轴开始时间（也就是第一个资源上传的时间）
             $rootScope.timelineStartTime = function(){
-                if($rootScope.resources[0] && $rootScope.selectedMainVideo){
-                    var r = $rootScope.resources[0].resources[0];
-                    return r.date;
+                var group = _.last($rootScope.resources),
+                    res = group ? _.last(group.resources) : undefined;
+                if(res && $rootScope.selectedMainVideo){
+                    return res.date;
                 }
                 return 0;
             };
@@ -67,13 +70,24 @@ angular.module('ap.controllers.main', [
                 return 0;
             };
 
-            $scope.uploadMainVideo = function(){
-                //TODO show modal to upload main video
+            $scope.selectMainVideo = function(video){
+                player.pause();
+                $rootScope.selectedMainVideo = video;
+
+                var date = new Date($rootScope.selectedMainVideoStartTime());
+                $rootScope.selectedMainVideoStartDate = {
+                    y: date.getFullYear(),
+                    M: date.getMonth()+1,
+                    d: date.getDate(),
+                    h: date.getHours(),
+                    m: date.getMinutes(),
+                    s: date.getSeconds()
+                };
             };
 
-            $scope.selectMainVideo = function(video){
-                $rootScope.selectedMainVideo = video;
-                player.pause();
+            $scope.toggleVideoPlayer = function(){
+                if(player.paused) player.play();
+                else player.pause();
             };
 
             $scope.enterEditOrderMode = function(enter){
@@ -110,16 +124,51 @@ angular.module('ap.controllers.main', [
             };
 
             $scope.updateMainVideoTiming = function(){
-                updateMainVideosInfo(
-                    $rootScope.selectedMainVideo['_id'],
-                    {startTime: $rootScope.selectedMainVideo['startTime']},
-                    function(xhr, e, json){
-                        console.log(xhr.status, json);
-                    },
-                    function(xhr, e){
-                        console.log(xhr.status, e);
-                    }
-                );
+                var beginning = $rootScope.timelineStartTime(),
+                    beginDate = new Date(beginning),
+                    date = new Date();
+                date.setFullYear($rootScope.selectedMainVideoStartDate.y);
+                date.setMonth($rootScope.selectedMainVideoStartDate.M-1);
+                date.setDate($rootScope.selectedMainVideoStartDate.d);
+                date.setHours($rootScope.selectedMainVideoStartDate.h);
+                date.setMinutes($rootScope.selectedMainVideoStartDate.m);
+                date.setSeconds($rootScope.selectedMainVideoStartDate.s);
+                date.setMilliseconds(beginDate.getMilliseconds());
+
+                var startTime = (date.getTime() - beginning)/1000;
+                if(startTime >= 0){
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: date.getFullYear(),
+                        M: date.getMonth()+1,
+                        d: date.getDate(),
+                        h: date.getHours(),
+                        m: date.getMinutes(),
+                        s: date.getSeconds()
+                    };
+                    $rootScope.selectedMainVideo.startTime = startTime;
+                    updateMainVideosInfo(
+                        $rootScope.selectedMainVideo['_id'],
+                        {startTime: startTime},
+                        function(xhr, e, json){
+                            console.log(xhr.status, json);
+                        },
+                        function(xhr, e){
+                            console.log(xhr.status, e);
+                        }
+                    );
+                }
+                else {
+                    alert('主视频开始录制时间必须晚于时间轴开始时间！');
+                    var d = new Date($rootScope.selectedMainVideoStartTime());
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: d.getFullYear(),
+                        M: d.getMonth()+1,
+                        d: d.getDate(),
+                        h: d.getHours(),
+                        m: d.getMinutes(),
+                        s: d.getSeconds()
+                    };
+                }
             };
 
             function updateMainVideosInfo(vid, query, onData, onError){
@@ -325,9 +374,56 @@ angular.module('ap.controllers.main', [
                 console.log('presources', $rootScope.presources);
             }
 
+            function findClosestResourceTimestamp(ts){
+                //找出所有resource的时间戳，排序
+                var timestamps = _.map($('.resourceItem'), function(item){
+                    return parseInt(item.getAttribute('data-ts'));
+                }).sort();
+
+                //找出和ts最接近的时间戳，返回之
+                for(var i=0; i<timestamps.length; ++i){
+                    if(timestamps[i] >= ts){
+                        return timestamps[i-1];
+                    }
+                }
+                //否则返回最后一个时间戳
+                return _.last(timestamps);
+            }
+
+            function initializeTimelineSync(){
+                var video = document.querySelector('video');
+                //監聽視頻的播放時間，找出時間軸上對應的資源
+                video.addEventListener('timeupdate', function(e){
+                    var ts = $rootScope.selectedMainVideoStartTime() + video.currentTime*1000,
+                        closestResourceTs = findClosestResourceTimestamp(ts),
+                        res = $('.resourceItem[data-ts=' + closestResourceTs + ']'),
+                        group = res.parents('.resourceGroup'),
+                        g = parseInt(res.attr('data-gindex')),
+                        r = parseInt(res.attr('data-rindex')),
+                        timeline = $('#timeline');
+                    //如果播放時間到了另一個不同的資源上時
+                    if($rootScope.highlightResource.g !== g || $rootScope.highlightResource.r !== r){
+                        //滾到那資源上並高亮之
+                        timeline.scrollTop(timeline.scrollTop() + group.position().top + res.position().top);
+                        $rootScope.$apply(function(){
+                            $rootScope.highlightResource = {g:g, r:r};
+
+                            //hack，避免item高亮重繪出錯
+                            var width = timeline.width();
+                            timeline.width(width+1);
+                            setTimeout(function(){
+                                timeline.width(width);
+                            }, 0);
+                        });
+                    }
+                });
+            }
+
             window.rs = $rootScope;
+            window.utils = UtilsService;
 
             getActivity();
+            initializeTimelineSync();
         }
     ]);
 

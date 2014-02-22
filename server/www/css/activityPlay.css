@@ -73,6 +73,7 @@ body{
     position: relative;
     overflow-x: hidden;
     overflow-y: scroll;
+    padding-right: 0;
     /*width: 82%;*/
 }
 #timeline .resourceGroup{
@@ -104,7 +105,10 @@ body{
 #timeline .resource{
     position: relative;
     width: 70%;
-    padding-left: 60px;
+    padding-left: 50px;
+}
+#timeline.playMode .resource{
+    width: 85%;
 }
 #timeline .line{
     position: absolute;
@@ -117,7 +121,13 @@ body{
     position: relative;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
-    padding: 10px 0;
+    padding: 10px;
+    background-color: #fff;
+}
+#timeline .resourceItem.highlight{
+    background-color: #ccc;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
 }
 #timeline .resourceItem .nextLine{
     position: absolute;
@@ -238,4 +248,17 @@ body{
 
 #bigPicModal img{
     max-width: 100%;
+}
+
+.editOrderItem{
+    padding-right: 10px;
+    margin-bottom: 10px;
+    -webkit-box-align: center;
+}
+.editOrderItem > div{
+    -webkit-box-flex: 1;
+}
+
+.dateInput{
+    width: 60px;
 }
