@@ -3,25 +3,20 @@ package com.swall.tra.network;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import com.android.volley.*;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.NetworkUtils;
 import org.apache.http.entity.ContentType;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by pxz on 13-12-13.
@@ -126,6 +121,7 @@ public class UploadService extends ActionService {
         }
 
         doUpload(ServiceManager.Constants.getUploadUrl(),
+                data.getString("id"),
                 comment,
                 bytes,
                 filePath,
@@ -153,7 +149,7 @@ public class UploadService extends ActionService {
                                 JSONObject object = new JSONObject(jsonString);
                                 JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
                                 long fid = JSONUtils.getLong(resultData,"fid",0);
-                                String fullFilePath = ServiceManager.Constants.getResourceUrl(fid);
+                                String fullFilePath = ServiceManager.Constants.getDownloadUrl(fid);
                                     upload(action,
                                             type,
                                             fullFilePath,
@@ -188,7 +184,13 @@ public class UploadService extends ActionService {
     }
 
 
-    private void doUpload(String postUrl,String comment,byte[] data, String filePath, final ActionListener listener,ContentType contentType){
+    private void doUpload(String postUrl,
+                          String activityId,
+                          String comment,
+                          byte[] data,
+                          String filePath,
+                          final ActionListener listener,
+                          ContentType contentType){
 
         /*
         Map<String,String> params = new HashMap<String,String>(3);
@@ -225,6 +227,7 @@ public class UploadService extends ActionService {
 
         NetworkUtils.MultipartRequest req =  new NetworkUtils.MultipartRequest(
                 postUrl,
+                activityId,
                 sEncodeKey,
                 data,
                 file,
