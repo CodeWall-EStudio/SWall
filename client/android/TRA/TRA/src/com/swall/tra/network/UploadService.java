@@ -147,9 +147,12 @@ public class UploadService extends ActionService {
 
                             try {
                                 JSONObject object = new JSONObject(jsonString);
-                                JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
-                                long fid = JSONUtils.getLong(resultData,"fid",0);
-                                String fullFilePath = ServiceManager.Constants.getDownloadUrl(fid);
+                                int err = JSONUtils.getInt(object,"err",-1);
+                                JSONObject resultObject = JSONUtils.getJSONObject(object,"result",new JSONObject());
+                                JSONObject resultData = JSONUtils.getJSONObject(resultObject,"data",new JSONObject());
+                                long fid = JSONUtils.getLong(resultData,"_id",-1);
+                                if(err != -1 && fid != -1){
+                                    String fullFilePath = ServiceManager.Constants.getDownloadUrl(fid);
                                     upload(action,
                                             type,
                                             fullFilePath,
@@ -159,6 +162,7 @@ public class UploadService extends ActionService {
                                             listener
                                     );
                                     error = false;
+                                }
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

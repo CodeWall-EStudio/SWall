@@ -184,6 +184,7 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     //如果本地存在，拿本地图片，否则从网络获取
                     File file = new File(Utils.getUrlFileName(item.content));
                     if(file.exists()){
+                        imageView.setDefaultImageResId(R.drawable.icon);
                         imageView.setImageURI(Uri.fromFile(file));
                         Log.i("SWall","local image");
                     }else{
