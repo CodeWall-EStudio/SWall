@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140222001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140222002" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -75,12 +75,12 @@
             <!-- 统计信息入口 -->
             <div class="stat">
                 <div>
-                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="stat=1">
+                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="showTimeStatistics()">
                         <img src="img/timestat_icon.png">
                     </button>
                 </div>
                 <div>
-                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="stat=2">
+                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="showUserStatistics()">
                         <img src="img/userstat_icon.png">
                     </button>
                 </div>
@@ -286,8 +286,7 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <img ng-show="stat == 1" src="img/timestat.png">
-                    <img ng-show="stat == 2" src="img/userstat.png">
+                    <div id="statBody" style="height: 450px"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
@@ -332,6 +331,8 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/activityPlay.min.js?20140222001"></script>
+    <script src="https://www.google.com/jsapi"></script>
+    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
+    <script src="js/activityPlay.min.js?20140222002"></script>
 </body>
 </html>

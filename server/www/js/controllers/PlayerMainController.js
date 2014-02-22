@@ -283,6 +283,55 @@ angular.module('ap.controllers.main', [
                 }
             };
 
+
+            $scope.showUserStatistics = function(){
+                $scope.stat = 2;
+
+                //准备数据
+                var stat = ActivityService.statistics.byUser($rootScope.activity, 10);
+                stat = _.map(stat, function(item){
+                    return [$rootScope.uid2nick(item.uid), item.count];
+                });
+                stat.splice(0, 0, ['用户', '资源数']);
+
+                //开始绘制统计图
+                var data = google.visualization.arrayToDataTable(stat),
+                    options = {
+                        is3D: true
+                    },
+                    chart = new google.visualization.PieChart(document.getElementById('statBody'));
+
+                setTimeout(function(){
+                    chart.draw(data, options);
+                }, 200);
+            };
+
+            $scope.showTimeStatistics = function(){
+                $scope.stat = 1;
+
+                var stat = ActivityService.statistics.byTime($rootScope.activity),
+                    beginning = stat.beginning,
+                    items = stat.items;
+                stat = _.map(items, function(resources, offset){
+                    var date = new Date(parseInt(offset) + beginning),
+                        dateStr = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' +
+                                  date.getHours() + ':' + date.getMinutes();
+                    return [dateStr, resources.length];
+                });
+                stat.splice(0, 0, ['时间', '资源数']);
+
+                var data = google.visualization.arrayToDataTable(stat),
+                    options = {
+                        hAxis: {title: '时间', titleTextStyle: {color: 'red'}}
+                    },
+                    chart = new google.visualization.ColumnChart(document.getElementById('statBody'));
+
+                setTimeout(function(){
+                    chart.draw(data, options);
+                }, 200);
+            };
+
+
             function clearSelection(){
                 $scope.selectedResource = null;
                 $scope.selectedRIndex = -1;

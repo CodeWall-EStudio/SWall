@@ -15,13 +15,13 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com', path:'/authenticationUse
 
 function login(username, password, callback){
     if(username && password){
-        /*//FOR LOCAL TESTING ONLY
+        //FOR LOCAL TESTING ONLY
         callback(null, 200, {
             uid: username,
             skey: '----------',
             nick: username
-        });*/
-        post(
+        });
+        /*post(
             GET_ENCODE_KEY_API,
             'loginName=' + username + '&password=' + password,
             function(data, res){
@@ -48,7 +48,7 @@ function login(username, password, callback){
             function(e){
                 callback(e);
             }
-        )
+        )*/
     }
     else callback(new Error('Invaild username or password'));
 }
@@ -60,8 +60,8 @@ function login(username, password, callback){
  * @param {Function} callback function(error:Error, statusCode:int, userInfo:Object)
  */
 function verifyEncodeKey(encodeKey, callback){
-    //callback(null, 200, {loginName:'tangqihong'});
-    if(encodeKey){
+    callback(null, 200, {loginName:'tangqihong'});
+    /*if(encodeKey){
         post(
             GET_PROFILE_API,
             'encodeKey='+encodeKey,
@@ -79,7 +79,7 @@ function verifyEncodeKey(encodeKey, callback){
             }
         );
     }
-    else callback(new Error('Invalid EncodeKey'));
+    else callback(new Error('Invalid EncodeKey'));*/
 }
 /**
  * verify the request, if no vaild encodeKey response 401, otherwise callback with user info
