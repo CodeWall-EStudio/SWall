@@ -740,9 +740,11 @@ app.put('/users/:uid/login', function(req, res){
             if(!error && status==200){
                 if(result){
                     var expiresDate = new Date(Date.now() + 3600000*24),
-                        options = {/*domain:'...', */path:'/', expires:expiresDate};
+                        options = {/*domain:'...', */path:'/', expires:expiresDate},
+                        options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate};
                     res.cookie('uid', uid, options);
                     res.cookie('skey', result.skey, options);
+                    res.cookie('skey', result.skey, options2);
                     res.json(200, result);
                 }
                 else res.send(401);

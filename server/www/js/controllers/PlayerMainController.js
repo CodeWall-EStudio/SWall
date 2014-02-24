@@ -4,8 +4,8 @@ angular.module('ap.controllers.main', [
         'ts.services.utils'
     ])
     .controller('PlayerMainController', [
-        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService', 'UtilsService',
-        function($rootScope, $scope, $location, ActivityService, UserService, UtilsService){
+        '$rootScope', '$scope', '$location', '$sce', 'ActivityService', 'UserService', 'UtilsService',
+        function($rootScope, $scope, $location, $sce, ActivityService, UserService, UtilsService){
             var aid = $location.search()['aid'],
                 autoRefreshTimeout = 0,
                 player = document.getElementById('player');
@@ -30,6 +30,16 @@ angular.module('ap.controllers.main', [
             $scope.autoRefresh = true;
 
             $scope.shouldShowUploadMainButton = false;
+
+            $rootScope.updateMainVideos = function(videos){
+                $rootScope.mainVideos = _.map(videos, function(video){
+                    if(!video.url){
+                        video.url = $sce.trustAsResourceUrl(video.src);
+                    }
+                    return video;
+                });
+                console.log('[MainVideos]', $rootScope.mainVideos);
+            };
 
             $scope.$watch('selectedResource', function(newValue){
                 if(newValue && newValue.type == 2){
@@ -349,9 +359,10 @@ angular.module('ap.controllers.main', [
                             $rootScope.activity = data.r;
                             addFetchedResourcesToRootScope($rootScope.activity.resources);
 
-                            if(!$rootScope.mainVideos.length){
-                                $rootScope.mainVideos = data.r.videos || [];
-                            }
+                            $rootScope.updateMainVideos(data.r.videos || []);
+                            /*if(!$rootScope.mainVideos.length){
+                                $rootScope.mainVideos = $rootScope.updateMainVideos(data.r.videos || []);
+                            }*/
 
                             if($rootScope.activity.active){
                                 //计算用户数
@@ -453,11 +464,15 @@ angular.module('ap.controllers.main', [
                         group = res.parents('.resourceGroup'),
                         g = parseInt(res.attr('data-gindex')),
                         r = parseInt(res.attr('data-rindex')),
+                        gp = group.position(),
+                        rp = res.position(),
+                        gt = gp ? gp.top : 0,
+                        rt = rp ? rp.top : 0,
                         timeline = $('#timeline');
                     //如果播放時間到了另一個不同的資源上時
                     if($rootScope.highlightResource.g !== g || $rootScope.highlightResource.r !== r){
                         //滾到那資源上並高亮之
-                        timeline.scrollTop(timeline.scrollTop() + group.position().top + res.position().top);
+                        timeline.scrollTop(timeline.scrollTop() + gt + rt);
                         $rootScope.$apply(function(){
                             $rootScope.highlightResource = {g:g, r:r};
 

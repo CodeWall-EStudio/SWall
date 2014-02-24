@@ -167,7 +167,7 @@
                         <div class="videoInfo">{{selectedMainVideo.name}}</div>
                         <video id="player" controls="controls"
                                ng-click="toggleVideoPlayer()"
-                               ng-src="{{selectedMainVideo.src}}"></video>
+                               ng-src="{{selectedMainVideo.url}}"></video>
                     </div>
                     <ul class="thumbnails">
                         <li ng-repeat="video in mainVideos" ng-hide="video == selectedMainVideo">
@@ -305,42 +305,55 @@
     <div class="modal fade" id="uploadMainVideoModal" ng-controller="MainVideoUploaderController">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">添加主视频</h4>
-                </div>
-                <div class="modal-body">
-                    <form role="form">
+                <form id="uploadMainVideoForm" action="http://szone.71xiaoxue.com/upload" method="post" target="uploadCallback" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title">添加主视频</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!--<form role="form">
+                            <div class="form-group">
+                                <label for="mainVideoName">主视频名</label>
+                                <input type="text" ng-model="videoName" class="form-control" id="mainVideoName">
+                            </div>
+                            <div class="form-group">
+                                <label for="mainVideoFile">主视频文件</label>
+                                <input type="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()">
+                                <p class="help-block">请选择主视频文件并点击“添加”按钮</p>
+                            </div>
+                        </form>-->
                         <div class="form-group">
                             <label for="mainVideoName">主视频名</label>
                             <input type="text" ng-model="videoName" class="form-control" id="mainVideoName">
                         </div>
                         <div class="form-group">
                             <label for="mainVideoFile">主视频文件</label>
-                            <input type="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()">
-                            <p class="help-block">请选择主视频文件并点击“添加”按钮</p>
+                            <input type="file" name="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()"/>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success"
-                            ng-disabled="!videoName || !videoFile || videoIsUploading || videoIsAdding"
-                            ng-click="startUpload()">
-                        <span ng-show="!videoIsReading && !videoIsUploading && !videoIsAdding">添加</span>
-                        <span ng-show="videoIsReading">请稍后</span>
-                        <span ng-show="videoIsUploading">上传中 {{videoUploadProgress}}%</span>
-                        <span ng-show="videoIsAdding">请稍后...</span>
-                    </button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
-                </div>
+                        <input type="text" name="media" value="1" style="display: none"/>
+                        <input type="text" name="skey" ng-model="skey" style="display: none"/>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" ng-value="submitLabel()" class="btn btn-success"
+                                ng-disabled="!videoName || !videoFile || videoIsUploading || videoIsAdding"
+                                ng-click="startUpload()"/>
+                            <!--<span ng-show="!videoIsReading && !videoIsUploading && !videoIsAdding">添加</span>
+                            <span ng-show="videoIsReading">请稍后...</span>
+                            <span ng-show="videoIsUploading">上传中...</span>
+                            <span ng-show="videoIsAdding">请稍后...</span>
+                        </input>-->
+                        <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                    </div>
+                </form>
+                <iframe style="display: none" src="uploadCallback.html" name="uploadCallback"></iframe>
             </div>
         </div>
     </div>
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="https://www.google.com/jsapi"></script>
-    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
+    <!--<script src="https://www.google.com/jsapi"></script>
+    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>-->
     <script src="js/activityPlay.min.js?20140222002"></script>
 </body>
 </html>
