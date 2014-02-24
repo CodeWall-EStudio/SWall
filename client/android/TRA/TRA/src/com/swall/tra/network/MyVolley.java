@@ -54,7 +54,7 @@ public class MyVolley {
         }
 
 */
-        sImageLoader = new ImageLoader(sRequestQueue, new BitmapLruCache(cacheSize));
+        sImageLoader = new MyImageLoader(sRequestQueue, new BitmapLruCache(cacheSize));
     }
 
     public static RequestQueue getRequestQueue(){

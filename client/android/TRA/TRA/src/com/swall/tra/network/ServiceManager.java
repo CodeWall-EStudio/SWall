@@ -32,10 +32,11 @@ public class ServiceManager {
         public static final long MAX_LOGIN_EXPIRED_TIME = 23 * 60 * 60 * 1000;
         // TODO 此处不应该可改，仅为环境配置临时使之可改
 //        public static String RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
-        public static String RESOURCE_MAIN_URL = "http://xzone.71xiaoxue.com/";
+//        public static String RESOURCE_MAIN_URL = "http://xzone.71xiaoxue.com/";
         public static String DATA_URL_PREFIX = "http://115.28.55.91:8080/";
 
-        public static String FILE_SERVER_URL = "http://xzone.codewalle.com/";
+//        public static String FILE_SERVER_URL = "http://xzone.codewalle.com/";
+        public static String FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
 
 
         private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
@@ -65,15 +66,15 @@ public class ServiceManager {
             switch (env){
                 case Constants.ENV_PUBLISH:
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
-                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
                     break;
                 case Constants.ENV_TEST:
                     DATA_URL_PREFIX = "http://swall.71xiaoxue.com/";
-                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    FILE_SERVER_URL = "http://xzone.codewalle.com/";
                     break;
                 case Constants.ENV_DEV:
-                    DATA_URL_PREFIX = "http://115.28.55.91:8080/";
-                    RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
+                    DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
+                    FILE_SERVER_URL = "http://xzone.codewalle.com/";
                     break;
             }
         }
@@ -124,8 +125,12 @@ public class ServiceManager {
             return FILE_SERVER_URL + String.format("/upload/?t=%d",System.currentTimeMillis());
         }
 
-        public static String getDownloadUrl(long fid) {
-            return FILE_SERVER_URL +"api/media/download?fileId="+fid;
+        public static String getDownloadUrl(String fid) {
+            if(FILE_SERVER_URL.indexOf("codewalle") != -1){
+                return FILE_SERVER_URL +"api/media/download?fileId="+fid;
+            }else{
+                return FILE_SERVER_URL + "/download/media?id="+fid;
+            }
         }
 
         public static final String KEY_USER_NAME            = "userName";

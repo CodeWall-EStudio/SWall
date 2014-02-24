@@ -146,12 +146,20 @@ public class UploadService extends ActionService {
                             * */
 
                             try {
+
                                 JSONObject object = new JSONObject(jsonString);
-                                int err = JSONUtils.getInt(object,"err",-1);
-                                JSONObject resultObject = JSONUtils.getJSONObject(object,"result",new JSONObject());
-                                JSONObject resultData = JSONUtils.getJSONObject(resultObject,"data",new JSONObject());
-                                long fid = JSONUtils.getLong(resultData,"_id",-1);
-                                if(err != -1 && fid != -1){
+
+                                // 两边cgi返回格式不一样。。
+                                boolean iscodewalle = ServiceManager.Constants.FILE_SERVER_URL.indexOf("codewalle") != -1;
+                                String fid;
+                                JSONObject resultData = JSONUtils.getJSONObject(object,"data",new JSONObject());
+                                if(iscodewalle){
+                                    fid = JSONUtils.getString(resultData,"_id","-1");
+                                }else{
+                                    fid = ""+JSONUtils.getLong(resultData,"fid",-1);
+                                }
+                                  
+                                if(!"-1".equals(fid)){
                                     String fullFilePath = ServiceManager.Constants.getDownloadUrl(fid);
                                     upload(action,
                                             type,

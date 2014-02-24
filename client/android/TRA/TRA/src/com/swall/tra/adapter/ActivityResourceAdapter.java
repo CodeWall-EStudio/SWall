@@ -181,15 +181,15 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     imageView.setVisibility(View.VISIBLE);
                     commentTextView.setVisibility(View.VISIBLE);
 
+                    imageView.setDefaultImageResId(R.drawable.icon);
                     //如果本地存在，拿本地图片，否则从网络获取
-                    File file = new File(Utils.getUrlFileName(item.content));
-                    if(file.exists()){
-                        imageView.setDefaultImageResId(R.drawable.icon);
-                        imageView.setImageURI(Uri.fromFile(file));
-                        Log.i("SWall","local image");
-                    }else{
+                    //File file = new File(Utils.getUrlFileName(item.content));
+                    //if(file.exists()){
+                    //    imageView.setImageURI(Uri.fromFile(file));
+                    //    Log.i("SWall","local image");
+                    //}else{
                         imageView.setImageUrl(item.content/*ActionService.getUrlWithSKEY(item.content)*/, MyVolley.getImageLoader());
-                    }
+                    //}
                 }else{
                     textView.setVisibility(View.VISIBLE);
                     imageView.setVisibility(View.GONE);
