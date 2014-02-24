@@ -11,23 +11,33 @@ angular.module('ap.controllers.videoUploader', [
             reset();
 
             $scope.onSelectedFile = function(){
-                var files = mainVideoInput.files,
-                    file = files ? files[0] : null;
-                console.log('[uploader] selected file', file);
+                $scope.$apply(function(){
+                    var files = mainVideoInput.files,
+                        file = files ? files[0] : null;
+                    console.log('[uploader] selected file', file);
 
-                if(file/* && TODO 判斷文件類型？*/){
-                    //load the file and get duration info
-                    $scope.videoFile = file;
-                    var video = document.createElement('video'),
-                        url = window.URL.createObjectURL(file);
+                    if(file/* && TODO 判斷文件類型？*/){
+                        //load the file and get duration info
+                        $scope.videoFile = file;
+                        var video = document.createElement('video'),
+                            url = window.URL.createObjectURL(file);
 
-                    video.addEventListener('loadedmetadata', function(){
-                        $scope.videoDuration = video.duration;
-                        console.log('[uploader] video duration = ' + video.duration);
-                    });
-                    video.src = url;
-                    console.log('[uploader] reading video file ...');
-                }
+                        video.addEventListener('loadedmetadata', function(){
+                            $scope.$apply(function(){
+                                $scope.videoIsReading = false;
+                                $scope.videoDuration = video.duration;
+                                console.log('[uploader] video duration = ' + video.duration);
+                            });
+                        });
+                        video.src = url;
+                        $scope.videoIsReading = true;
+                        console.log('[uploader] reading video file ...');
+                    }
+                    else {
+                        $scope.videoFile = null;
+                        $scope.videoDuration = 0;
+                    }
+                });
             };
 
             $scope.startUpload = function(){
@@ -38,7 +48,8 @@ angular.module('ap.controllers.videoUploader', [
                 if($scope.videoFile && $scope.videoDuration && $scope.videoName){
                     //create form and xml http request to post the file
                     var form = new FormData(),
-                        xhr = new XMLHttpRequest();
+                        xhr = new XMLHttpRequest(),
+                        api = 'http://xzone.codewalle.com/upload';
                     form.append('file', $scope.videoFile);
 
                     xhr.upload.addEventListener('progress', function(e){
@@ -51,10 +62,13 @@ angular.module('ap.controllers.videoUploader', [
                         $scope.videoIsUploading = false;
                         if(xhr.status == 200){
                             var json = JSON.parse(xhr.responseText),
-                                url = (json && json[0]) ? '/resources/' + json[0].filename : null;
-                            console.log('[uploader] upload video success', json, url);
-                            $scope.videoURL = url;
-                            addVideoToActivity();
+                                fileId = (json && json.result && !json.err) ? json.result.data._id : null,
+                                fileUrl = fileId ? 'http://xzone.codewalle.com/api/media/download?fileId=' + fileId : null;
+                            console.log('[uploader] upload video success', json, fileUrl);
+                            if(fileUrl){
+                                $scope.videoURL = url;
+                                addVideoToActivity();
+                            }
                         }
                         else {
                             //TODO handle other status code
@@ -64,16 +78,17 @@ angular.module('ap.controllers.videoUploader', [
 
                     xhr.addEventListener('error', function(e){
                         console.log('[uploader] upload video error', e);
-                        //TODO alert
                         $scope.$apply(function(){
                             reset();
+                            $('#uploadMainVideoModal').modal('hide');
                         });
+                        alert('主视频上传失败！');
                     }, false);
 
                     //start uploading the file
                     $scope.videoIsUploading = true;
                     $scope.videoUploadProgress = 0;
-                    xhr.open('POST', '/resources');
+                    xhr.open('POST', api);
                     xhr.send(form);
                     console.log('[uploader] uploading video ...');
                 }
@@ -120,11 +135,13 @@ angular.module('ap.controllers.videoUploader', [
 
             function reset(){
                 //local file info
+                $('#mainVideoFile').val(null);
                 $scope.videoFile = null;
                 $scope.videoName = null;
                 $scope.videoDuration = 0;
 
                 //upload status & result
+                $scope.videoIsReading = false;
                 $scope.videoIsUploading = false;
                 $scope.videoIsAdding = false;
                 $scope.videoUploadProgress = 0;

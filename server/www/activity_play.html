@@ -75,12 +75,16 @@
             <!-- 统计信息入口 -->
             <div class="stat">
                 <div>
-                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="showTimeStatistics()">
+                    <button data-toggle="modal" data-target="#bigPicModal"
+                            ng-disabled="!activity.resources.length"
+                            ng-click="showTimeStatistics()">
                         <img src="img/timestat_icon.png">
                     </button>
                 </div>
                 <div>
-                    <button data-toggle="modal" data-target="#bigPicModal" ng-click="showUserStatistics()">
+                    <button data-toggle="modal" data-target="#bigPicModal"
+                            ng-disabled="!activity.resources.length"
+                            ng-click="showUserStatistics()">
                         <img src="img/userstat_icon.png">
                     </button>
                 </div>
@@ -88,7 +92,7 @@
         </div>
         <!-- 时间线和资源列表 -->
         <div id="timeline"
-             ng-class="{min:selectedResource, playMode:selectedMainVideo, 'col-sm-8':!selectedMainVideo, 'col-sm-5':selectedMainVideo}">
+             ng-class="{min:selectedResource, playMode:selectedMainVideo, 'col-sm-10':activity.active, 'col-sm-8':!activity.active && !selectedMainVideo, 'col-sm-5':!activity.active && selectedMainVideo}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup"
                  ng-show="groupContainsResourceOfSelectedUser(group)"
@@ -132,6 +136,7 @@
         </div>
         <!-- 主視頻 -->
         <div id="mainVideos"
+             ng-hide="activity.active"
              ng-class="{'col-sm-2':!selectedMainVideo, 'col-sm-5':selectedMainVideo}">
             <!-- 缩略图模式 -->
             <div class="thumbnailMode" ng-hide="selectedMainVideo">
@@ -145,6 +150,7 @@
                 </ul>
                 <button type="button" class="btn btn-default"
                         data-toggle="modal" data-target="#uploadMainVideoModal"
+                        ng-show="shouldShowUploadMainButton"
                         ng-disabled="mainVideos.length >= 4"
                         ng-click="uploadMainVideo()">
                     <span class="glyphicon glyphicon-plus"></span> 添加主视频
@@ -173,6 +179,7 @@
                     <div class="controls">
                         <button type="button" class="btn btn-default"
                                 data-toggle="modal" data-target="#uploadMainVideoModal"
+                                ng-show="shouldShowUploadMainButton"
                                 ng-disabled="mainVideos.length >= 4"
                                 ng-click="uploadMainVideo()">
                             <span class="glyphicon glyphicon-plus"></span> 添加主视频
@@ -319,7 +326,8 @@
                     <button type="button" class="btn btn-success"
                             ng-disabled="!videoName || !videoFile || videoIsUploading || videoIsAdding"
                             ng-click="startUpload()">
-                        <span ng-show="!videoIsUploading && !videoIsAdding">添加</span>
+                        <span ng-show="!videoIsReading && !videoIsUploading && !videoIsAdding">添加</span>
+                        <span ng-show="videoIsReading">请稍后</span>
                         <span ng-show="videoIsUploading">上传中 {{videoUploadProgress}}%</span>
                         <span ng-show="videoIsAdding">请稍后...</span>
                     </button>

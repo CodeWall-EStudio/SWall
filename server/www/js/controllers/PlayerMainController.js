@@ -29,6 +29,8 @@ angular.module('ap.controllers.main', [
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
 
+            $scope.shouldShowUploadMainButton = false;
+
             $scope.$watch('selectedResource', function(newValue){
                 if(newValue && newValue.type == 2){
                     setTimeout(function(){
@@ -369,6 +371,8 @@ angular.module('ap.controllers.main', [
                                 });
                                 $rootScope.userCount = _.keys(users).length;
                             }
+
+                            $scope.shouldShowUploadMainButton = UserService.activity.isCreatorOfActivity($rootScope.activity);
                         }
                         else{
                             //TODO handle error

@@ -31,8 +31,22 @@ angular.module('ts.controllers.activityPanel', [
                 $scope.panelTitle       = data.panelTitle || defaults.panelTitle;
                 $scope.confirmBtnTitle  = data.confirmBtnTitle || defaults.confirmBtnTitle;
                 $scope.cancelBtnTitle   = data.cancelBtnTitle || defaults.cancelBtnTitle;
-                $scope.activity         = data.activity ||cloneDefaulActivityContent();
+                $scope.activity         = data.activity || cloneDefaulActivityContent();
                 $scope.invitedUsers     = $scope.activity.users.invitedUsers.join(',');
+
+                //get config
+                var config = $scope.config ? $scope.config.activityConfig : {},
+                    info = $scope.activity.info;
+                //find grade index
+                for(var i=0; i<config.classes.length; ++i){
+                    var grade = config.classes[i];
+                    if(grade.grade == info['grade']){
+                        $scope.grade = i;
+                        $scope.cls = grade.cls.indexOf(info['class']);
+                        console.log($scope.grade, $scope.cls);
+                        break;
+                    }
+                }
 
                 //初始化日期時間
                 var ts = $scope.activity.info.date,
@@ -64,7 +78,7 @@ angular.module('ts.controllers.activityPanel', [
             });
 
             $scope.$watch('grade', function(newValue){
-                $scope.cls = 0;
+                //$scope.cls = 0;
             });
 
             $scope.showActivityPanel = function(){
@@ -142,9 +156,9 @@ angular.module('ts.controllers.activityPanel', [
                 ActivityService.fetchActivityConfig(
                     function(data, status){
                         $scope.config = data;
-                        $scope.grade = 0;
+                        /*$scope.grade = 0;
                         $scope.cls = 0;
-                        $scope.subject = 0;
+                        $scope.subject = 0;*/
                     }
                 )
             }
