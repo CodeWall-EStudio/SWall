@@ -86,15 +86,48 @@ angular.module('ap.controllers.main', [
                 player.pause();
                 $rootScope.selectedMainVideo = video;
 
-                var date = new Date($rootScope.selectedMainVideoStartTime());
-                $rootScope.selectedMainVideoStartDate = {
-                    y: date.getFullYear(),
-                    M: date.getMonth()+1,
-                    d: date.getDate(),
-                    h: date.getHours(),
-                    m: date.getMinutes(),
-                    s: date.getSeconds()
-                };
+                if(video){
+                    var date = new Date($rootScope.selectedMainVideoStartTime());
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: date.getFullYear(),
+                        M: date.getMonth()+1,
+                        d: date.getDate(),
+                        h: date.getHours(),
+                        m: date.getMinutes(),
+                        s: date.getSeconds()
+                    };
+                }
+            };
+
+            $scope.editMainVideoName = function(video){
+                var newName = prompt('请输入“' + video.name + '”的新名称：');
+                if(newName){
+                    video.name = newName;
+                    updateMainVideosInfo(
+                        video._id,
+                        {name: newName},
+                        function(xhr, e, json){
+                            console.log(xhr.status, json);
+                        },
+                        function(xhr, e){
+                            console.error(xhr.status, e);
+                        }
+                    );
+                }
+            };
+
+            $scope.removeMainVideo = function(video, i){
+                if(confirm('确定删除主视频“' + video.name + '”?')){
+                    $rootScope.mainVideos.splice(i, 1);
+                    $rootScope.selectedMainVideo = null;
+                    $rootScope.editingOrder = false;
+                    $rootScope.editingTime = false;
+
+                    var cgi = '/activities/' + aid + '/videos/' + video._id,
+                        xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', cgi);
+                    xhr.send();
+                }
             };
 
             $scope.toggleVideoPlayer = function(){
@@ -165,7 +198,7 @@ angular.module('ap.controllers.main', [
                             console.log(xhr.status, json);
                         },
                         function(xhr, e){
-                            console.log(xhr.status, e);
+                            console.error(xhr.status, e);
                         }
                     );
                 }
@@ -477,11 +510,11 @@ angular.module('ap.controllers.main', [
                             $rootScope.highlightResource = {g:g, r:r};
 
                             //hack，避免item高亮重繪出錯
-                            var width = timeline.width();
+                            /*var width = timeline.width();
                             timeline.width(width+1);
                             setTimeout(function(){
                                 timeline.width(width);
-                            }, 0);
+                            }, 0);*/
                         });
                     }
                 });

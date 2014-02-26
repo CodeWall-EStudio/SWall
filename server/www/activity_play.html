@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140222002" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140226001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -197,16 +197,22 @@
                         <li ng-repeat="video in mainVideos" class="hbox editOrderItem">
                             <a>{{video.name}}</a>
                             <div></div>
+                            <button type="button" class="btn btn-info" ng-click="editMainVideoName(video)">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
                             <button type="button" class="btn btn-default" ng-click="enterEditTimeMode(video, false)">时间轴对齐</button>
                             <button type="button" class="btn btn-default"
                                     ng-disabled="$first"
                                     ng-click="updateMainVideosLocalOrder($index, true)">
-                                上移
+                                <span class="glyphicon glyphicon-arrow-up"></span>
                             </button>
                             <button type="button" class="btn btn-default"
                                     ng-disabled="$last"
                                     ng-click="updateMainVideosLocalOrder($index, false)">
-                                下移
+                                <span class="glyphicon glyphicon-arrow-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-warning" ng-click="removeMainVideo(video, $index)">
+                                <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </li>
                     </ul>
@@ -330,6 +336,7 @@
                             <label for="mainVideoFile">主视频文件</label>
                             <input type="file" name="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()"/>
                         </div>
+                        <input type="text" name="fromweb" value="1" style="display: none"/>
                         <input type="text" name="media" value="1" style="display: none"/>
                         <input type="text" name="skey" ng-model="skey" style="display: none"/>
                     </div>
@@ -352,8 +359,8 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <!--<script src="https://www.google.com/jsapi"></script>
-    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>-->
-    <script src="js/activityPlay.min.js?20140222002"></script>
+    <script src="https://www.google.com/jsapi"></script>
+    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
+    <script src="js/activityPlay.min.js?20140226001"></script>
 </body>
 </html>

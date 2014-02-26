@@ -667,18 +667,55 @@ app.post('/activities/:aid/videos', function(req, res){
 });
 
 
+app.delete('/activities/:aid/videos/:vid', function(req, res){
+    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+        var uid         = userInfo['loginName'],
+            aid         = new mongodb.ObjectID(req.params['aid']),
+            vid         = req.params['vid'];
+
+        var query = {
+            '_id': aid,
+            'users.creator': uid
+        };
+        db.activityDataCollection.findOne(query, function(err, doc){
+            if(err)         res.json(500, {c:1, m:err.message});
+            else if(!doc)   res.json(404, {c:0});
+            else {
+                if(doc['videos']){
+                    _.some(doc['videos'], function(video, i){
+                        if(video._id == vid){
+                            doc['videos'].splice(i, 1);
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    //保存修改
+                    db.activityDataCollection.save(doc, {w:1}, function(err){
+                        if(err) res.json(500, {c:1, m:err.message});
+                        else    res.json(200, {c:0, r:doc});
+                    });
+                }
+                else res.json(200, {c:0, r:doc});
+            }
+        });
+    });
+});
+
+
 app.put('/activities/:aid/videos/:vid', function(req, res){
     auth.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid         = userInfo['loginName'],
             aid         = new mongodb.ObjectID(req.params['aid']),
             vid         = req.params['vid'],
+            newName     = req.body['name'],
             rawOrders   = req.body['orders'],
             rawTime     = req.body['startTime'],
             orders      = rawOrders ? rawOrders.split(',') : [],
             startTime   = rawTime == undefined ? -1 : parseInt(rawTime);
 
         //必须有orders或startTime其中只一个参数
-        if(orders.length || startTime >= 0){
+        if(orders.length || startTime >= 0 || newName){
             var query = {
                 '_id': aid,
                 'users.creator': uid
@@ -701,10 +738,11 @@ app.put('/activities/:aid/videos/:vid', function(req, res){
                             doc['videos'] = sorted;
                         }
                         //如果请求指定了新的开始时间，则更新之
-                        if(startTime >= 0){
+                        if(startTime >= 0 || newName){
                             _.some(doc['videos'], function(video, i){
                                 if(video._id == vid){
-                                    doc['videos'][i].startTime = startTime;
+                                    if(startTime >= 0)  doc['videos'][i].startTime = startTime;
+                                    if(newName)         doc['videos'][i].name = newName;
                                     return true;
                                 }
                                 return false;
