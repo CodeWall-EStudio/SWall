@@ -119,8 +119,8 @@ angular.module('ap.controllers.main', [
             $scope.removeMainVideo = function(video, i){
                 if(confirm('确定删除主视频“' + video.name + '”?')){
                     $rootScope.mainVideos.splice(i, 1);
-                    $rootScope.selectedMainVideo = null;
-                    $rootScope.editingOrder = false;
+                    $rootScope.selectedMainVideo = $rootScope.mainVideos[0];
+                    $rootScope.editingOrder = ($rootScope.mainVideos[0] != undefined);
                     $rootScope.editingTime = false;
 
                     var cgi = '/activities/' + aid + '/videos/' + video._id,

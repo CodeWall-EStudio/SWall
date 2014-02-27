@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140226001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140227001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -184,7 +184,9 @@
                                 ng-click="uploadMainVideo()">
                             <span class="glyphicon glyphicon-plus"></span> 添加主视频
                         </button>
-                        <button type="button" class="btn btn-default" ng-click="enterEditOrderMode(true)">
+                        <button type="button" class="btn btn-default"
+                                ng-show="shouldShowUploadMainButton"
+                                ng-click="enterEditOrderMode(true)">
                             <span class="glyphicon glyphicon-pencil"></span> 编辑模式
                         </button>
                     </div>
@@ -361,6 +363,6 @@
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
     <script src="https://www.google.com/jsapi"></script>
     <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
-    <script src="js/activityPlay.min.js?20140226001"></script>
+    <script src="js/activityPlay.min.js?20140227001"></script>
 </body>
 </html>
