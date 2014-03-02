@@ -15,6 +15,12 @@ angular.module('ts.services.user', [
                 return Boolean(uid && skey);
             }
 
+            function isCreatorOfActivity(activity){
+                var uid = UtilsService.cookie.get('uid'),
+                    creator = activity.users.creator;
+                return uid == creator;
+            }
+
             function nick(){
                 var s = localStorage['login_result'];
                 var r = s ? JSON.parse(s) : {};
@@ -62,7 +68,10 @@ angular.module('ts.services.user', [
                 nick:           nick,
                 login:          login,
                 logout:         logout,
-                fetchProfile:   fetchProfile
+                fetchProfile:   fetchProfile,
+                activity: {
+                    isCreatorOfActivity: isCreatorOfActivity
+                }
             };
         }
     ]);

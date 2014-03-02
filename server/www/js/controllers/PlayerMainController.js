@@ -4,8 +4,8 @@ angular.module('ap.controllers.main', [
         'ts.services.utils'
     ])
     .controller('PlayerMainController', [
-        '$rootScope', '$scope', '$location', 'ActivityService', 'UserService', 'UtilsService',
-        function($rootScope, $scope, $location, ActivityService, UserService, UtilsService){
+        '$rootScope', '$scope', '$location', '$sce', 'ActivityService', 'UserService', 'UtilsService',
+        function($rootScope, $scope, $location, $sce, ActivityService, UserService, UtilsService){
             var aid = $location.search()['aid'],
                 autoRefreshTimeout = 0,
                 player = document.getElementById('player');
@@ -28,6 +28,18 @@ angular.module('ap.controllers.main', [
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
+
+            $scope.shouldShowUploadMainButton = false;
+
+            $rootScope.updateMainVideos = function(videos){
+                $rootScope.mainVideos = _.map(videos, function(video){
+                    if(!video.url){
+                        video.url = $sce.trustAsResourceUrl(video.src);
+                    }
+                    return video;
+                });
+                console.log('[MainVideos]', $rootScope.mainVideos);
+            };
 
             $scope.$watch('selectedResource', function(newValue){
                 if(newValue && newValue.type == 2){
@@ -74,15 +86,48 @@ angular.module('ap.controllers.main', [
                 player.pause();
                 $rootScope.selectedMainVideo = video;
 
-                var date = new Date($rootScope.selectedMainVideoStartTime());
-                $rootScope.selectedMainVideoStartDate = {
-                    y: date.getFullYear(),
-                    M: date.getMonth()+1,
-                    d: date.getDate(),
-                    h: date.getHours(),
-                    m: date.getMinutes(),
-                    s: date.getSeconds()
-                };
+                if(video){
+                    var date = new Date($rootScope.selectedMainVideoStartTime());
+                    $rootScope.selectedMainVideoStartDate = {
+                        y: date.getFullYear(),
+                        M: date.getMonth()+1,
+                        d: date.getDate(),
+                        h: date.getHours(),
+                        m: date.getMinutes(),
+                        s: date.getSeconds()
+                    };
+                }
+            };
+
+            $scope.editMainVideoName = function(video){
+                var newName = prompt('请输入“' + video.name + '”的新名称：');
+                if(newName){
+                    video.name = newName;
+                    updateMainVideosInfo(
+                        video._id,
+                        {name: newName},
+                        function(xhr, e, json){
+                            console.log(xhr.status, json);
+                        },
+                        function(xhr, e){
+                            console.error(xhr.status, e);
+                        }
+                    );
+                }
+            };
+
+            $scope.removeMainVideo = function(video, i){
+                if(confirm('确定删除主视频“' + video.name + '”?')){
+                    $rootScope.mainVideos.splice(i, 1);
+                    $rootScope.selectedMainVideo = $rootScope.mainVideos[0];
+                    $rootScope.editingOrder = ($rootScope.mainVideos[0] != undefined);
+                    $rootScope.editingTime = false;
+
+                    var cgi = '/activities/' + aid + '/videos/' + video._id,
+                        xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', cgi);
+                    xhr.send();
+                }
             };
 
             $scope.toggleVideoPlayer = function(){
@@ -153,7 +198,7 @@ angular.module('ap.controllers.main', [
                             console.log(xhr.status, json);
                         },
                         function(xhr, e){
-                            console.log(xhr.status, e);
+                            console.error(xhr.status, e);
                         }
                     );
                 }
@@ -283,6 +328,55 @@ angular.module('ap.controllers.main', [
                 }
             };
 
+
+            $scope.showUserStatistics = function(){
+                $scope.stat = 2;
+
+                //准备数据
+                var stat = ActivityService.statistics.byUser($rootScope.activity, 10);
+                stat = _.map(stat, function(item){
+                    return [$rootScope.uid2nick(item.uid), item.count];
+                });
+                stat.splice(0, 0, ['用户', '资源数']);
+
+                //开始绘制统计图
+                var data = google.visualization.arrayToDataTable(stat),
+                    options = {
+                        is3D: true
+                    },
+                    chart = new google.visualization.PieChart(document.getElementById('statBody'));
+
+                setTimeout(function(){
+                    chart.draw(data, options);
+                }, 200);
+            };
+
+            $scope.showTimeStatistics = function(){
+                $scope.stat = 1;
+
+                var stat = ActivityService.statistics.byTime($rootScope.activity),
+                    beginning = stat.beginning,
+                    items = stat.items;
+                stat = _.map(items, function(resources, offset){
+                    var date = new Date(parseInt(offset) + beginning),
+                        dateStr = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' +
+                                  date.getHours() + ':' + date.getMinutes();
+                    return [dateStr, resources.length];
+                });
+                stat.splice(0, 0, ['时间', '资源数']);
+
+                var data = google.visualization.arrayToDataTable(stat),
+                    options = {
+                        hAxis: {title: '时间', titleTextStyle: {color: 'red'}}
+                    },
+                    chart = new google.visualization.ColumnChart(document.getElementById('statBody'));
+
+                setTimeout(function(){
+                    chart.draw(data, options);
+                }, 200);
+            };
+
+
             function clearSelection(){
                 $scope.selectedResource = null;
                 $scope.selectedRIndex = -1;
@@ -298,9 +392,10 @@ angular.module('ap.controllers.main', [
                             $rootScope.activity = data.r;
                             addFetchedResourcesToRootScope($rootScope.activity.resources);
 
-                            if(!$rootScope.mainVideos.length){
-                                $rootScope.mainVideos = data.r.videos || [];
-                            }
+                            $rootScope.updateMainVideos(data.r.videos || []);
+                            /*if(!$rootScope.mainVideos.length){
+                                $rootScope.mainVideos = $rootScope.updateMainVideos(data.r.videos || []);
+                            }*/
 
                             if($rootScope.activity.active){
                                 //计算用户数
@@ -320,6 +415,8 @@ angular.module('ap.controllers.main', [
                                 });
                                 $rootScope.userCount = _.keys(users).length;
                             }
+
+                            $scope.shouldShowUploadMainButton = UserService.activity.isCreatorOfActivity($rootScope.activity);
                         }
                         else{
                             //TODO handle error
@@ -400,20 +497,24 @@ angular.module('ap.controllers.main', [
                         group = res.parents('.resourceGroup'),
                         g = parseInt(res.attr('data-gindex')),
                         r = parseInt(res.attr('data-rindex')),
+                        gp = group.position(),
+                        rp = res.position(),
+                        gt = gp ? gp.top : 0,
+                        rt = rp ? rp.top : 0,
                         timeline = $('#timeline');
                     //如果播放時間到了另一個不同的資源上時
                     if($rootScope.highlightResource.g !== g || $rootScope.highlightResource.r !== r){
                         //滾到那資源上並高亮之
-                        timeline.scrollTop(timeline.scrollTop() + group.position().top + res.position().top);
+                        timeline.scrollTop(timeline.scrollTop() + gt + rt);
                         $rootScope.$apply(function(){
                             $rootScope.highlightResource = {g:g, r:r};
 
                             //hack，避免item高亮重繪出錯
-                            var width = timeline.width();
+                            /*var width = timeline.width();
                             timeline.width(width+1);
                             setTimeout(function(){
                                 timeline.width(width);
-                            }, 0);
+                            }, 0);*/
                         });
                     }
                 });

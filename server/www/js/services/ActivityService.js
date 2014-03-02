@@ -179,6 +179,48 @@ angular.module('ts.services.activity', [
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Statistics
+
+            /**
+             * 获取上传资源最多的用户排行
+             * @param {Object} activity
+             * @param {int} [count=10]
+             * @return {Array}
+             */
+            function getUploadedResourceUsersRanking(activity, count){
+                var counts  = _.countBy(_.pluck(activity.resources, 'user')),//{uid1:count1, uid2:count2}
+                    arr     = _.map(counts, function(count, uid){ return {uid:uid, count:count}; }),//[{uid:uid1, count:count1}, {...}, ...]
+                    result  = _.sortBy(arr, function(item){ return -item.count; });
+                return result;
+            }
+
+            /**
+             * 获取按时间分布的资源上传统计
+             * @param {Object} activity
+             * @param {int} [delta=300] 默认300秒内的上传资源会合并成一项
+             * @return {Object}
+             */
+            function getResourcesGroupByTime(activity, delta){
+                var firstResource = _.first(activity.resources);
+                if(firstResource){
+                    var beginning = firstResource.date,
+                        results = {};
+                    delta = (delta || 300) * 1000;
+                    _.each(activity.resources, function(resource){
+                        var index = Math.floor((resource.date - beginning)/delta),
+                            key = index * delta;
+                        if(!results[key]) results[key] = [];
+                        results[key].push(resource);
+                    });
+                    return {
+                        beginning: beginning,
+                        items: results
+                    };
+                }
+                return {};
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Helper methods
 
             function insertActivityToRootScope(activity){
@@ -282,7 +324,12 @@ angular.module('ts.services.activity', [
                 updateActivity:         updateActivity,
                 closeActivity:          closeActivity,
                 deleteActivity:         deleteActivity,
-                fetchActivityConfig:    fetchActivityConfig
+                fetchActivityConfig:    fetchActivityConfig,
+
+                statistics: {
+                    byUser: getUploadedResourceUsersRanking,
+                    byTime: getResourcesGroupByTime
+                }
             };
         }
     ]);

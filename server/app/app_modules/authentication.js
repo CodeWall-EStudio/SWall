@@ -15,8 +15,8 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com', path:'/authenticationUse
 
 function login(username, password, callback){
     if(username && password){
-        /*//FOR LOCAL TESTING ONLY
-        callback(null, 200, {
+        //FOR LOCAL TESTING ONLY
+        /*callback(null, 200, {
             uid: username,
             skey: '----------',
             nick: username
