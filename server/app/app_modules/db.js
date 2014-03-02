@@ -1,7 +1,7 @@
 var mongodb = require('mongodb');
 
 
-var HOST        = 'localhost',
+var HOST        = 'localhost', //正式環境：'192.168.98.59'
     PORT        = 27017,
     DB          = 'swall',
     USERNAME    = 'nodejs',
@@ -12,6 +12,7 @@ var HOST        = 'localhost',
 function connect(){
     //TODO 这里是不是应该搞个连接池？还是说MongoDB自己维护了一个池？
     var url = 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + ':' + PORT + '/' + DB;
+    //正式環境：var url = 'mongodb://' + HOST + ':' + PORT + '/' + DB;
     mongodb.MongoClient.connect(url, null, function(err, db){
         if(err) throw err;
 
