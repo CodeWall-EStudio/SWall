@@ -88,9 +88,7 @@ function verifyEncodeKey(encodeKey, callback){
  * @param {Function} callback function(userInfo:Object)
  */
 function response401IfUnauthoirzed(req, res, callback){
-    var k = 'skey',
-        encodeKey = req.cookies[k];
-
+    var encodeKey = req.cookies['skey'];
     verifyEncodeKey(encodeKey, function(error, statusCode, userInfo){
         if(error || statusCode!=200 || !userInfo || !userInfo['loginName']){
             res.json(401, {c:10, m:'Unauthoirzed'});
