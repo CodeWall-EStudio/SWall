@@ -16,6 +16,7 @@ import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.widget.InputMethodRelativeLayout;
+import com.tencent.connect.auth.QQToken;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,6 +46,14 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
 
                     updateAccounts(data);
 
+                    break;
+                case ServiceManager.Constants.ACTION_LOGIN_WITH_QQ:
+                    QQToken token = app.getQQAuth().getQQToken();
+                    doLogin(token.getOpenId(),token.getAccessToken());
+//                    dismissLoginProgressDialog();
+//                    startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//                    Log.i(TAG, "login success");
+//                    finish();
                     break;
             }
         }
@@ -97,6 +106,7 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
 
         mRootLayout.setOnSizeChangedListenner(this);
         findViewById(R.id.login_button).setOnClickListener(this);
+        findViewById(R.id.login_with_qq_button).setOnClickListener(this);
 
         mProgressDialog = new AlertDialog.Builder(this)
                 .setTitle("登录中，请稍候...")
@@ -122,25 +132,34 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.login_button:
-                // hide soft keyboard
-                // TODO move to utils
-                try{
-                    ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }catch(Exception e){}
-                String userName = mEtUserName.getText().toString();
-                String pwd = mEtPassword.getText().toString();
-
-                mLoginData = new Bundle();
-                if(TextUtils.isEmpty(userName) || TextUtils.isEmpty(pwd))return;
-                mLoginData.putString(ServiceManager.Constants.KEY_USER_NAME, userName);
-                mLoginData.putString(ServiceManager.Constants.KEY_PASSWORD, pwd);
-                app.doAction(ServiceManager.Constants.ACTION_LOGIN,mLoginData,listener);
-
+            case R.id.login_with_qq_button:
+                app.doAction(ServiceManager.Constants.ACTION_LOGIN_WITH_QQ,null,listener,this);
                 disableLoginActions();
                 showLoginProgressDialog();
                 break;
+            case R.id.login_button:
+                // hide soft keyboard
+                // TODO move to utils
+                String userName = mEtUserName.getText().toString();
+                String pwd = mEtPassword.getText().toString();
+                doLogin(userName,pwd);
+                break;
         }
+    }
+
+    private void doLogin(String userName,String pwd){
+        try{
+            ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch(Exception e){}
+
+        mLoginData = new Bundle();
+        if(TextUtils.isEmpty(userName) || TextUtils.isEmpty(pwd))return;
+        mLoginData.putString(ServiceManager.Constants.KEY_USER_NAME, userName);
+        mLoginData.putString(ServiceManager.Constants.KEY_PASSWORD, pwd);
+        app.doAction(ServiceManager.Constants.ACTION_LOGIN,mLoginData,listener);
+
+        disableLoginActions();
+        showLoginProgressDialog();
     }
 
     private void showLoginProgressDialog() {

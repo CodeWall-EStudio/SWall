@@ -3,7 +3,11 @@ package com.swall.tra.network;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import com.swall.tra.TRAApplication;
 import com.swall.tra.utils.AccountDatabaseHelper;
+import com.tencent.connect.UserInfo;
+import com.tencent.connect.auth.QQAuth;
+import com.tencent.connect.auth.QQToken;
 import org.apache.http.HttpHeaders;
 
 import java.lang.ref.WeakReference;
@@ -18,9 +22,15 @@ import java.util.Map;
 public abstract class ActionService {
     protected static Map<String, String> sRequestCookies = new HashMap<String, String>();
     public static Map<String, String> getRequestHeaders(){
-        if(sRequestCookies.isEmpty() || TextUtils.isEmpty(sEncodeKey)){
-            sRequestCookies.put(HttpHeaders.CACHE_CONTROL,"no-cache");
-            sRequestCookies.put("Cookie","skey="+sEncodeKey);
+//        if(sRequestCookies.isEmpty() || TextUtils.isEmpty(sEncodeKey)){
+//            sRequestCookies.put(HttpHeaders.CACHE_CONTROL,"no-cache");
+//            sRequestCookies.put("Cookie","skey="+sEncodeKey);
+//        }
+        if(sRequestCookies.isEmpty()){
+            TRAApplication app = TRAApplication.getApp();
+            QQAuth qqAuth = app.getQQAuth();
+            QQToken token = qqAuth.getQQToken();
+            sRequestCookies.put("Cookie","skey="+token.getAccessToken()+"; uid="+token.getOpenId());
         }
         return sRequestCookies;
     }

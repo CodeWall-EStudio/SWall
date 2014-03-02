@@ -30,7 +30,9 @@ public abstract class BaseActivity extends Activity {
         //Log.i("SWall",TAG+":onCreate");
         currentAccount = app.getCachedAccount();
         defaultRequestData = new Bundle();
-        defaultRequestData.putString(ServiceManager.Constants.KEY_USER_NAME,currentAccount.userName);
+        if(currentAccount != null){
+            defaultRequestData.putString(ServiceManager.Constants.KEY_USER_NAME,currentAccount.userName);
+        }
 
     }
 

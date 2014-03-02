@@ -163,6 +163,7 @@ public class ServiceManager {
         public static final int ACTION_JION_ACTIVITY                = 0x0e;
         public static final int ACTION_QUIT_ACTIVITY                = 0x0f;
         public static final int ACTION_UPLOAD_AUDIO                 = 0x10;
+        public static final int ACTION_LOGIN_WITH_QQ                = 0x11;
 
         public static final int UPLOAD_TYPE_TEXT = 0;
         public static final int UPLOAD_TYPE_IMAGE = 1;

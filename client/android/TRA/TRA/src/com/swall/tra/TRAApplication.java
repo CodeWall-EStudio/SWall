@@ -1,18 +1,26 @@
 package com.swall.tra;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.android.volley.toolbox.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
+import com.tencent.connect.auth.QQAuth;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
 import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -36,6 +44,8 @@ public class TRAApplication extends Application {
     public static final String KEY_SHOW_NAME = "show_name";
     public static final String KEY_ENCODE_KEY = "encode_key";
     public static final String KEY_LOGIN_TIME = "login_time";
+    public static final String QQ_APP_ID = "100548719";
+    private Tencent mTencent;
 
 
     private ServiceManager mServiceManager;
@@ -43,7 +53,7 @@ public class TRAApplication extends Application {
     private DownloadService mDownloadService;
     private UploadService mUploadService;
     private static TRAApplication sInstance;
-
+    private QQAuth mQAuth;
 
 
     public ActionListener listener = new ActionListener(null) {
@@ -71,6 +81,13 @@ public class TRAApplication extends Application {
 
     public TRAApplication(){
         sInstance = this;
+    }
+
+    public QQAuth getQQAuth(){
+        return mQAuth;
+    }
+    public Tencent getTencentContext(){
+        return mTencent;
     }
 
 
@@ -127,6 +144,12 @@ public class TRAApplication extends Application {
         initVolley();
         initUIL();
         updateCurrentAccount(getCachedAccount());
+
+
+        Context context = getApplicationContext();
+
+        mQAuth = QQAuth.createInstance(QQ_APP_ID,context);
+        mTencent = Tencent.createInstance(QQ_APP_ID, context);
     }
 
     private void initUIL() {
@@ -187,6 +210,12 @@ public class TRAApplication extends Application {
     private AccountInfo mAccountInfo;
     // ###########
     public AccountInfo getCachedAccount(){
+
+        QQAuth qAuth = getQQAuth();
+        if (qAuth != null && !qAuth.isSessionValid()) {
+            return new AccountInfo("","","","");
+        }
+
         if(mAccountInfo == null){
             Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME});
             String name = data.get(KEY_USER_NAME);
@@ -302,6 +331,39 @@ public class TRAApplication extends Application {
     }
     private SharedPreferences.Editor getSharedPreferencesEditor(String name){
         return getSharedPreferences(name).edit();
+    }
+
+    public void doAction(final int action, Object maybeNull, final ActionListener listener, final LoginActivity activity) {
+        switch(action){
+            case ServiceManager.Constants.ACTION_LOGIN_WITH_QQ:
+
+                TRAApplication.getApp().getTencentContext().loginWithOEM(activity, "all", new IUiListener() {
+                    @Override
+                    public void onComplete(Object o) {
+                        try {
+                            JSONObject result = new JSONObject(o.toString());
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("result",true);
+                            listener.onReceive(action,bundle);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onReceive(action,null);
+                            Toast.makeText(activity,"登录失败"+o.toString(),Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(UiError uiError) {
+                        listener.onReceive(action,null);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        listener.onReceive(action,null);
+                    }
+                }, "100548719", "100548719", "新媒体教研中心");
+                break;
+        }
     }
 
     // ############ 基本接口END  ####################

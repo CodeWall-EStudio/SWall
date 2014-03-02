@@ -168,7 +168,7 @@ public class DataService extends ActionService{
                         // TODO 分别处理网络错误
 
                         String str = error.toString();
-                        Log.e(TAG,action+" error:"+str,error);
+                        Log.e(TAG,action+" error:"+str+" "+error.getMessage()+error.getLocalizedMessage(),error);
                         try{
                             JSONObject response = new JSONObject(str);
                             if(!response.has("r") ||  !response.has("c")){

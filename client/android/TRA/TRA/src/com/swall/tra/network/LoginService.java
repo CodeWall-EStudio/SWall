@@ -20,6 +20,9 @@ import static com.swall.tra.network.ServiceManager.Constants;
 
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.NetworkUtils;
+import com.tencent.connect.UserInfo;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.UiError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -141,7 +144,8 @@ public class LoginService extends ActionService {
                 Constants.ACTION_GET_ACCOUNTS,// FIXME 如果后续需要多个帐号登录，可使用此 action
                 Constants.ACTION_LOGOUT,
                 Constants.ACTION_CHECK_PASSWORD, // TODO
-                Constants.ACTION_UPDATE_ACCOUNT
+                Constants.ACTION_UPDATE_ACCOUNT,
+                Constants.ACTION_LOGIN_WITH_QQ
         };
     }
 
@@ -176,27 +180,32 @@ public class LoginService extends ActionService {
                             result.putString(TRAApplication.KEY_USER_NAME,userName);
                             result.putString(TRAApplication.KEY_USER_PASSWORD,password);
                             boolean success = true;
-                            JSONObject o = null;
-                            try {
-                                o = new JSONObject(response);
-                                if(o != null){
-                                    JSONObject resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
-                                    String showName = JSONUtils.getString(resultObject,"userName","");
-                                    String encodeKey = JSONUtils.getString(resultObject,"encodeKey","");
-                                    if(TextUtils.isEmpty(encodeKey)){
-                                        success = false;
-                                    }else{
-                                        result.putString(TRAApplication.KEY_SHOW_NAME,showName);
-                                        result.putString(TRAApplication.KEY_ENCODE_KEY,encodeKey);
-                                        result.putLong(TRAApplication.KEY_LOGIN_TIME,System.currentTimeMillis());
-                                    }
-                                }else{
-                                    success =false;
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                success = false;
-                            }
+                            result.putString(TRAApplication.KEY_SHOW_NAME,"QQ登录用户");
+                            result.putString(TRAApplication.KEY_ENCODE_KEY,"-");
+                            result.putLong(TRAApplication.KEY_LOGIN_TIME,System.currentTimeMillis());
+
+//                            JSONObject o = null;
+//                            try {
+                                // 以下为非QQ登录的情况
+//                                o = new JSONObject(response);
+//                                if(o != null){
+//                                    JSONObject resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
+//                                    String showName = JSONUtils.getString(resultObject,"userName","");
+//                                    String encodeKey = JSONUtils.getString(resultObject,"encodeKey","");
+//                                    if(TextUtils.isEmpty(encodeKey)){
+//                                        success = false;
+//                                    }else{
+//                                        result.putString(TRAApplication.KEY_SHOW_NAME,showName);
+//                                        result.putString(TRAApplication.KEY_ENCODE_KEY,encodeKey);
+//                                        result.putLong(TRAApplication.KEY_LOGIN_TIME,System.currentTimeMillis());
+//                                    }
+//                                }else{
+//                                    success =false;
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                                success = false;
+//                            }
                             result.putBoolean(ServiceManager.Constants.KEY_STATUS,success);
                             notifyListener(Constants.ACTION_LOGIN,result,tmpListenerList);
                             tmpListenerList.clear();
