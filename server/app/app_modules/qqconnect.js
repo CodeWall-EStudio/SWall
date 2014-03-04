@@ -4,15 +4,27 @@ var http = require('http'),
     _ = require('underscore')._;
 
 
-var APP_ID = '101029853',
-    APP_SECRET = 'ee6a36c9eb6f01fde2dbbd4170e5ddaa',
-    OAUTH2_REDIRECT = 'http://media.71xiaoxue.com/qqconnect/redirect';
+var APP_ID = '101031164',
+    APP_SECRET = '634bfd7a03d309102a21cebba40eafb3',
+    OAUTH2_REDIRECT = 'http://qwall.codewalle.com/qqconnect/redirect';
 
 
 //localStorage
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./qqconnect');
+}
+
+
+function gotoQQLogin(req, res){
+    var callbackURL = req.query['callback'] || '',
+        scope = req.query['scope'] || 'get_user_info';
+    res.redirect('https://graph.qq.com/oauth2.0/authorize' +
+        '?response_type=code' +
+        '&client_id=' + APP_ID +
+        '&redirect_uri=' + encodeURIComponent(OAUTH2_REDIRECT) +
+        '&state=' + callbackURL +
+        '&scope=' + scope);
 }
 
 
@@ -24,7 +36,11 @@ if (typeof localStorage === "undefined" || localStorage === null) {
  */
 function handleAuthorizationRedirect(req, callback){
     //取得authorization code換取access token
-    var authorizationCode = req.query['code'];
+    var authorizationCode = req.query['code'],
+        callbackURL = req.query['state'];
+    if(!callbackURL.match(/^(http|https):\/\//)){
+        callbackURL = '';
+    }
     fetchAccessToken(authorizationCode, function(accessToken){
         if(accessToken && accessToken.length){
             //access token到手後，獲取openid
@@ -41,9 +57,9 @@ function handleAuthorizationRedirect(req, callback){
                         if(userInfo){
                             //用戶信息成功獲取後，將信息存儲起來
                             localStorage.setItem('user.profile.' + openID, JSON.stringify(userInfo));
-                            callback(0, tokens, userInfo);
+                            callback(0, tokens, userInfo, callbackURL);
                         }
-                        else callback(3, tokens);
+                        else callback(3, tokens, null, callbackURL);
                     });
                 }
                 else callback(2);
@@ -58,7 +74,27 @@ function response401IfUnauthoirzed(req, res, callback){
     var accessToken = req.cookies['skey'],
         openID = req.cookies['uid'];
     //檢查cookie里是否有access token和openid
+    console.log('[AuthCheck] accessToken=' + accessToken + ', openID=' + openID);
     if(accessToken && openID){
+        //发请求获取用户的user info
+        console.log('[AuthCheck] fetching userInfo ...');
+        fetchUserInfo(accessToken, openID, function(userInfo){
+            console.log('[AuthCheck] userInfo:', userInfo);
+            if(userInfo && !userInfo.ret){
+                //存起来先
+                localStorage.setItem('user.tokens.' + openID, JSON.stringify(accessToken));
+                localStorage.setItem('user.profile.' + openID, JSON.stringify(userInfo));
+
+                //回调表示验证成功
+                callback({
+                    name: userInfo.nickname,
+                    loginName: openID
+                });
+            }
+            else res.json(401, {c:10, m:'Unauthorized'});
+        });
+        /*
+        你傻啦？没在你web登录过的用户不就都没法登录咩，客户端怎么办！
         //從localStorage里讀取tokens和profile記錄
         var storedTokens = localStorage.getItem('user.tokens.' + openID),
             storedUserInfo = localStorage.getItem('user.profile.' + openID);
@@ -78,9 +114,9 @@ function response401IfUnauthoirzed(req, res, callback){
             catch(e){
 
             }
-        }
+        }*/
     }
-    res.json(401, {c:10, m:'Unauthorized'});
+    else res.json(401, {c:10, m:'Unauthorized'});
 }
 
 
@@ -101,6 +137,10 @@ function getProfilesOfUids(uids, callback){
     }, {});
     if(callback) callback(null, profiles);
     else return profiles;
+}
+function getMyProfile(req){
+    var openID = req.cookies['uid'];
+    return openID ? getProfileOfUid(openID) : null;
 }
 
 
@@ -214,8 +254,10 @@ exports.api = {
         APP_SECRET: APP_SECRET,
         OAUTH2_REDIRECT: OAUTH2_REDIRECT
     },
+    gotoQQLogin:                    gotoQQLogin,
     handleAuthorizationRedirect:    handleAuthorizationRedirect,
     response401IfUnauthoirzed:      response401IfUnauthoirzed,
     getProfileOfUid:                getProfileOfUid,
-    getProfilesOfUids:              getProfilesOfUids
+    getProfilesOfUids:              getProfilesOfUids,
+    getMyProfile:                   getMyProfile
 };

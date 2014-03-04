@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = 8090,
+var PORT = 8889,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -125,6 +125,7 @@ app.get('/activities', function(req, res){
     authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             query = {};
+        console.log('[GET /activities] uid=' + uid, 'query=', query, 'userInfo=', userInfo);
 
         //根據活動狀態過濾，active(true) | closed(false)
         var status = req.query['status'];
@@ -210,6 +211,7 @@ app.get('/activities', function(req, res){
                         res.json(200, {c:0, r:{
                             activities:docs,
                             profiles: profiles,
+                            me: authModule.getMyProfile(req),
                             more:hasMore
                         }});
                     });
@@ -241,12 +243,12 @@ app.get('/activities/:aid', function(req, res){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']);
 
-        getActivityByID(uid, aid, function(status, err, result){
+        getActivityByID(req, uid, aid, function(status, err, result){
             res.json(status, result);
         });
     });
 });
-function getActivityByID(uid, aid, callback){
+function getActivityByID(req, uid, aid, callback){
     var query = {
             '_id': aid,
             '$or': [
@@ -262,8 +264,19 @@ function getActivityByID(uid, aid, callback){
             }
             else { //有返回活動，繼續去拉取用戶信息
                 authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
-                    if(err) callback(500, err, {c:1, m:err.message}); //拉取用戶信息出錯
-                    else callback(200, null, {c:0, r:doc, profiles:profiles}); //正常
+                    if(err){
+                        //拉取用戶信息出錯
+                        callback(500, err, {c:1, m:err.message});
+                    }
+                    else{
+                        //正常
+                        callback(200, null, {
+                            c:0,
+                            r:doc,
+                            profiles:profiles,
+                            me: authModule.getMyProfile(req)
+                        });
+                    }
                 });
             }
         }
@@ -363,7 +376,7 @@ app.put('/activities/:aid', function(req, res){
                 db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){
                     if(err) res.json(500, {c:1, m:err.message});
                     else {
-                        getActivityByID(uid, aid, function(status, err, result){
+                        getActivityByID(req, uid, aid, function(status, err, result){
                             res.json(status, result);
                         });
                     }
@@ -420,7 +433,7 @@ app.post('/activities/:aid/participators', function(req, res){
                     if(err)         res.json(500, {c:1, m:err.message});
                     else if(!count) res.json(401, {c:0});
                     else {
-                        getActivityByID(uid, aid, function(status, err, result){
+                        getActivityByID(req, uid, aid, function(status, err, result){
                             res.json(status, result);
                         });
                     }
@@ -497,7 +510,7 @@ app.post('/activities/:aid/resources', function(req, res){
                 if(err)         res.json(500, {c:1, m:err.message});
                 else if(!count) res.json(404, {c:0});
                 else {
-                    getActivityByID(uid, aid, function(status, err, result){
+                    getActivityByID(req, uid, aid, function(status, err, result){
                         res.json(status, result);
                     });
                 }
@@ -773,19 +786,24 @@ app.put('/activities/:aid/videos/:vid', function(req, res){
 
 //跳轉到QQ互聯登錄
 app.get('/qqconnect/login', function(req, res){
-    res.redirect('https://graph.qq.com/oauth2.0/authorize' +
-        '?response_type=code' +
-        '&client_id=' + qqconnect.constants.APP_ID +
-        '&redirect_uri=' + encodeURIComponent(qqconnect.constants.OAUTH2_REDIRECT) +
-        '&state=0' +
-        '&scope=get_user_info');
+    qqconnect.gotoQQLogin(req, res);
 });
 
 
 //處理QQ互聯登錄回調
 app.get('/qqconnect/redirect', function(req, res){
-    qqconnect.handleAuthorizationRedirect(req, function(ret, tokens, userInfo){
-        if(!ret && tokens && userInfo){
+    qqconnect.handleAuthorizationRedirect(req, function(ret, tokens, userInfo, callbackURL){
+        if (callbackURL && callbackURL.length){
+            var url = decodeURIComponent(callbackURL);
+            if(url.indexOf('?') == -1) url += '?';
+            if(tokens && userInfo){
+                url += 'access_token=' + tokens.accessToken
+                    + '&openid=' + tokens.openID
+                    + '&nickname=' + encodeURIComponent(userInfo.nickname);
+            }
+            res.redirect(url);
+        }
+        else if(!ret && tokens && userInfo){
             //種cookie並重定向回到首頁
             var expiresDate = new Date(Date.now() + 3600000*24*30),//accessToken系一個月有效的
                 options = {path:'/', expires:expiresDate};
