@@ -48,12 +48,16 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
 
                     break;
                 case ServiceManager.Constants.ACTION_LOGIN_WITH_QQ:
-                    QQToken token = app.getQQAuth().getQQToken();
-                    doLogin(token.getOpenId(),token.getAccessToken());
-//                    dismissLoginProgressDialog();
-//                    startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//                    Log.i(TAG, "login success");
-//                    finish();
+//                    QQToken token = app.getQQAuth().getQQToken();
+//                    doLogin(token.getOpenId(),token.getAccessToken());
+                    dismissLoginProgressDialog();
+                    if(data == null){
+                        enableLoginActoins();
+                    }else{
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        Log.i(TAG, "login success");
+                        finish();
+                    }
                     break;
             }
         }

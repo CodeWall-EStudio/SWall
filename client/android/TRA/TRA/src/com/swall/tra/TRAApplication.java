@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
 import com.tencent.connect.auth.QQAuth;
+import com.tencent.connect.auth.QQToken;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
@@ -44,7 +45,9 @@ public class TRAApplication extends Application {
     public static final String KEY_SHOW_NAME = "show_name";
     public static final String KEY_ENCODE_KEY = "encode_key";
     public static final String KEY_LOGIN_TIME = "login_time";
-    public static final String QQ_APP_ID = "100548719";
+    public static final String QQ_APP_ID = "100548719";//hord
+//    public static final String QQ_APP_ID = "101031164";// oscar
+    //"";
     private Tencent mTencent;
 
 
@@ -189,6 +192,8 @@ public class TRAApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         sInstance = null;
+        mQAuth = null;
+        mTencent = null;
     }
 
     public void addObserver(int action, ActionListener listener) {
@@ -211,12 +216,15 @@ public class TRAApplication extends Application {
     // ###########
     public AccountInfo getCachedAccount(){
 
-        QQAuth qAuth = getQQAuth();
-        if (qAuth != null && !qAuth.isSessionValid()) {
-            return new AccountInfo("","","","");
-        }
 
         if(mAccountInfo == null){
+
+
+            QQAuth qAuth = getQQAuth();
+            if (qAuth != null && !qAuth.isSessionValid()) {
+                return new AccountInfo("","","","");
+            }
+
             Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME});
             String name = data.get(KEY_USER_NAME);
             String password = data.get(KEY_USER_PASSWORD);
@@ -344,24 +352,35 @@ public class TRAApplication extends Application {
                             JSONObject result = new JSONObject(o.toString());
                             Bundle bundle = new Bundle();
                             bundle.putBoolean("result",true);
+
+                            QQToken token = mQAuth.getQQToken();
+                            AccountInfo accountInfo = new AccountInfo(
+                                    token.getOpenId(),
+                                    "",
+                                    "QQ用户",
+                                    token.getAccessToken());
+                            updateCurrentAccount(accountInfo);
                             listener.onReceive(action,bundle);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             listener.onReceive(action,null);
                             Toast.makeText(activity,"登录失败"+o.toString(),Toast.LENGTH_SHORT).show();
+                            updateCurrentAccount(null);
                         }
                     }
 
                     @Override
                     public void onError(UiError uiError) {
                         listener.onReceive(action,null);
+                        updateCurrentAccount(null);
                     }
 
                     @Override
                     public void onCancel() {
                         listener.onReceive(action,null);
+                        updateCurrentAccount(null);
                     }
-                }, "100548719", "100548719", "新媒体教研中心");
+                }, QQ_APP_ID, QQ_APP_ID, "新媒体教研中心");
                 break;
         }
     }

@@ -73,6 +73,9 @@ public abstract class ActionService {
         }
         notifyListener(action,data);
     }
+    protected void notifyListenerError(final int action, final Exception error, final ActionListener localListener){
+
+    }
     protected void notifyListener(final int action,final Bundle data){
         ServiceManager manager =managerRef.get();
         if(manager != null){

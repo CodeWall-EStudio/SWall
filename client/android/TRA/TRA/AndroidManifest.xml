@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.swall.tra"
           android:versionCode="16"
-          android:versionName="1.0_0224">
+          android:versionName="1.0_0305_QQ">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -67,7 +67,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="tencent100548719" /><!-- 100380359 100381104 222222 -->
+                <!--<data android:scheme="tencent101031164" />-->
+                <!-- osc -->
+
+
+                <!-- hor -->
+                <data android:scheme="tencent100548719" />
             </intent-filter>
         </activity>
         <activity android:name="com.tencent.connect.avatar.ImageActivity" />

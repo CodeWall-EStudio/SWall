@@ -65,8 +65,8 @@ public class ServiceManager {
         public static void setEnv(int env){
             switch (env){
                 case Constants.ENV_PUBLISH:
-                    DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
-                    FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
+                    DATA_URL_PREFIX = "http://qwall.codewalle.com/";
+                    FILE_SERVER_URL = "http://qzone.codewalle.com/";
                     break;
                 case Constants.ENV_TEST:
                     DATA_URL_PREFIX = "http://swall.71xiaoxue.com/";
