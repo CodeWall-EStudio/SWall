@@ -76,8 +76,8 @@ app.post('/activities', function(req, res){
                 if(type){
                     if(ts > (new Date()).getTime()){ //活动开始时间必须比现在要晚
                         if(teacher){
-                            if(grade){
-                                if(cls){
+                            if(grade && grade !== 'undefined'){
+                                if(cls && cls !== 'undefined'){
                                     if(subject){
                                         if(domain){
                                             var doc = {
@@ -349,9 +349,10 @@ app.put('/activities/:aid', function(req, res){
                         updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
                     }
 
-                    if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
+                    //if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
                     if(type)        updates['info.type']            = type;
                     if(ts)          updates['info.date']            = ts;
+                    if(desc)        updates['info.desc']            = utf8.substr(desc,     0, LONG_STR_MAXLEN);
                     if(title)       updates['info.title']           = utf8.substr(title,    0, SHORT_STR_MAXLEN);
                     if(teacher)     updates['info.teacher']         = utf8.substr(teacher,  0, SHORT_STR_MAXLEN);
                     if(grade)       updates['info.grade']           = utf8.substr(grade,    0, SHORT_STR_MAXLEN);

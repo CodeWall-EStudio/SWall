@@ -6,6 +6,10 @@ body.fixedTopNavbar{
     margin-bottom: 30px;
 }
 
+a{
+    cursor: pointer;
+}
+
 .hbox{
     display: -webkit-box;
     -webkit-box-orient: horizontal;

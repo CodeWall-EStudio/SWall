@@ -95,18 +95,19 @@ angular.module('ts.controllers.activityPanel', [
                 $scope.errMsg = '';
                 disableFields();
 
-                var config = $scope.config ? $scope.config.activityConfig : {};
-                console.log(config, $scope.activity);
-                var params = {
+                var config = $scope.config ? $scope.config.activityConfig : {},
+                    gradeConfig = config.classes[$scope.grade],
+                    subjectConfig = config.subjects[$scope.subject],
+                    params = {
                     uids:       $scope.invitedUsers || '',
                     title:      $scope.activity.info.title || '',
                     type:       $scope.activity.info.type|1,
                     desc:       $scope.activity.info.desc || '',
                     date:       UtilService.time.datetimePickerValueToTs($scope.activity.info.date),
                     teacher:    $scope.activity.info.teacher || '',
-                    grade:      config.classes[$scope.grade].grade,
-                    'class':    config.classes[$scope.grade].cls[$scope.cls],
-                    subject:    config.subjects[$scope.subject],
+                    grade:      gradeConfig ? gradeConfig.grade : '',
+                    'class':    gradeConfig ? gradeConfig.cls[$scope.cls] : '',
+                    subject:    subjectConfig || '',
                     domain:     $scope.activity.info.domain || ''
                 };
                 ActivityService.createActivity(
@@ -170,7 +171,22 @@ angular.module('ts.controllers.activityPanel', [
             }
             function handleActivityCreatedOrUpdatedFail(data, status){
                 data = data || {c:-1, msg:'UNKNOWN'};
-                $scope.errMsg = status + ' - [' + data.c + '] ' + data.m;
+                var message = '其他未知错误';
+                switch(data.c){
+                    case 1:     message = '后台其他错误'; break;
+                    case 10:    message = '用户尚未登录'; break;
+                    case 10000: message = '用户权限填写不正确'; break;
+                    case 10010: message = '活动标题填写不正确'; break;
+                    case 10020: message = '活动类型填写不正确'; break;
+                    case 10040: message = '活动日期填写不正确，必须晚于当前时间！'; break;
+                    case 10050: message = '出课教师填写不正确'; break;
+                    case 10060: message = '年级填写不正确'; break;
+                    case 10070: message = '班级填写不正确'; break;
+                    case 10080: message = '学科填写不正确'; break;
+                    case 10090: message = '课题填写不正确'; break;
+                }
+                //$scope.errMsg = status + ' - [' + data.c + '] ' + data.m;
+                $scope.errMsg = '[' + status + '|' + data.c + ']' + message;
                 enableFields();
             }
 

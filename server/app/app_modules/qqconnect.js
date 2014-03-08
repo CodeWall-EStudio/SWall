@@ -4,8 +4,8 @@ var http = require('http'),
     _ = require('underscore')._;
 
 
-var APP_ID = '101031164',
-    APP_SECRET = '634bfd7a03d309102a21cebba40eafb3',
+var APP_ID = '100548719',
+    APP_SECRET = '9e47324ac7fed9f8364d4982ccf3037e',
     OAUTH2_REDIRECT = 'http://qwall.codewalle.com/qqconnect/redirect';
 
 
@@ -38,7 +38,7 @@ function handleAuthorizationRedirect(req, callback){
     //取得authorization code換取access token
     var authorizationCode = req.query['code'],
         callbackURL = req.query['state'];
-    if(!callbackURL.match(/^(http|https):\/\//)){
+    if(!callbackURL || !callbackURL.match(/^(http|https):\/\//)){
         callbackURL = '';
     }
     fetchAccessToken(authorizationCode, function(accessToken){

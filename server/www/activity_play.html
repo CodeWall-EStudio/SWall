@@ -4,7 +4,7 @@
     <title>{{activity.info.title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140227001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140308001" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
@@ -343,7 +343,7 @@
                         <input type="text" name="skey" ng-model="skey" style="display: none"/>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" ng-value="submitLabel()" class="btn btn-success"
+                        <input ng-value="submitLabel()" class="btn btn-success"
                                 ng-disabled="!videoName || !videoFile || videoIsUploading || videoIsAdding"
                                 ng-click="startUpload()"/>
                             <!--<span ng-show="!videoIsReading && !videoIsUploading && !videoIsAdding">添加</span>
@@ -361,8 +361,8 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="https://www.google.com/jsapi"></script>
-    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
-    <script src="js/activityPlay.min.js?20140227001"></script>
+    <!--<script src="https://www.google.com/jsapi"></script>
+    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>-->
+    <script src="js/activityPlay.min.js?20140308002"></script>
 </body>
 </html>

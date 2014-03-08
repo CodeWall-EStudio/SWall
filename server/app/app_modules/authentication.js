@@ -154,11 +154,13 @@ function fetchOrganizationTreeEveryHour(){
         }
     });
 }
-//每小時自動同步一次組織信息
+
+//QQ登錄這邊不需要這個操作了
+/*//每小時自動同步一次組織信息
 every('1h').do(function(){
     fetchOrganizationTreeEveryHour();
 });
-fetchOrganizationTreeEveryHour();
+fetchOrganizationTreeEveryHour();*/
 
 
 function getProfileOfUid(uid, callback){
