@@ -12,7 +12,8 @@ import java.util.ArrayList;
 public class JSONUtils {
     public static String getString(JSONObject object,String key,String defaultValue){
         try{
-            return object.getString(key);
+            String result = object.getString(key);
+            return result == null ? "":result;
         }catch (Exception e){
             return defaultValue;
         }
