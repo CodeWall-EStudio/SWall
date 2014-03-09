@@ -9,6 +9,11 @@ body{
     -webkit-box-orient: vertical;
 }
 
+.container{
+    margin-left: 0;
+    padding-left: 0;
+}
+
 #topNavBar{
     box-shadow: none;
 }
