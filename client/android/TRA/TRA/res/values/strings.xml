@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">新媒体教研中心</string>
+    <string name="app_name">新媒体教研中心(QQ登录)</string>
     <string name="tab_current_activities">当前活动</string>
     <string name="tab_expired_activities">历史活动</string>
     <string name="tab_settings">设置</string>

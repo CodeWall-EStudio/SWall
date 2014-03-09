@@ -9,10 +9,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.swall.tra.R;
-import com.swall.tra.TRAApplication;
-import com.swall.tra.model.AccountInfo;
-import com.swall.tra.network.ServiceManager;
+import com.swall.tra_qq.R;
+import com.swall.tra_qq.TRAApplication;
+import com.swall.tra_qq.model.AccountInfo;
+import com.swall.tra_qq.network.ServiceManager;
 import com.umeng.analytics.MobclickAgent;
 
 /**

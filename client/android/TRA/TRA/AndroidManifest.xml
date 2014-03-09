@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.swall.tra"
-          android:versionCode="16"
-          android:versionName="1.0_0305_QQ">
+          package="com.swall.tra_qq"
+          android:versionCode="1"
+          android:versionName="1.0_0309_QQ">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

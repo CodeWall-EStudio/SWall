@@ -45,4 +45,4 @@
 # 以下包不进行过滤
 -keep class com.umeng.** { *; }
 
--keep class com.swall.tra.R$*
+-keep class com.swall.tra_qq.R$*

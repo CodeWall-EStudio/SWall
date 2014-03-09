@@ -5,7 +5,7 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
-    <com.swall.tra.widget.ImageViewTouch
+    <com.swall.tra_qq.widget.ImageViewTouch
             android:id="@+id/imageview"
             android:scaleType="fitCenter"
             android:clickable="true"
