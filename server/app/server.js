@@ -1,11 +1,12 @@
-var fs      = require('fs'),
-    express = require('express'),
-    connect = require('connect'),
-    mongodb = require('mongodb'),
-    _       = require('underscore')._,
-    db      = require('./app_modules/db'),
-    auth    = require('./app_modules/authentication').api,
-    utf8    = require('./app_modules/utf8');
+var fs          = require('fs'),
+    express     = require('express'),
+    connect     = require('connect'),
+    mongodb     = require('mongodb'),
+    _           = require('underscore')._,
+    db          = require('./app_modules/db'),
+    auth        = require('./app_modules/authentication').api,
+    qqconnect   = require('./app_modules/qqconnect').api,
+    utf8        = require('./app_modules/utf8');
 
 
 var PORT = 8090,
@@ -14,10 +15,12 @@ var PORT = 8090,
 
 var SHORT_STR_MAXLEN = 90,
     LONG_STR_MAXLEN = 450,
-    LONG_CONTENT_MAXLEN = 600;
+    LONG_CONTENT_MAXLEN = 600,
+    USER_QQ_OAUTH2 = false;
 
 
-var app = express();
+var app = express(),
+    authModule = USER_QQ_OAUTH2 ? qqconnect : auth;
 
 //allows CORS
 var allowCrossDomain = function(req, res, next) {
@@ -52,7 +55,7 @@ app.use(express.static(__dirname + '/../www'));
 
 //创建活动
 app.post('/activities', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid     = userInfo['loginName'];
         var rawUids = req.body['uids'],
             uids    = rawUids ? rawUids.split(',') : [],
@@ -119,7 +122,7 @@ app.post('/activities', function(req, res){
 
 //获取活动列表
 app.get('/activities', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             query = {};
 
@@ -203,7 +206,7 @@ app.get('/activities', function(req, res){
                     _.each(docs, function(doc){
                         allUids = _.union(allUids, getAllUidsOfActivity(doc));
                     });
-                    auth.getProfilesOfUids(allUids, function(err, profiles){
+                    authModule.getProfilesOfUids(allUids, function(err, profiles){
                         res.json(200, {c:0, r:{
                             activities:docs,
                             profiles: profiles,
@@ -234,7 +237,7 @@ app.get('/activities/config', function(req, res){
 
 //获取单个活动
 app.get('/activities/:aid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']);
 
@@ -258,7 +261,7 @@ function getActivityByID(uid, aid, callback){
                 callback(404, null, {c:0});
             }
             else { //有返回活動，繼續去拉取用戶信息
-                auth.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
+                authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
                     if(err) callback(500, err, {c:1, m:err.message}); //拉取用戶信息出錯
                     else callback(200, null, {c:0, r:doc, profiles:profiles}); //正常
                 });
@@ -270,7 +273,7 @@ function getActivityByID(uid, aid, callback){
 
 //删除活动
 app.delete('/activities/:aid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             query = {
@@ -296,7 +299,7 @@ app.delete('/activities/:aid', function(req, res){
 
 //更新活动
 app.put('/activities/:aid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']);
 
@@ -378,7 +381,7 @@ app.put('/activities/:aid', function(req, res){
 
 //参与活动
 app.post('/activities/:aid/participators', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             //这是用来检查我是否已经加入别的活动的
@@ -429,7 +432,7 @@ app.post('/activities/:aid/participators', function(req, res){
 
 //退出活动
 app.delete('/activities/:aid/participators/:uid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             //找出指定id且我已经参与的活动
@@ -460,7 +463,7 @@ app.delete('/activities/:aid/participators/:uid', function(req, res){
 
 
 app.post('/activities/:aid/resources', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             type = parseInt(req.body['type'])||0,
@@ -505,7 +508,7 @@ app.post('/activities/:aid/resources', function(req, res){
 });
 
 app.get('/activities/:aid/resources', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             index = parseInt(req.query['index'])||0,
@@ -542,7 +545,7 @@ app.get('/activities/:aid/resources', function(req, res){
 });
 
 app.delete('/activities/:aid/resources/:rid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             rid = new mongodb.ObjectID(req.params['rid']),
@@ -574,7 +577,7 @@ app.delete('/activities/:aid/resources/:rid', function(req, res){
 
 //TODO 統計直接由前端做就可以了吧
 app.get('/activities/:aid/stat/topUsers', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']),
             count = parseInt(req.query['n']),
@@ -614,7 +617,7 @@ app.get('/activities/:aid/stat/topTimes', function(req, res){
 
 
 app.post('/activities/:aid/videos', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid         = userInfo['loginName'],
             aid         = new mongodb.ObjectID(req.params['aid']),
             src         = req.body['src'],
@@ -668,7 +671,7 @@ app.post('/activities/:aid/videos', function(req, res){
 
 
 app.delete('/activities/:aid/videos/:vid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid         = userInfo['loginName'],
             aid         = new mongodb.ObjectID(req.params['aid']),
             vid         = req.params['vid'];
@@ -704,7 +707,7 @@ app.delete('/activities/:aid/videos/:vid', function(req, res){
 
 
 app.put('/activities/:aid/videos/:vid', function(req, res){
-    auth.response401IfUnauthoirzed(req, res, function(userInfo){
+    authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid         = userInfo['loginName'],
             aid         = new mongodb.ObjectID(req.params['aid']),
             vid         = req.params['vid'],
@@ -768,6 +771,35 @@ app.put('/activities/:aid/videos/:vid', function(req, res){
 // 登錄與用戶相關
 
 
+//跳轉到QQ互聯登錄
+app.get('/qqconnect/login', function(req, res){
+    res.redirect('https://graph.qq.com/oauth2.0/authorize' +
+        '?response_type=code' +
+        '&client_id=' + qqconnect.constants.APP_ID +
+        '&redirect_uri=' + encodeURIComponent(qqconnect.constants.OAUTH2_REDIRECT) +
+        '&state=0' +
+        '&scope=get_user_info');
+});
+
+
+//處理QQ互聯登錄回調
+app.get('/qqconnect/redirect', function(req, res){
+    qqconnect.handleAuthorizationRedirect(req, function(ret, tokens, userInfo){
+        if(!ret && tokens && userInfo){
+            //種cookie並重定向回到首頁
+            var expiresDate = new Date(Date.now() + 3600000*24*30),//accessToken系一個月有效的
+                options = {path:'/', expires:expiresDate};
+            res.cookie('uid', tokens.openID, options);
+            res.cookie('skey', tokens.accessToken, options);
+            res.redirect('/teacher_space.html');
+        }
+        else {
+            res.json(500, {ret:ret, tokens:tokens, userInfo:userInfo});
+        }
+    });
+});
+
+
 //登錄
 app.put('/users/:uid/login', function(req, res){
     var uid = req.params['uid'],
@@ -778,11 +810,11 @@ app.put('/users/:uid/login', function(req, res){
             if(!error && status==200){
                 if(result){
                     var expiresDate = new Date(Date.now() + 3600000*24),
-                        options = {/*domain:'...', */path:'/', expires:expiresDate},
-                        options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate};
+                        options = {/*domain:'...', */path:'/', expires:expiresDate}/*,
+                        options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate}*/;
                     res.cookie('uid', uid, options);
                     res.cookie('skey', result.skey, options);
-                    res.cookie('skey', result.skey, options2);
+                    //res.cookie('skey', result.skey, options2);
                     res.json(200, result);
                 }
                 else res.send(401);
@@ -796,7 +828,7 @@ app.put('/users/:uid/login', function(req, res){
 //獲取指定用戶的昵稱
 app.get('/users/:uid/profile', function(req, res){
     var uid = req.params['uid'];
-    auth.getProfileOfUid(uid, function(err, reply){
+    authModule.getProfileOfUid(uid, function(err, reply){
         if(err)         res.send(500);
         else if(!reply) res.send(404);
         else            res.json(200, reply);
@@ -806,7 +838,7 @@ app.get('/users/:uid/profile', function(req, res){
 
 //獲取所有用戶的昵稱
 app.get('/users/profiles', function(req, res){
-    auth.fetchOrganizationTree(req.cookies['skey'], function(error, status, result){
+    authModule.fetchOrganizationTree(req.cookies['skey'], function(error, status, result){
         if(!error && status == 200) res.json(200, result);
         else res.json(500);
     });
