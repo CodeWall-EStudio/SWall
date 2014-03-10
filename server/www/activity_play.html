@@ -318,24 +318,26 @@
     <div class="modal fade" id="uploadMainVideoModal" ng-controller="MainVideoUploaderController">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="uploadMainVideoForm" action="http://szone.71xiaoxue.com/upload" method="post" target="uploadCallback" enctype="multipart/form-data">
+                <!--<form id="uploadMainVideoForm" action="http://szone.71xiaoxue.com/upload" method="post" target="uploadCallback" enctype="multipart/form-data">-->
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                         <h4 class="modal-title">添加主视频</h4>
                     </div>
                     <div class="modal-body">
-                        <!--<form role="form">
+                        <form role="form">
                             <div class="form-group">
                                 <label for="mainVideoName">主视频名</label>
-                                <input type="text" ng-model="videoName" class="form-control" id="mainVideoName">
+                                <input type="text" ng-model="videoName" class="form-control" id="mainVideoName"
+                                       ng-disabled="videoIsUploading || videoIsAdding">
                             </div>
                             <div class="form-group">
                                 <label for="mainVideoFile">主视频文件</label>
-                                <input type="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()">
+                                <input type="file" id="mainVideoFile" onchange="angular.element(this).scope().onSelectedFile()"
+                                       ng-disabled="videoIsUploading || videoIsAdding">
                                 <p class="help-block">请选择主视频文件并点击“添加”按钮</p>
                             </div>
-                        </form>-->
-                        <div class="form-group">
+                        </form>
+                        <!--<div class="form-group">
                             <label for="mainVideoName">主视频名</label>
                             <input type="text" ng-model="videoName" class="form-control" id="mainVideoName">
                         </div>
@@ -345,20 +347,18 @@
                         </div>
                         <input type="text" name="fromweb" value="1" style="display: none"/>
                         <input type="text" name="media" value="1" style="display: none"/>
-                        <input type="text" name="skey" ng-model="skey" style="display: none"/>
+                        <input type="text" name="skey" ng-model="skey" style="display: none"/>-->
                     </div>
                     <div class="modal-footer">
-                        <input ng-value="submitLabel()" class="btn btn-success"
+                        <button class="btn btn-success"
                                 ng-disabled="!videoName || !videoFile || videoIsUploading || videoIsAdding"
-                                ng-click="startUpload()"/>
-                            <!--<span ng-show="!videoIsReading && !videoIsUploading && !videoIsAdding">添加</span>
-                            <span ng-show="videoIsReading">请稍后...</span>
-                            <span ng-show="videoIsUploading">上传中...</span>
-                            <span ng-show="videoIsAdding">请稍后...</span>
-                        </input>-->
-                        <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                                ng-click="startUpload()">
+                            {{submitLabel()}}
+                        </button>
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>-->
+                        <button type="button" class="btn btn-default" ng-click="cancelUpload()">取消</button>
                     </div>
-                </form>
+                <!--</form>-->
                 <iframe style="display: none" src="uploadCallback.html" name="uploadCallback"></iframe>
             </div>
         </div>
