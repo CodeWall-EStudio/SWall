@@ -204,6 +204,13 @@ body{
     right: 15px;
     padding: 4px 8px;
 }
+#mainVideos .player .videoArea{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 15px;
+    bottom: 50px;
+}
 #mainvideos .thumbnails{
     margin-bottom: 10px;
 }

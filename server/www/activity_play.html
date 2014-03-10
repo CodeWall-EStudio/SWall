@@ -170,9 +170,8 @@
                     </div>
                     <div class="player">
                         <!--<div class="videoInfo">{{selectedMainVideo.name}}</div>-->
-                        <video id="player" controls="controls"
-                               ng-click="toggleVideoPlayer()"
-                               ng-src="{{selectedMainVideo.url}}"></video>
+                        <video id="player" controls="controls" ng-src="{{selectedMainVideo.url}}"></video>
+                        <div class="videoArea" ng-click="toggleVideoPlayer()"></div>
                     </div>
                     <ul class="thumbnails">
                         <li ng-repeat="video in mainVideos" ng-hide="video == selectedMainVideo">
