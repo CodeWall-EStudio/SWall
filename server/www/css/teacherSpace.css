@@ -21,6 +21,10 @@
     margin-bottom: 0;
 }
 
+.panel-title{
+    cursor: pointer;
+}
+
 #activityList{
     min-height: 400px;
     border: 1px rgb(211,214,218) solid;

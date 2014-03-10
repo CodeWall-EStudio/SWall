@@ -156,6 +156,7 @@ angular.module('ts.services.activity', [
                     });
             }
 
+            //关闭活动
             function closeActivity(activityID, success, error){
                 updateActivity(activityID, {status:'closed'}, success, error);
             }

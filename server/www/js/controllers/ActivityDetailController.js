@@ -60,8 +60,10 @@ angular.module('ts.controllers.activityDetail', [
             };
 
             $scope.deleteActivity = function(){
-                if(confirm('確定要刪除活動？')){
-                    ActivityService.deleteActivity($rootScope.selectedActivity._id);
+                if(confirm('确定要删除活动？')){
+                    ActivityService.deleteActivity($rootScope.selectedActivity._id, null, function(){
+                        alert('删除活动失败，请注意：有资源或有用户加入的活动不能删除');
+                    });
                 }
             };
 

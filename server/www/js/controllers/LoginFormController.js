@@ -44,8 +44,8 @@ angular.module('ts.controllers.loginForm', [
             });
 
             //NOTE 20140302 QQ登錄改造，改用QQ互聯OAUTH2登錄
-            if(!UserService.hasLoggedIn()){
+            /*if(!UserService.hasLoggedIn()){
                 $('#loginModal').modal('show');
-            }
+            }*/
         }
     ]);

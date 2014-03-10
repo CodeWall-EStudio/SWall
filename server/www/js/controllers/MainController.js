@@ -22,9 +22,6 @@ angular.module('ts.controllers.main', [
 
             $rootScope.showLoginModal = function(){
                 $rootScope.$emit(CMD_SHOW_LOGIN_PANEL);
-
-                //NOTE 20140302 QQ登錄改造，改用QQ互聯OAUTH2登錄
-                //window.location = '/qqconnect/login';
             };
 
             /**

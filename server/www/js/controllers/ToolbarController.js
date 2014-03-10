@@ -7,12 +7,12 @@ angular.module('ts.controllers.toolbar', [
             $scope.authorizationTypes = [
                 {label:'授权我参与的', value:'invited'},
                 {label:'公开的', value:'public'},
-                {label:'全部', value:null}
+                {label:'全部权限', value:null}
             ];
             $scope.statuses = [
                 {label:'开放的', value:'active'},
                 {label:'关闭的', value:'closed'},
-                {label:'全部', value:null}
+                {label:'全部状态', value:null}
             ];
 
             $scope.aTypeIndex = 2;
