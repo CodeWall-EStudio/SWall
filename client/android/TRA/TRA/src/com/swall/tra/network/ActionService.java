@@ -27,7 +27,7 @@ public abstract class ActionService {
 
     public static String getUrlWithSKEY(String url) {
         URI uri = URI.create(url);
-        if(url.indexOf("?") != -1){
+        if(url.indexOf('?') != -1){
             url += "?";
         }else{
             url += "&";

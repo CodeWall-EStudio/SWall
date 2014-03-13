@@ -32,7 +32,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     private AlertDialog mQuitProgramConfirmDialog;
     private boolean mBackConfirm;
     private long mLastBackTime;
-    private final long DOUBLE_BACK_QUIT_INTERVAL = 2500;
+    private static final long DOUBLE_BACK_QUIT_INTERVAL = 2500;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

@@ -39,7 +39,7 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         }
     };
     private int mAutoRetryCount = 0;
-    private final int RETRY_MAX = 5;
+    private static final int RETRY_MAX = 5;
 
     @Override
     public View onCreateView(LayoutInflater inflater) {
@@ -59,6 +59,8 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         mAdapter = new ActivitiesListAdapter(getActivity());
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
+
+
 
         listListener = new ActionListener(getActivity()) {
             @Override
