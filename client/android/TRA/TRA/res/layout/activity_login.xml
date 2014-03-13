@@ -78,9 +78,10 @@
 
     <Button
             style="@style/buttonBlue"
+            android:layout_centerHorizontal="true"
             android:id="@+id/login_with_qq_button"
             android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_below="@+id/inputlayout"
