@@ -126,11 +126,11 @@ public class ServiceManager {
         }
 
         public static String getDownloadUrl(String fid) {
-            if(FILE_SERVER_URL.indexOf("codewalle") != -1){
+//            if(FILE_SERVER_URL.indexOf("codewalle") != -1){
                 return FILE_SERVER_URL +"api/media/download?fileId="+fid;
-            }else{
-                return FILE_SERVER_URL + "/download/media?id="+fid;
-            }
+//            }else{
+//                return FILE_SERVER_URL + "/download/media?id="+fid;
+//            }
         }
 
         public static final String KEY_USER_NAME            = "userName";

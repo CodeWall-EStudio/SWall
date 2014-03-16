@@ -406,6 +406,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
     private void doUploadText(String text) {
         defaultRequestData.putString("text",text.toString());
         defaultRequestData.putString("id", mInfo.id);
+        defaultRequestData.putString("activityId",mInfo.id);
         app.doAction(ServiceManager.Constants.ACTION_UPLOAD_TEXT, defaultRequestData, mUploadListener);
     }
 

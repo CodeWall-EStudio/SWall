@@ -111,7 +111,7 @@ public class NetworkUtils {
             builder.addTextBody("media", "1");
             builder.addTextBody("name",fileName);
             builder.addTextBody("skey",""+encodeKey);
-            builder.addTextBody("actityId",actiityId);
+            builder.addTextBody("activityId",actiityId);
 //            builder.addTextBody("file",fileName);
 //            builder.setCharset(Charset.forName("UTF-8"));
             builder.setBoundary("----WebKitFormBoundaryOZP8ZyAfN79iuKUB--");
