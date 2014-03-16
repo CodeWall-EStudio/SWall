@@ -178,6 +178,9 @@ public class LoginService extends ActionService {
                             boolean success = true;
                             JSONObject o = null;
                             try {
+                                /*
+                                {"resultMsg":"","resultObject":{"email":null,"userId":"6ad7bae4-6c87-4bf3-a7cd-50f6bb6b8b50","encodeKey":"F3B14EA32A2226DEE7338A2EB44C672981FA33A6755D16ACC1E4783BECF419F3C3233795DD70209BBC4C403589741636D76FFE1EA73815345C51300D55C4228AF6016962C862351008A8403C0E359E18","gender":0,"userName":"æ½ç¥¥æº"},"success":true}
+                                */
                                 o = new JSONObject(response);
                                 if(o != null){
                                     JSONObject resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
