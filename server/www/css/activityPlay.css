@@ -111,6 +111,7 @@ body{
     position: relative;
     width: 70%;
     padding-left: 50px;
+    margin-top: 10px;
 }
 #timeline.playMode .resource{
     width: 85%;

@@ -46,9 +46,9 @@ angular.module('ap.controllers.videoUploader', [
             };
 
             $scope.startUpload = function(){
-                $scope.videoIsUploading = true;
-                document.querySelector('#uploadMainVideoForm').submit();
-                //uploadVideoFile();
+                //$scope.videoIsUploading = true;
+                //document.querySelector('#uploadMainVideoForm').submit();
+                uploadVideoFile();
             };
 
             $scope.cancelUpload = function(){
@@ -62,7 +62,7 @@ angular.module('ap.controllers.videoUploader', [
 
             $scope.submitLabel = function(){
                 if($scope.videoIsReading) return '请稍候';
-                if($scope.videoIsUploading) return '上传中';
+                if($scope.videoIsUploading) return '上传中 (' + ($scope.videoUploadProgress || 0) + '%)';
                 if($scope.videoIsAdding) return '添加中';
                 return '添加';
             };
@@ -79,7 +79,7 @@ angular.module('ap.controllers.videoUploader', [
                     //构造请求
                     var form = new FormData(),
                         xhr = new XMLHttpRequest(),
-                        api = 'http://qzone.codewalle.com/upload';
+                        api = 'http://szone.71xiaoxue.com/upload';
                     form.append('skey', UtilsService.cookie.get('skey'));
                     form.append('file', $scope.videoFile);
                     form.append('name', $scope.videoName);
@@ -122,57 +122,6 @@ angular.module('ap.controllers.videoUploader', [
                     console.log('[uploader] uploading video ...');
                 }
             }
-
-            /*function uploadVideoFile(){
-                if($scope.videoFile && $scope.videoDuration && $scope.videoName){
-                    //create form and xml http request to post the file
-                    var form = new FormData(),
-                        xhr = new XMLHttpRequest(),
-                        //api = 'http://xzone.codewalle.com/upload';
-                        api = 'http://szone.71xiaoxue.com/upload';
-                    form.append('uid',      UtilsService.cookie.get('uid'));
-                    form.append('skey',     UtilsService.cookie.get('skey'));
-                    form.append('file',     $scope.videoFile);
-                    form.append('media',    1);
-                    console.log('form', form);
-
-                    xhr.upload.addEventListener('progress', function(e){
-                        $scope.$apply(function(){
-                            $scope.videoUploadProgress = Math.floor(e.loaded / e.total * 100);
-                        });
-                    }, false);
-
-                    xhr.addEventListener('load', function(e){
-                        $scope.videoIsUploading = false;
-                        if(xhr.status == 200){
-                            console.log(xhr.responseText);
-                            console.log(xhr.responseText, xhr.responseText.indexOf('>{"'));
-                        }
-                        else {
-                            //TODO handle other status code
-                        }
-                        $scope.$digest();
-                    }, false);
-
-                    xhr.addEventListener('error', function(e){
-                        console.log('[uploader] upload video error', e);
-                        $scope.$apply(function(){
-                            reset();
-                            $('#uploadMainVideoModal').modal('hide');
-                        });
-                        alert('主视频上传失败！');
-                    }, false);
-
-                    //start uploading the file
-                    $scope.videoIsUploading = true;
-                    $scope.videoUploadProgress = 0;
-                    xhr.open('POST', api);
-                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    xhr.withCredentials = true;
-                    xhr.send(form);
-                    console.log('[uploader] uploading video ...');
-                }
-            }*/
 
             //function addVideoToActivity(){
             function addVideoToActivity(fileID){
@@ -246,17 +195,3 @@ angular.module('ap.controllers.videoUploader', [
             window.$scope = $scope;
         }
     ]);
-
-
-/*window.addVideoToActivity = function(fileId){
-    alert(fileId);
-    if(fileId){
-        var fileUrl = 'http://xzone.codewalle.com/api/media/download?fileId=' + fileId;
-        console.log('[uploader] upload video success', json, fileUrl);
-        window.$scope.videoURL = url;
-        window.addVideoToActivity();
-    }
-    else {
-        alert('主视频上传失败');
-    }
-};*/

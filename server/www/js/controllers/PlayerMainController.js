@@ -16,7 +16,7 @@ angular.module('ap.controllers.main', [
             $rootScope.rawResources = [];
             $rootScope.resources = [];
             $rootScope.presources = []; //previewable resources
-            $rootScope.highlightResource = {}; //{g:int, r:int}
+            $rootScope.highlightResource = {g:-1, r:-1};
             $rootScope.profiles = {};
 
             $rootScope.selectedMainVideo = null; //已选择的主视频
@@ -30,6 +30,8 @@ angular.module('ap.controllers.main', [
             $scope.autoRefresh = true;
 
             $scope.shouldShowUploadMainButton = false;
+
+            var dontNeedTimelineRepaint = false;
 
             $rootScope.updateMainVideos = function(videos){
                 $rootScope.mainVideos = _.map(videos, function(video){
@@ -61,10 +63,7 @@ angular.module('ap.controllers.main', [
             $rootScope.timelineStartTime = function(){
                 var group = _.last($rootScope.resources),
                     res = group ? _.last(group.resources) : undefined;
-                if(res && $rootScope.selectedMainVideo){
-                    return res.date;
-                }
-                return 0;
+                return res ? res.date : 0;
             };
 
             $rootScope.selectedMainVideoStartTime = function(){
@@ -236,10 +235,28 @@ angular.module('ap.controllers.main', [
                 xhr.send(form);
             }
 
-            $scope.showResourceDetail = function(resource){
+            $scope.showResourceDetail = function(resource, g, r){
+                $scope.highlightSpecifyResource(resource, g, r, true);
                 if(resource.type){
                     $scope.selectedResource = resource;
                     $scope.selectedRIndex = $rootScope.presources.indexOf(resource);
+                }
+            };
+
+            $scope.highlightSpecifyResource = function(resource, groupIndex, resourceIndex, updatePlayTime){
+                console.log('highlighting resource', groupIndex, resourceIndex);
+                $rootScope.highlightResource = {g:groupIndex, r:resourceIndex};
+                scrollToResource(resource, true, true);
+
+                if(updatePlayTime && $rootScope.selectedMainVideo && resource){
+                    var resourceTs = resource.date,
+                        selectedMainVideoTs0 = $rootScope.selectedMainVideoStartTime(),
+                        selectedMainVideoTs1 = selectedMainVideoTs0 + $rootScope.selectedMainVideo.duration;
+                    console.log(resourceTs, selectedMainVideoTs0, selectedMainVideoTs1);
+                    if(resourceTs < selectedMainVideoTs0) resourceTs = selectedMainVideoTs0;
+                    else if(resourceTs > selectedMainVideoTs1) resourceTs = selectedMainVideoTs1;
+                    player.currentTime = (resourceTs - selectedMainVideoTs0);
+                    player.play();
                 }
             };
 
@@ -493,31 +510,50 @@ angular.module('ap.controllers.main', [
                 video.addEventListener('timeupdate', function(e){
                     var ts = $rootScope.selectedMainVideoStartTime() + video.currentTime*1000,
                         closestResourceTs = findClosestResourceTimestamp(ts),
-                        res = $('.resourceItem[data-ts=' + closestResourceTs + ']'),
-                        group = res.parents('.resourceGroup'),
-                        g = parseInt(res.attr('data-gindex')),
-                        r = parseInt(res.attr('data-rindex')),
-                        gp = group.position(),
-                        rp = res.position(),
-                        gt = gp ? gp.top : 0,
-                        rt = rp ? rp.top : 0,
-                        timeline = $('#timeline');
-                    //如果播放時間到了另一個不同的資源上時
-                    if($rootScope.highlightResource.g !== g || $rootScope.highlightResource.r !== r){
-                        //滾到那資源上並高亮之
-                        timeline.scrollTop(timeline.scrollTop() + gt + rt);
-                        $rootScope.$apply(function(){
-                            $rootScope.highlightResource = {g:g, r:r};
-
-                            //hack，避免item高亮重繪出錯
-                            /*var width = timeline.width();
-                            timeline.width(width+1);
-                            setTimeout(function(){
-                                timeline.width(width);
-                            }, 0);*/
-                        });
-                    }
+                        res = $('.resourceItem[data-ts=' + closestResourceTs + ']');
+                    scrollToResourceElement(res, true);
                 });
+            }
+
+            function scrollToResource(resource, compareIndex, dontHighlight){
+                if(resource){
+                    var res = $('.resourceItem[data-ts=' + resource.date + ']');
+                    scrollToResourceElement(res, compareIndex, dontHighlight);
+                }
+            }
+
+            function scrollToResourceElement(res, compareIndex, dontHighlight){
+                if(!res) return;
+
+                /*if(compareIndex){
+                    var g = parseInt(res.attr('data-gindex')),
+                        r = parseInt(res.attr('data-rindex'));
+                    if($rootScope.highlightResource.g == g && $rootScope.highlightResource.r == r){
+                        return;
+                    }
+                }*/
+
+                var g = parseInt(res.attr('data-gindex')),
+                    r = parseInt(res.attr('data-rindex')),
+                    group = res.parents('.resourceGroup'),
+                    gp = group.position(),
+                    rp = res.position(),
+                    gt = gp ? gp.top : 0,
+                    rt = rp ? rp.top : 0,
+                    timeline = $('#timeline');
+
+                console.log(timeline.scrollTop(), gt, rt);
+                timeline.scrollTop(timeline.scrollTop() + gt + rt);
+                if(!dontHighlight){
+                    $rootScope.$apply(function(){
+                        $scope.highlightSpecifyResource(null, g, r);
+                    });
+                }
+
+                res.width(res.width() + 1);
+                setTimeout(function(){
+                    res.width('auto');
+                }, 100);
             }
 
             window.rs = $rootScope;

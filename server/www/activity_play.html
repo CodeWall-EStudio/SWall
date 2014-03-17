@@ -8,11 +8,11 @@
     <link href="css/activityPlay.min.css?20140317001" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="player/video.min.css">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
-    <script src="lib/angular/angular_1.2.6.js"></script>s
+    <script src="lib/angular/angular_1.2.6.js"></script>
     <script type="text/javascript" src="player/video.dev.js"></script>
     <script>
         videojs.options.flash.swf = "player/video-js.swf";
-  </script>
+    </script>
 </head>
 <body class="fixedTopNavbar">
 
@@ -122,7 +122,7 @@
                          ng-repeat="resource in group.resources"
                          ng-init="$resourceIndex=$index"
                          ng-show="resourceShouldBeVisible(resource)"
-                         ng-click="showResourceDetail(resource)"
+                         ng-click="showResourceDetail(resource, $groupIndex, $resourceIndex)"
                          ng-class="{highlight: highlightResource.g==$groupIndex && highlightResource.r==$resourceIndex}"
                          ng-switch on="resource.type">
                         <div class="thumb imageThumb" ng-switch-when="1">
@@ -351,6 +351,7 @@
                         <input type="text" name="fromweb" value="1" style="display: none"/>
                         <input type="text" name="media" value="1" style="display: none"/>
                         <input type="text" name="skey" ng-model="skey" style="display: none"/>
+                        <input type="text" name="activityId" ng-model="activity._id" style="display: none"/>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" ng-value="submitLabel()" class="btn btn-success"
@@ -371,16 +372,8 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <!--<script src="https://www.google.com/jsapi"></script>
-    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>-->
-    <!--<script src="js/activityPlay.min.js?20140317002"></script>-->
-
-<script src="js/utils/Constants.js"></script>
-<script src="js/services/UtilsService.js"></script>
-<script src="js/services/UserService.js"></script>
-<script src="js/services/ActivityService.js"></script>
-<script src="js/controllers/PlayerMainController.js"></script>
-<script src="js/controllers/MainVideoUploaderController.js"></script>
-<script src="js/activityPlay.js"></script>
+    <script src="https://www.google.com/jsapi"></script>
+    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
+    <script src="js/activityPlay.min.js?20140317002"></script>
 </body>
 </html>
