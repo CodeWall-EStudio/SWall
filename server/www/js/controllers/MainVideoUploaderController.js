@@ -185,7 +185,7 @@ angular.module('ap.controllers.videoUploader', [
                     alert('上传视频失败，请输入有效的视频名字');
                 }
                 else {
-                    $scope.videoURL = 'http://szone.71xiaoxue.com/download/media?id=' + fileID;
+                    $scope.videoURL = 'http://szone.71xiaoxue.com/api/media/download?fileId=' + fileID;
 
                     var aid = $location.search()['aid'],
                         form = new FormData(),
