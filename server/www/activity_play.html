@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140317001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140317003" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="player/video.min.css">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
@@ -73,6 +73,9 @@
     <div class="row hbox full" id="mainContent">
         <!-- 侧边栏 -->
         <div class="col-sm-2 sidebar">
+            <div class="addComment" ng-show="activity.active">
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addCommentModal">添加评论</button>
+            </div>
             <!-- 参与活动的用户列表 -->
             <div class="userlist full">
                 <ul>
@@ -320,6 +323,31 @@
         </div>
     </div>
 
+    <div class="modal fade" id="addCommentModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">添加评论</h4>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" rows="3"placeholder="请输入评论内容"
+                              ng-disabled="addingNewComment"
+                              ng-model="newCommentContent"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success"
+                            ng-click="submitNewComment()"
+                            ng-disabled="addingNewComment || !newCommentContent.length">
+                        <span ng-hide="addingNewComment">添加</span>
+                        <span ng-show="addingNewComment">请稍后</span>
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"
+                            ng-disabled="addingNewComment">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="uploadMainVideoModal" ng-controller="MainVideoUploaderController">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -374,6 +402,6 @@
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
     <script src="https://www.google.com/jsapi"></script>
     <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
-    <script src="js/activityPlay.min.js?20140317002"></script>
+    <script src="js/activityPlay.min.js?20140317003"></script>
 </body>
 </html>

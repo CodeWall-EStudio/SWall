@@ -52,6 +52,9 @@ body{
     border-right: 1px solid rgb(211,214,218);
     padding-right: 0;
 }
+#mainContent .addComment{
+    padding: 5px;
+}
 #mainContent .userlist{
     padding: 10px;
 }

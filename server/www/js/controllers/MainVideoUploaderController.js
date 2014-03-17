@@ -20,7 +20,7 @@ angular.module('ap.controllers.videoUploader', [
                         file = files ? files[0] : null;
                     console.log('[uploader] selected file', file);
 
-                    if(file && file.type == 'video/mp4'){
+                    if(file && file.type.split('/')[0] == 'video'){
                         //load the file and get duration info
                         $scope.videoFile = file;
                         var video = document.createElement('video'),

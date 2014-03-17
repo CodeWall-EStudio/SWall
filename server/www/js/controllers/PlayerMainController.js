@@ -31,6 +31,36 @@ angular.module('ap.controllers.main', [
 
             $scope.shouldShowUploadMainButton = false;
 
+            $scope.newCommentContent = '';
+            $scope.addingNewComment = false;
+
+            $scope.submitNewComment = function(){
+                if(!$scope.addingNewComment && $scope.newCommentContent.length){
+                    $scope.addingNewComment = true;
+
+                    var xhr = new XMLHttpRequest(),
+                        form = new FormData();
+                    form.append('type', 0);
+                    form.append('content', $scope.newCommentContent);
+                    xhr.addEventListener('load', function(){
+                        switch(xhr.status){
+                            case 400: alert('请求有误，无法添加评论'); break;
+                            case 404: alert('您需要先在手机端加入该活动才可以发表评论哦'); break;
+                            case 500: alert('网络或服务器出错啦，请稍后再试'); break;
+                            case 200:
+                            case 201:
+                                getActivity();
+                                break;
+                        }
+                        $scope.addingNewComment = false;
+                        $scope.newCommentContent = '';
+                        $('#addCommentModal').modal('hide');
+                    });
+                    xhr.open('POST', '/activities/' + aid + '/resources');
+                    xhr.send(form);
+                }
+            };
+
             var dontNeedTimelineRepaint = false;
 
             $rootScope.updateMainVideos = function(videos){
