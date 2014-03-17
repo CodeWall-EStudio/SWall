@@ -2,13 +2,14 @@
 <html ng-app="activityPlay" ng-controller="PlayerMainController">
 <head>
     <title>{{activity.info.title}}</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140308001" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140317001" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="player/video.min.css">
     <script src="lib/jquery/jquery-2.0.3.min.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>s
-    <script type="text/javascript" src="player/video.div.js"></script>
+    <script type="text/javascript" src="player/video.dev.js"></script>
     <script>
         videojs.options.flash.swf = "player/video-js.swf";
   </script>
@@ -372,6 +373,14 @@
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
     <!--<script src="https://www.google.com/jsapi"></script>
     <script> google.load("visualization", "1", {packages:["corechart"]}); </script>-->
-    <script src="js/activityPlay.min.js?20140308002"></script>
+    <!--<script src="js/activityPlay.min.js?20140317002"></script>-->
+
+<script src="js/utils/Constants.js"></script>
+<script src="js/services/UtilsService.js"></script>
+<script src="js/services/UserService.js"></script>
+<script src="js/services/ActivityService.js"></script>
+<script src="js/controllers/PlayerMainController.js"></script>
+<script src="js/controllers/MainVideoUploaderController.js"></script>
+<script src="js/activityPlay.js"></script>
 </body>
 </html>
