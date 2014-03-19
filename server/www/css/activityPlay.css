@@ -52,6 +52,9 @@ body{
     border-right: 1px solid rgb(211,214,218);
     padding-right: 0;
 }
+#mainContent .addComment{
+    padding: 5px;
+}
 #mainContent .userlist{
     padding: 10px;
 }
@@ -111,6 +114,7 @@ body{
     position: relative;
     width: 70%;
     padding-left: 50px;
+    margin-top: 10px;
 }
 #timeline.playMode .resource{
     width: 85%;
