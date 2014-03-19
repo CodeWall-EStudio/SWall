@@ -35,31 +35,43 @@ angular.module('ap.controllers.main', [
             $scope.addingNewComment = false;
 
             $scope.submitNewComment = function(){
-                if(!$scope.addingNewComment && $scope.newCommentContent.length){
-                    $scope.addingNewComment = true;
+                //先加入当前活动，成不成功就先不管了
+                joinActivity(function(){
+                    //然后提交新评论
+                    if(!$scope.addingNewComment && $scope.newCommentContent.length){
+                        $scope.addingNewComment = true;
 
-                    var xhr = new XMLHttpRequest(),
-                        form = new FormData();
-                    form.append('type', 0);
-                    form.append('content', $scope.newCommentContent);
-                    xhr.addEventListener('load', function(){
-                        switch(xhr.status){
-                            case 400: alert('请求有误，无法添加评论'); break;
-                            case 404: alert('您需要先在手机端加入该活动才可以发表评论哦'); break;
-                            case 500: alert('网络或服务器出错啦，请稍后再试'); break;
-                            case 200:
-                            case 201:
-                                getActivity();
-                                break;
-                        }
-                        $scope.addingNewComment = false;
-                        $scope.newCommentContent = '';
-                        $('#addCommentModal').modal('hide');
-                    });
-                    xhr.open('POST', '/activities/' + aid + '/resources');
-                    xhr.send(form);
-                }
+                        var xhr = new XMLHttpRequest(),
+                            form = new FormData();
+                        form.append('type', 0);
+                        form.append('content', $scope.newCommentContent);
+                        xhr.addEventListener('load', function(){
+                            switch(xhr.status){
+                                case 400: alert('请求有误，无法添加评论'); break;
+                                case 404: alert('您是否已经加入了其他活动？请先在手机端退出其他活动才可以发表评论哦'); break;
+                                case 500: alert('网络或服务器出错啦，请稍后再试'); break;
+                                case 200:
+                                case 201:
+                                    getActivity();
+                                    break;
+                            }
+                            $scope.addingNewComment = false;
+                            $scope.newCommentContent = '';
+                            $('#addCommentModal').modal('hide');
+                        });
+                        xhr.open('POST', '/activities/' + aid + '/resources');
+                        xhr.send(form);
+                    }
+                });
             };
+            function joinActivity(success){
+                var xhr = new XMLHttpRequest();
+                xhr.addEventListener('load', function(){
+                    if(success) success();
+                });
+                xhr.open('POST', '/activities/' + aid + '/participators');
+                xhr.send();
+            }
 
             var dontNeedTimelineRepaint = false;
 
@@ -267,7 +279,8 @@ angular.module('ap.controllers.main', [
 
             $scope.showResourceDetail = function(resource, g, r){
                 $scope.highlightSpecifyResource(resource, g, r, true);
-                if(resource.type){
+                //如果是正在播放主视频，就不需要显示资源预览了
+                if(resource.type && !$rootScope.selectedMainVideo){
                     $scope.selectedResource = resource;
                     $scope.selectedRIndex = $rootScope.presources.indexOf(resource);
                 }
