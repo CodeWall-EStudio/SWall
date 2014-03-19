@@ -17,6 +17,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.update.UmengUpdateAgent;
 
 /**
  * Created by pxz on 13-12-28.
@@ -129,6 +130,10 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));
         }
 
+
+
+        UmengUpdateAgent.setUpdateAutoPopup(true);
+        UmengUpdateAgent.update(this);
 
         showQuitButton();
 
