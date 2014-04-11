@@ -305,7 +305,7 @@
     </div>
 
     <div class="modal fade" id="bigPicModal">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="width:750px;">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
@@ -314,7 +314,7 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <div id="statBody" style="height: 450px"></div>
+                    <div id="statBody" style="width:710px; height:450px"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
@@ -400,8 +400,10 @@
 
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="https://www.google.com/jsapi"></script>
-    <script> google.load("visualization", "1", {packages:["corechart"]}); </script>
-    <script src="js/activityPlay.min.js?20140317004"></script>
+    <script src="lib/amcharts/amcharts.js"></script>
+    <script src="lib/amcharts/pie.js"></script>
+    <script src="lib/amcharts/serial.js"></script>
+    <script src="lib/amcharts/themes/light.js"></script>
+    <script src="js/activityPlay.min.js?20140402001"></script>
 </body>
 </html>

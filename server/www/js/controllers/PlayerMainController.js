@@ -395,20 +395,18 @@ angular.module('ap.controllers.main', [
                 //准备数据
                 var stat = ActivityService.statistics.byUser($rootScope.activity, 10);
                 stat = _.map(stat, function(item){
-                    return [$rootScope.uid2nick(item.uid), item.count];
+                    return {nick:$rootScope.uid2nick(item.uid), count:item.count};
                 });
-                stat.splice(0, 0, ['用户', '资源数']);
+                console.log(stat);
 
                 //开始绘制统计图
-                var data = google.visualization.arrayToDataTable(stat),
-                    options = {
-                        is3D: true
-                    },
-                    chart = new google.visualization.PieChart(document.getElementById('statBody'));
-
-                setTimeout(function(){
-                    chart.draw(data, options);
-                }, 200);
+                AmCharts.makeChart('statBody', {
+                    type: 'pie',
+                    theme: 'light',
+                    dataProvider: stat,
+                    valueField: 'count',
+                    titleField: 'nick'
+                });
             };
 
             $scope.showTimeStatistics = function(){
@@ -421,19 +419,40 @@ angular.module('ap.controllers.main', [
                     var date = new Date(parseInt(offset) + beginning),
                         dateStr = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' +
                                   date.getHours() + ':' + date.getMinutes();
-                    return [dateStr, resources.length];
+                    return {date:dateStr, count:resources.length};
                 });
-                stat.splice(0, 0, ['时间', '资源数']);
 
-                var data = google.visualization.arrayToDataTable(stat),
-                    options = {
-                        hAxis: {title: '时间', titleTextStyle: {color: 'red'}}
+                AmCharts.makeChart('statBody', {
+                    type: 'serial',
+                    theme: 'light',
+                    dataProvider: stat,
+                    valueAxes: [{
+                        gridColor: '#FFFFFF',
+                        gridAlpha: 0.2,
+                        dashLength: 0,
+                        labelsEnabled: false
+                    }],
+                    gridAboveGraphs: true,
+                    startDuration: 1,
+                    graphs: [{
+                        balloonText: '[[category]]: <b>[[value]]</b>',
+                        fillAlphas: 0.8,
+                        lineAlpha: 0.2,
+                        type: 'column',
+                        valueField: 'count'
+                    }],
+                    chartCursor: {
+                        categoryBalloonEnabled: false,
+                        cursorAlpha: 0,
+                        zoomable: false
                     },
-                    chart = new google.visualization.ColumnChart(document.getElementById('statBody'));
-
-                setTimeout(function(){
-                    chart.draw(data, options);
-                }, 200);
+                    categoryField: 'date',
+                    categoryAxis: {
+                        gridPosition: 'start',
+                        gridAlpha: 0,
+                        labelRotation: 45
+                    }
+                });
             };
 
 
