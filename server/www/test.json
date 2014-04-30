@@ -1,0 +1,589 @@
+{
+  "c": 0,
+  "r": {
+    "_id": "52c2698fda48d1ac193aa379",
+    "active": true,
+    "info": {
+      "type": 1,
+      "date": 1388592000000,
+      "createDate": 1388472719048,
+      "title": "測試",
+      "desc": "測試的活動",
+      "teacher": "沒老師",
+      "grade": "一年级",
+      "class": "一班",
+      "subject": "数学",
+      "domain": "測試課"
+    },
+    "resources": [
+      {
+        "_id": "52c3eccfda48d1ac193aa37a",
+        "user": "刀",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://115.28.55.91:8080/resources/6572-1m8m7v5.3gp",
+        "comment": "",
+        "date": 1388571855290
+      },
+      {
+        "_id": "52c3ecf0da48d1ac193aa37b",
+        "user": "刀",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/6572-6ec892.jpg",
+        "comment": "",
+        "date": 1388571855290
+      },
+      {
+        "_id": "52c42cb43993904e69a5746e",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/26958-1f1mycg.jpg",
+        "comment": "",
+        "date": 1388571855290
+      },
+      {
+        "_id": "52c42ceb3993904e69a5746f",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "丑：",
+        "comment": "",
+        "date": 1388588267354
+      },
+      {
+        "_id": "52c42cf33993904e69a57470",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "丑：",
+        "comment": "",
+        "date": 1388588275479
+      },
+      {
+        "_id": "52c42d2a3993904e69a57473",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/26958-xehy4a.jpg",
+        "comment": "",
+        "date": 1388588330965
+      },
+      {
+        "_id": "52c42e4e3993904e69a57474",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "hjj",
+        "comment": "",
+        "date": 1388588622911
+      },
+      {
+        "_id": "52c42e553993904e69a57475",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "ijhcjpdjjfjdj",
+        "comment": "",
+        "date": 1388588629656
+      },
+      {
+        "_id": "52c42f0f3993904e69a57476",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/26958-1kyfhx1.jpg",
+        "comment": "",
+        "date": 1388588815626
+      },
+      {
+        "_id": "52c42f1d3993904e69a57477",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/26958-65i02a.jpg",
+        "comment": "",
+        "date": 1388588829779
+      },
+      {
+        "_id": "52c42f273993904e69a57478",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://115.28.55.91:8080/resources/26958-1cw6e3y.jpg",
+        "comment": "",
+        "date": 1388588839384
+      },
+      {
+        "_id": "52c42f523993904e69a57479",
+        "user": "张三",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "yhhv",
+        "comment": "",
+        "date": 1388588882905
+      },
+      {
+        "_id": "52c7f6203993904e69a57498",
+        "user": "给你",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "乙",
+        "comment": "",
+        "date": 1388836384956
+      },
+      {
+        "_id": "52cd71d97063348d20b63785",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "二",
+        "comment": "",
+        "date": 1389195737925
+      },
+      {
+        "_id": "52cd71fa7063348d20b63786",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "在一起",
+        "comment": "",
+        "date": 1389195770838
+      },
+      {
+        "_id": "52ceb6227063348d20b63789",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "一",
+        "comment": "",
+        "date": 1389278754014
+      },
+      {
+        "_id": "52cecc707063348d20b6378a",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com/download?id=118",
+        "comment": "",
+        "date": 1389284464626
+      },
+      {
+        "_id": "52ced24c7063348d20b6378b",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.codewalle.com//download/media?id=296",
+        "comment": "",
+        "date": 1389285964723
+      },
+      {
+        "_id": "52ced27c7063348d20b6378c",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.codewalle.com//download/media?id=297",
+        "comment": "",
+        "date": 1389286012314
+      },
+      {
+        "_id": "52ced2af7063348d20b6378d",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "hujd",
+        "comment": "",
+        "date": 1389286063030
+      },
+      {
+        "_id": "52ced2b07063348d20b6378e",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.codewalle.com//download/media?id=297",
+        "comment": "",
+        "date": 1389286064095
+      },
+      {
+        "_id": "52ced3087063348d20b6378f",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=119",
+        "comment": "",
+        "date": 1389286152143
+      },
+      {
+        "_id": "52ced31a7063348d20b63790",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=120",
+        "comment": "",
+        "date": 1389286170672
+      },
+      {
+        "_id": "52cee1d77063348d20b63791",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "hkdi",
+        "comment": "",
+        "date": 1389289943957
+      },
+      {
+        "_id": "52cee1dc7063348d20b63792",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "jrnfj",
+        "comment": "",
+        "date": 1389289948437
+      },
+      {
+        "_id": "52cf8fee7063348d20b63797",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=132",
+        "comment": "",
+        "date": 1389334510667
+      },
+      {
+        "_id": "52cf901b7063348d20b63798",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "好好吧",
+        "comment": "",
+        "date": 1389334555928
+      },
+      {
+        "_id": "52d013297063348d20b637a2",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=240",
+        "comment": "",
+        "date": 1389368105452
+      },
+      {
+        "_id": "52d0171f7063348d20b637a3",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=240",
+        "comment": "",
+        "date": 1389369119239
+      },
+      {
+        "_id": "52d017b17063348d20b637a4",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=240",
+        "comment": "",
+        "date": 1389369265491
+      },
+      {
+        "_id": "52d017ea7063348d20b637a5",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=240",
+        "comment": "",
+        "date": 1389369322733
+      },
+      {
+        "_id": "52d01bd37063348d20b637a6",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=242",
+        "comment": "",
+        "date": 1389370323650
+      },
+      {
+        "_id": "52d01c367063348d20b637a7",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=243",
+        "comment": "",
+        "date": 1389370422293
+      },
+      {
+        "_id": "52d01c837063348d20b637a8",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=244",
+        "comment": "",
+        "date": 1389370499696
+      },
+      {
+        "_id": "52d01cca7063348d20b637a9",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=245",
+        "comment": "",
+        "date": 1389370570053
+      },
+      {
+        "_id": "52d01cf97063348d20b637aa",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=246",
+        "comment": "",
+        "date": 1389370617730
+      },
+      {
+        "_id": "52d01d937063348d20b637ab",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=247",
+        "comment": "",
+        "date": 1389370771944
+      },
+      {
+        "_id": "52d01e207063348d20b637ac",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=248",
+        "comment": "",
+        "date": 1389370912952
+      },
+      {
+        "_id": "52d01e977063348d20b637ad",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=249",
+        "comment": "",
+        "date": 1389371031303
+      },
+      {
+        "_id": "52d01ee47063348d20b637ae",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=250",
+        "comment": "",
+        "date": 1389371108214
+      },
+      {
+        "_id": "52d01f1d7063348d20b637af",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=250",
+        "comment": "",
+        "date": 1389371165655
+      },
+      {
+        "_id": "52d021287063348d20b637b0",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=251",
+        "comment": "",
+        "date": 1389371688560
+      },
+      {
+        "_id": "52d0215b7063348d20b637b1",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=251",
+        "comment": "",
+        "date": 1389371739976
+      },
+      {
+        "_id": "52d0228a7063348d20b637b2",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "一",
+        "comment": "",
+        "date": 1389372042870
+      },
+      {
+        "_id": "52d0229f7063348d20b637b3",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=252",
+        "comment": "",
+        "date": 1389372063495
+      },
+      {
+        "_id": "52d0239a7063348d20b637b4",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "飞",
+        "comment": "",
+        "date": 1389372314072
+      },
+      {
+        "_id": "52d023bc7063348d20b637b5",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=253",
+        "comment": "",
+        "date": 1389372348508
+      },
+      {
+        "_id": "52d023bf7063348d20b637b6",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=253",
+        "comment": "",
+        "date": 1389372351317
+      },
+      {
+        "_id": "52d023c27063348d20b637b7",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=254",
+        "comment": "",
+        "date": 1389372354006
+      },
+      {
+        "_id": "52d031887063348d20b637b8",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=255",
+        "comment": "",
+        "date": 1389375880189
+      },
+      {
+        "_id": "52d0b7a7e82d8cec36d071bc",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=257",
+        "comment": "",
+        "date": 1389410215658
+      },
+      {
+        "_id": "52d0b936e82d8cec36d071bd",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=258",
+        "comment": "",
+        "date": 1389410614879
+      },
+      {
+        "_id": "52d0bc6ee82d8cec36d071be",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=259",
+        "comment": "",
+        "date": 1389411438532
+      },
+      {
+        "_id": "52d0bccfe82d8cec36d071bf",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "uiti",
+        "comment": "",
+        "date": 1389411535505
+      },
+      {
+        "_id": "52d0bcd4e82d8cec36d071c0",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "uiti",
+        "comment": "",
+        "date": 1389411540543
+      },
+      {
+        "_id": "52d0bce1e82d8cec36d071c1",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 0,
+        "content": "gjo",
+        "comment": "",
+        "date": 1389411553828
+      },
+      {
+        "_id": "52d0bd64e82d8cec36d071c2",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=260",
+        "comment": "",
+        "date": 1389411684618
+      },
+      {
+        "_id": "52d0bd8ae82d8cec36d071c3",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=261",
+        "comment": "",
+        "date": 1389411722278
+      },
+      {
+        "_id": "52d0bdc1e82d8cec36d071c4",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=262",
+        "comment": "",
+        "date": 1389411777432
+      },
+      {
+        "_id": "52d0be55e82d8cec36d071c5",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 1,
+        "content": "http://szone.71xiaoxue.com//download/media?id=263",
+        "comment": "",
+        "date": 1389411925003
+      },
+      {
+        "_id": "52d0bec8e82d8cec36d071c6",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=264",
+        "comment": "",
+        "date": 1389412040717
+      },
+      {
+        "_id": "52d0bface82d8cec36d071c7",
+        "user": "zhaoyonghong",
+        "activity": "52c2698fda48d1ac193aa379",
+        "type": 2,
+        "content": "http://szone.71xiaoxue.com//download/media?id=265",
+        "comment": "",
+        "date": 1389412268080
+      }
+    ],
+    "users": {
+      "creator": "oscar",
+      "invitedUsers": [
+        "*"
+      ],
+      "participators": [
+        "刀",
+        "tangshukuan"
+      ]
+    }
+  }
+}

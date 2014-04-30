@@ -1,0 +1,18 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1007" measuredH="703" mockupW="1007" mockupH="703">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="-1" h="-1" measuredW="1007" measuredH="703" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/11-%25e6%2588%2591%25e7%259a%2584%25e7%25a9%25ba%25e9%2597%25b4-A3-%25e6%2597%25b6%25e9%2597%25b4%25e7%25ba%25bf-%25e9%2580%2589%25e4%25b8%25ad%25e6%2596%2587%25e4%25bb%25b6.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Canvas" x="219" y="0" w="148" h="67" measuredW="100" measuredH="70" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderColor>13369344</borderColor>
+        <href>11-%u6211%u7684%u7A7A%u95F4-A4-%u5BFC%u822A%u83DC%u5355%26bm%3B11-%u6211%u7684%u7A7A%u95F4-A4-%u5BFC%u822A%u83DC%u5355.bmml%26bm%3B11-%u6211%u7684%u7A7A%u95F4-A4-%u5BFC%u822A%u83DC%u5355.bmml%26bm%3B11-%u6211%u7684%u7A7A%u95F4-A4-%u5BFC%u822A%u83DC%u5355.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%22219%2C0%2C367%2C67%22%20href%3D%2211-%25E6%2588%2591%25E7%259A%2584%25E7%25A9%25BA%25E9%2597%25B4-A4-%25E5%25AF%25BC%25E8%2588%25AA%25E8%258F%259C%25E5%258D%2595.bmml%22%20alt%3D%2211-%u6211%u7684%u7A7A%u95F4-A4-%u5BFC%u822A%u83DC%u5355%22%20id%3D%222%22/%3E</map>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

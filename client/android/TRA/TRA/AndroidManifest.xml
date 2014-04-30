@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.swall.tra_qq"
-          android:versionCode="1"
+          android:versionCode="2"
           android:versionName="1.0_0309_QQ">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -82,7 +82,7 @@
 
 
         <!-- 友盟 -->
-        <meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />
+        <meta-data android:value="5327d32356240b93e009a6ff" android:name="UMENG_APPKEY" />
         <meta-data android:value="c_0001" android:name="UMENG_CHANNEL"/>
         <service
                 android:name="com.umeng.common.net.DownloadingService"

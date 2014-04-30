@@ -1,0 +1,36 @@
+diff a/client/android/TRA/TRA/src/com/swall/tra/utils/NetworkUtils.java b/client/android/TRA/TRA/src/com/swall/tra/utils/NetworkUtils.java	(rejected hunks)
+@@ -84,7 +84,7 @@ public class NetworkUtils {
+ 
+         private final Response.Listener<String> mListener;
+ 
+-        public MultipartRequest(String url,String encodeKey,byte[] data, File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
++        public MultipartRequest(String url,String actiityId,String encodeKey,byte[] data, File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
+             super(Method.POST, url, errorListener);
+             mListener = listener;
+ 
+@@ -111,6 +111,7 @@ public class NetworkUtils {
+             builder.addTextBody("media", "1");
+             builder.addTextBody("name",fileName);
+             builder.addTextBody("skey",""+encodeKey);
++            builder.addTextBody("actityId",actiityId);
+ //            builder.addTextBody("file",fileName);
+ //            builder.setCharset(Charset.forName("UTF-8"));
+             builder.setBoundary("----WebKitFormBoundaryOZP8ZyAfN79iuKUB--");
+@@ -133,6 +134,7 @@ public class NetworkUtils {
+                 }
+             });
+         }
++        /*
+         public MultipartRequest(String url,String encodeKey,File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
+             super(Method.POST, url, errorListener);
+             mListener = listener;
+@@ -153,7 +155,8 @@ public class NetworkUtils {
+             builder.setBoundary("------WebKitFormBoundarymilpfzFmBW97xGu4--");
+             mEntity = builder.build();
+ 
+-        } 
++        }
++        */
+ /*
+         public MultipartRequest(String url, Response.ErrorListener errorListener, Response.Listener<String> listener, File file, String stringPart)
+         {

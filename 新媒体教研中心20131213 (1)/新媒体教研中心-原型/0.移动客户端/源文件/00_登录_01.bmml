@@ -1,0 +1,31 @@
+<mockup version="1.0" skin="wireframe" fontFace="Balsamiq Sans" measuredW="541" measuredH="961" mockupW="541" mockupH="961">
+  <controls>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Image" x="1" y="1" w="-1" h="-1" measuredW="540" measuredH="960" zOrder="1" locked="true" isInGroup="-1">
+      <controlProperties>
+        <borderStyle>none</borderStyle>
+        <src>./assets/Android_login.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="47" controlTypeID="com.balsamiq.mockups::Image" x="0" y="0" w="-1" h="-1" measuredW="540" measuredH="960" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/login.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="48" controlTypeID="com.balsamiq.mockups::Canvas" x="81" y="665" w="382" h="70" measuredW="100" measuredH="70" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderStyle>none</borderStyle>
+      </controlProperties>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::Canvas" x="73" y="658" w="398" h="85" measuredW="100" measuredH="70" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <backgroundAlpha>0</backgroundAlpha>
+        <borderColor>13369344</borderColor>
+        <borderStyle>none</borderStyle>
+        <href>01_%u5F53%u524D%u6D3B%u52A8_01_%u5217%u8868%26bm%3B01_%u5F53%u524D%u6D3B%u52A8_01_%u5217%u8868.bmml%26bm%3B01_%u5F53%u524D%u6D3B%u52A8_01_%u5217%u8868.bmml%26bm%3B01_%u5F53%u524D%u6D3B%u52A8_01_%u5217%u8868.bmml</href>
+        <map>%3Carea%20shape%3D%22rect%22%20coords%3D%2273%2C658%2C471%2C743%22%20href%3D%2201_%25E5%25BD%2593%25E5%2589%258D%25E6%25B4%25BB%25E5%258A%25A8_01_%25E5%2588%2597%25E8%25A1%25A8.bmml%22%20alt%3D%2201_%u5F53%u524D%u6D3B%u52A8_01_%u5217%u8868%22%20id%3D%2249%22/%3E</map>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
