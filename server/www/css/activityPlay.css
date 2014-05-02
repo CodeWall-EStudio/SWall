@@ -5,10 +5,10 @@ html{
 
 body{
     height: 100%;
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    /* @alternate */-ms-flex-direction: row;
+    /* @alternate */-ms-flex-direction: column;
 }
 
 .container{
@@ -49,10 +49,10 @@ body{
     -webkit-padding-start: 0px;
 }
 #mainContent .sidebar{
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    /* @alternate */-ms-flex-direction: row;
+    /* @alternate */-ms-flex-direction: column;
     border-right: 1px solid rgb(211,214,218);
     padding-right: 0;
 }
@@ -89,10 +89,10 @@ body{
     /*width: 82%;*/
 }
 #timeline .resourceGroup{
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
-    /* @alternate */-ms-flex-direction: column;
+    /* @alternate */-ms-flex-direction: row;
 }
 #timeline .time{
     width: 30%;
@@ -102,6 +102,7 @@ body{
     padding-top: 10px;
     padding-right: 10px;
     -webkit-transition: width 300ms;
+	transition: width 300ms;
 }
 #timeline.playMode .time{
     width: 15%;
@@ -134,10 +135,10 @@ body{
 }
 #timeline .resourceItem{
     position: relative;
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
-    /* @alternate */-ms-flex-direction: column;
+    /* @alternate */-ms-flex-direction: row;
     padding: 10px;
     background-color: #fff;
 }
@@ -245,6 +246,7 @@ body{
     background-color: #fff;
     box-shadow: 0 10px 10px rgba(0,0,0,0.8);
     -webkit-transition: right 400ms;
+	transition: right 400ms;
 }
 #preview.shown{
     right: 15px;

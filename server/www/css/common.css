@@ -12,15 +12,15 @@ a{
 
 .hbox{
     display: -webkit-box;
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     -webkit-box-orient: horizontal;
-    /* @alternate */-ms-flex-direction: column;
+    /* @alternate */-ms-flex-direction: row;
 }
 .vbox{
     display: -webkit-box;
-    display: /* @alternate */-ms-flex-box;
+    display: /* @alternate */-ms-flexbox;
     -webkit-box-orient: vertical;
-    /* @alternate */-ms-flex-direction: row;
+    /* @alternate */-ms-flex-direction: column;
 }
 .full{
     -webkit-box-flex: 1;
