@@ -5,8 +5,10 @@ html{
 
 body{
     height: 100%;
+    display: /* @alternate */-ms-flex-box;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    /* @alternate */-ms-flex-direction: row;
 }
 
 .container{
@@ -47,8 +49,10 @@ body{
     -webkit-padding-start: 0px;
 }
 #mainContent .sidebar{
+    display: /* @alternate */-ms-flex-box;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    /* @alternate */-ms-flex-direction: row;
     border-right: 1px solid rgb(211,214,218);
     padding-right: 0;
 }
@@ -85,8 +89,10 @@ body{
     /*width: 82%;*/
 }
 #timeline .resourceGroup{
+    display: /* @alternate */-ms-flex-box;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
+    /* @alternate */-ms-flex-direction: column;
 }
 #timeline .time{
     width: 30%;
@@ -128,8 +134,10 @@ body{
 }
 #timeline .resourceItem{
     position: relative;
+    display: /* @alternate */-ms-flex-box;
     display: -webkit-box;
     -webkit-box-orient: horizontal;
+    /* @alternate */-ms-flex-direction: column;
     padding: 10px;
     background-color: #fff;
 }
@@ -190,6 +198,7 @@ body{
 }
 #mainVideos .playMode h4{
     -webkit-box-flex: 1;
+    /* @alternate */-ms-flex: 1;
 }
 #mainVideos .playMode .closeBtn{
     padding: 5px 10px;
@@ -273,6 +282,7 @@ body{
 }
 .editOrderItem > div{
     -webkit-box-flex: 1;
+    /* @alternate */-ms-flex: 1;
 }
 
 .dateInput{

@@ -12,14 +12,19 @@ a{
 
 .hbox{
     display: -webkit-box;
+    display: /* @alternate */-ms-flex-box;
     -webkit-box-orient: horizontal;
+    /* @alternate */-ms-flex-direction: column;
 }
 .vbox{
     display: -webkit-box;
+    display: /* @alternate */-ms-flex-box;
     -webkit-box-orient: vertical;
+    /* @alternate */-ms-flex-direction: row;
 }
 .full{
     -webkit-box-flex: 1;
+    /* @alternate */-ms-flex: 1;
 }
 .center{
     -webkit-box-align: center;

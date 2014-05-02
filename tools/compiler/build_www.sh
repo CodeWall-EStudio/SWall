@@ -28,13 +28,15 @@ java -jar $JS_COMPILER --js $WWW_DIR/js/utils/Constants.js \
 					   --js $WWW_DIR/js/activityPlay.js \
  					   --js_output_file $WWW_DIR/js/activityPlay.min.js
 
-java -jar $CSS_COMPILER --allow-unrecognized-functions \
+java -jar $CSS_COMPILER \
+		  --allow-unrecognized-properties  \
 		  $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput.css \
 		  $WWW_DIR/css/common.css \
 		  $WWW_DIR/css/teacherSpace.css \
 		  > $WWW_DIR/css/teacherSpace.min.css
 
-java -jar $CSS_COMPILER --allow-unrecognized-functions \
+java -jar $CSS_COMPILER \
+		  --allow-unrecognized-properties  \
 		  $WWW_DIR/css/common.css \
 		  $WWW_DIR/css/activityPlay.css \
 		  > $WWW_DIR/css/activityPlay.min.css
