@@ -330,6 +330,7 @@ angular.module('ap.controllers.main', [
                 setTimeout(function(){
                     //刷新webkit box的高度
                     $('.resourceGroup').css('display', '-webkit-box');
+                    $('.resourceGroup').css('display', '-ms-flexbox');
                     $scope.$digest();
                     refreshAllNextItemLineHeight();
                 }, 0);
@@ -629,7 +630,7 @@ angular.module('ap.controllers.main', [
 
 //圖片加載完成後，更新折線高度用的 //////////////////////////////////////////////////////////////////////////////////////////
 
-/*function onImgLoad(e){
+function onImgLoad(e){
     var img = e.target,
         item = $(img).parents('.resourceItem')[0],
         gindex = parseInt(item.getAttribute('data-gindex')),
@@ -652,4 +653,4 @@ function refreshAllNextItemLineHeight(){
             if(item.type !== 0) updateNextItemLineHeight(g, r);
         });
     })
-}*/
+}

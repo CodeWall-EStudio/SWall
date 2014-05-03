@@ -8,4 +8,5 @@ angular.module('ts.utils.constants', [])
 
     //cmd
     .constant('CMD_SHOW_LOGIN_PANEL', 'cmd.login.panel.show') //展示登錄界面
-    .constant('CMD_SHOW_ACTIVITY_PANEL', 'cmd.activity.panel.show') //展示活动创建/编辑面板
+    .constant('CMD_SHOW_ACTIVITY_PANEL', 'cmd.activity.panel.show'); //展示活动创建/编辑面板
+    
