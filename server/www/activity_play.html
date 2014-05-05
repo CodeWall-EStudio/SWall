@@ -279,6 +279,32 @@
                         ng-click="selectPreviousPreviewableResource()">
                     上一页
                 </button>
+                <div class="mediaContent full" ng-switch on="selectedResource.type" style="text-align:center;position:relative">
+                        <div style="position:absolute;bottom:20px;top:0;left:0;right:0;text-align:center;vertical-align:middle;">
+                            <img class="image" ng-switch-when="1" style="height: inherit;max-width:100%;max-height:70%" ng-src="{{selectedResource.content}}" />
+                            <video class="video" ng-switch-when="2" autoplay controls id="videoPlayer"></video>
+                        </div>
+                        <!-- ngSwitchWhen: 2 -->
+                        <div>
+                            <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="2">视频</span>
+                            <span>{{uid2nick(selectedResource.user)}}</span>
+                        </div>
+                        <div>{{selectedResource.comment}}</div>
+                </div>
+                <button type="button" class="btn btn-link"
+                        ng-disabled="!hasNextPreviewableResource()"
+                        ng-click="selectNextPreviewableResource()">
+                    下一页
+                </button>
+            </div>
+            <!--
+            <div class="hbox full content">
+                <button type="button" class="btn btn-link"
+                        ng-disabled="!hasPreviousPreviewableResource()"
+                        ng-click="selectPreviousPreviewableResource()">
+                    上一页
+                </button>
                 <div class="mediaContent full" ng-switch on="selectedResource.type">
                     <div class="contentWrapper">
                         <div ng-switch-when="1" class="image">
@@ -301,6 +327,7 @@
                     下一页
                 </button>
             </div>
+            -->
         </div>
     </div>
 

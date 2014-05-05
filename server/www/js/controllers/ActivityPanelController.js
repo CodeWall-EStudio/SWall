@@ -25,6 +25,10 @@ angular.module('ts.controllers.activityPanel', [
                     }
                 };
 
+            if(datetimePicker.type != 'datetime-local'){
+                $('#na_data').datetimepicker('setEndDate',null);
+            }
+
             $rootScope.$on(CMD_SHOW_ACTIVITY_PANEL, function(event, data){
                 //initialize $scope
                 data = data || {};

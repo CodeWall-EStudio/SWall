@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html ng-app="activityPlay" ng-controller="PlayerMainController">
+<head>
+    <title>{{activity.info.title}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/activityPlay.min.css?20140317003" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="player/video.min.css">
+    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/angular/angular_1.2.6.js"></script>
+    <script type="text/javascript" src="player/video.dev.js"></script>
+    <script>
+        videojs.options.flash.swf = "player/video-js.swf";
+    </script>
+</head>
+<body class="fixedTopNavbar">
+            <div class="hbox full content">
+                <button class="btn btn-link" type="button" ng-click="selectPreviousPreviewableResource()" ng-disabled="!hasPreviousPreviewableResource()">
+                    上一页
+                </button>
+                <div class="mediaContent full" style="text-align:center;position:relative" on="selectedResource.type" ng-switch="">
+                    <div style="position:absolute;top:0;bottom:0;right:0;left:0;">
+                        <img style="height: inherit;-ms-flex:1 1 auto;max-width:100%;max-height:70%;vertical-align:middle" src="http://szone.71xiaoxue.com/api/media/download?fileId=5327fc5fcb1afd8645e1ae87" ng-src="http://szone.71xiaoxue.com/api/media/download?fileId=5327fc52cb1afd8645e1ae71" />
+                        <!-- ngSwitchWhen: 2 -->
+                    </div>
+                    <div style="positoin:absolute;bottom:0;">
+                        <div>
+                            <!-- ngSwitchWhen: 1 --><span class="ng-scope" ng-switch-when="1">图片</span>
+                            <!-- ngSwitchWhen: 2 -->
+                            <span class="ng-binding">钟英菊</span>
+                        </div>
+                        <div class="ng-binding">有关海洋主题的英文学习开始了</div>
+                    </div>
+                </div>
+                <button class="btn btn-link" type="button" ng-click="selectNextPreviewableResource()" ng-disabled="!hasNextPreviewableResource()">
+                    下一页
+                </button>
+            </div>
+
+</body>
+</html>

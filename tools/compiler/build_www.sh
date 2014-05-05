@@ -58,7 +58,10 @@ cat $WWW_DIR/js/utils/Constants.js \
 
 java -jar $CSS_COMPILER \
 		  --allow-unrecognized-properties  \
+		  --allowed-non-standard-function  \
+		  --allow-unrecognized-functions  \
 		  $WWW_DIR/lib/bootstrap_tagsinput/bootstrap-tagsinput.css \
+		  $WWW_DIR/lib/bootstrap_datetimepicker/bootstrap-datetimepicker.css \
 		  $WWW_DIR/css/common.css \
 		  $WWW_DIR/css/teacherSpace.css \
 		  > $WWW_DIR/css/teacherSpace.min.css
