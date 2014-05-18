@@ -34,20 +34,20 @@ public class ServiceManager {
 //        public static String RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
 //        public static String RESOURCE_MAIN_URL = "http://xzone.71xiaoxue.com/";
         public static String DATA_URL_PREFIX = "http://115.28.55.91:8080/";
-
 //        public static String FILE_SERVER_URL = "http://xzone.codewalle.com/";
         public static String FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
 
-
         private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
 
+
         public static final String KEY_LOGIN_SUCCESS = "success";
+
         public static final String KEY_LOGIN_RESULT_OBJECT = "resultObject";
         public static final String KEY_RESULT = "result";
-
         public static final int ENV_TEST = 1;
         public static final int ENV_PUBLISH = 2;
         public static final int ENV_DEV = 3;
+        private static final int ENV_ERXIAON = 4;
 
         /*
     正式环境：
@@ -76,6 +76,9 @@ public class ServiceManager {
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
                     FILE_SERVER_URL = "http://xzone.codewalle.com/";
                     break;
+                case Constants.ENV_ERXIAON:
+                    DATA_URL_PREFIX = "http://ydsmedia.hylc-edu.cn/";
+                    FILE_SERVER_URL = "http://ydszone.hylc-edu.cn/";
             }
         }
         public static String getLoginUrl() {
