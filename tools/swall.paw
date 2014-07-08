@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>267100BF-9E8E-4A3F-BFD0-E4067D4BCF94</UUID>
-        <nextObjectID>246</nextObjectID>
+        <nextObjectID>254</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -54,7 +54,7 @@
     </databaseInfo>
     <object type="LMREQUEST" id="z102">
         <attribute name="uuid" type="string">34784F15-84B5-4D3B-A3F8-46B0B1ED498E</attribute>
-        <attribute name="url" type="string">["http:\\/\\/",{"name":"com.luckymarmot.Paw.DynamicValue","data":"62706C6973743030D40102030405061D1E582476657273696F6E58246F626A65637473592461726368697665725424746F7012000186A0A507080D111855246E756C6CD2090A0B0C5F1013656E7669726F6E6D656E745661726961626C655624636C61737380028004D20A0E0F10594E532E737472696E6780035F102437354338413943342D413746452D343834312D383937392D453835303636364237353130D2121314155A24636C6173736E616D655824636C61737365735F100F4E534D757461626C65537472696E67A3141617584E53537472696E67584E534F626A656374D21213191A5F10214C4D456E7669726F6E6D656E745661726961626C6544796E616D696356616C7565A31B1C175F10214C4D456E7669726F6E6D656E745661726961626C6544796E616D696356616C75655E4C4D44796E616D696356616C75655F100F4E534B657965644172636869766572D11F2054726F6F74800100080011001A0023002D00320037003D00430048005E006500670069006E0078007A00A100A600B100BA00CC00D000D900E200E7010B010F0133014201540157015C000000000000020100000000000000210000000000000000000000000000015E"},"\\/users\\/tangqihong\\/login"]</attribute>
+        <attribute name="url" type="string">http://swall.codewalle.com/users/test/login</attribute>
         <attribute name="timeoutinterval" type="float">30</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
         <attribute name="redirectauthorization" type="bool">0</attribute>
@@ -78,10 +78,10 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z102"></relationship>
     </object>
     <object type="LMREQUESTGROUP" id="z105">
-        <attribute name="order" type="int64">2</attribute>
+        <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">Swall</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z127 z129 z199 z130"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z127 z199 z129 z130"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -202,7 +202,7 @@
         <attribute name="order" type="int64">1</attribute>
         <attribute name="name" type="string">Activities</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z105"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z174 z156 z107 z171 z159 z189 z133"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z107 z156 z174 z171 z189 z159 z133"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -651,10 +651,10 @@
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z182"></relationship>
     </object>
     <object type="LMREQUESTGROUP" id="z185">
-        <attribute name="order" type="int64">0</attribute>
+        <attribute name="order" type="int64">1</attribute>
         <attribute name="name" type="string">71xiaoxue</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z153 z212 z145 z151 z210 z177 z193"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z151 z193 z210 z145 z212 z177 z153"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -816,7 +816,7 @@
         <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">Main Videos</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z105"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z201 z218 z204"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z204 z201 z218"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -1036,10 +1036,10 @@
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z215 z216 z217"></relationship>
     </object>
     <object type="LMREQUESTGROUP" id="z219">
-        <attribute name="order" type="int64">1</attribute>
+        <attribute name="order" type="int64">2</attribute>
         <attribute name="name" type="string">QQ</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z220 z222 z224 z227 z241"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z222 z224 z220 z227 z241"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -1268,5 +1268,98 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z171"></relationship>
+    </object>
+    <object type="LMREQUESTGROUP" id="z247">
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string">小龙的新登录服务</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z251 z253 z248"></relationship>
+        <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
+        <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z248">
+        <attribute name="body" type="string">[{"name":"com.luckymarmot.Paw.DynamicValue","data":"62706C6973743030D40102030405063B3C582476657273696F6E58246F626A65637473592461726368697665725424746F7012000186A0AF101007080D141A1B1C1D23292A2B3132333655246E756C6CD2090A0B0C596B657956616C7565735624636C6173738002800FD20E0A0F135A4E532E6F626A65637473A310111280038008800B800ED20E0A1519A31617188004800580068007546E616D65547465737409D21E1F20215A24636C6173736E616D655824636C6173736573574E534172726179A22022584E534F626A656374D20E0A2419A32526188009800A80068007537077645438383838D20E0A2C19A32D2E18800C800D80068007546A736F6E5474727565D21E1F34355E4E534D757461626C654172726179A3342022D21E1F37385F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C7565A3393A225F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C75655E4C4D44796E616D696356616C75655F100F4E534B657965644172636869766572D13D3E54726F6F74800100080011001A0023002D00320037004A00500055005F00660068006A006F007A007E0080008200840086008B008F0091009300950097009C00A100A200A700B200BB00C300C600CF00D400D800DA00DC00DE00E000E400E900EE00F200F400F600F800FA00FF010401090118011C012101420146016701760188018B01900000000000000201000000000000003F00000000000000000000000000000192"}]</attribute>
+        <attribute name="uuid" type="string">A2506315-CE98-4E24-AF5C-93A684E9D4AB</attribute>
+        <attribute name="url" type="string">http://qzone.codewalle.com/api/user/login</attribute>
+        <attribute name="timeoutinterval" type="float">30</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">POST</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string">登录</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z249"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z249">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z248"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z250">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z251"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z251">
+        <attribute name="body" type="string">[{"name":"com.luckymarmot.Paw.DynamicValue","data":"62706C6973743030D4010203040506292A582476657273696F6E58246F626A65637473592461726368697665725424746F7012000186A0AA07080D1218191A1B212455246E756C6CD2090A0B0C596B657956616C7565735624636C61737380028009D20E0A0F115A4E532E6F626A65637473A11080038008D20E0A1317A31415168004800580068007546A736F6E547472756509D21C1D1E1F5A24636C6173736E616D655824636C6173736573574E534172726179A21E20584E534F626A656374D21C1D22235E4E534D757461626C654172726179A3221E20D21C1D25265F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C7565A32728205F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C75655E4C4D44796E616D696356616C75655F100F4E534B657965644172636869766572D12B2C54726F6F74800100080011001A0023002D0032003700420048004D0057005E0060006200670072007400760078007D00810083008500870089008E00930094009900A400AD00B500B800C100C600D500D900DE00FF01030124013301450148014D0000000000000201000000000000002D0000000000000000000000000000014F"}]</attribute>
+        <attribute name="uuid" type="string">3AD71F91-D660-424A-B932-895C7C130C64</attribute>
+        <attribute name="url" type="string">http://qzone.codewalle.com/api/user/logoff</attribute>
+        <attribute name="timeoutinterval" type="float">30</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">1</attribute>
+        <attribute name="name" type="string">退出</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z250"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z252">
+        <attribute name="value" type="string">skey=bbc0cbd26e12d5e800e6ccdce43fe162; connect.sid=s%3AS8lyrsmxccqGelEGPsuZRlyA.QC6i%2Bezm3LRRrAfa1f%2B1O2udO7vEwSH4Kaf%2BZ5ys0yA</attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string">Cookie</attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z253"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z253">
+        <attribute name="uuid" type="string">1A80481A-07D3-466B-8151-013898B6D81C</attribute>
+        <attribute name="url" type="string">http://qzone.codewalle.com/api/user/validate</attribute>
+        <attribute name="timeoutinterval" type="float">30</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">GET</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="order" type="int64">2</attribute>
+        <attribute name="name" type="string">校验</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z252 z254"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z254">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">1</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z253"></relationship>
     </object>
 </database>

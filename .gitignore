@@ -29,3 +29,6 @@ proguard/
 .idea/
 
 dump.rdb
+
+server/log
+server/www-dist

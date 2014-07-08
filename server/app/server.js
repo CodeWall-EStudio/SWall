@@ -46,7 +46,7 @@ app.use(customHeaders);
 app.use(express.cookieParser());
 app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
 app.use(connect.compress());
-app.use(express.static(__dirname + '/../www'));
+app.use(express.static(__dirname + '/../www-dist'));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ app.post('/activities', function(req, res){
                                                     date:       ts,
                                                     createDate: new Date().getTime(),
                                                     title:      utf8.substr(title,      0, LONG_STR_MAXLEN),
-                                                    desc:       utf8.substr(desc || '', 0, SHORT_STR_MAXLEN),
+                                                    desc:       utf8.substr(desc || '', 0, LONG_CONTENT_MAXLEN),
                                                     teacher:    utf8.substr(teacher,    0, SHORT_STR_MAXLEN),
                                                     grade:      utf8.substr(grade,      0, SHORT_STR_MAXLEN),
                                                     'class':    utf8.substr(cls,        0, SHORT_STR_MAXLEN),
@@ -815,6 +815,7 @@ app.put('/users/:uid/login', function(req, res){
                         options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate}*/;
                     res.cookie('uid', uid, options);
                     res.cookie('skey', result.skey, options);
+                    res.cookie('connect.sid', result.session, options);
                     //res.cookie('skey', result.skey, options2);
                     res.json(200, result);
                 }

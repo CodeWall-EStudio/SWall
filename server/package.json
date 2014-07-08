@@ -12,6 +12,7 @@
         "grunt-contrib-jshint": "*",
         "grunt-contrib-watch": "*",
         "grunt-contrib-clean": "*",
-        "grunt-text-replace": "*"
+        "grunt-text-replace": "*",
+        "grunt-shell": "*"
     }
 }

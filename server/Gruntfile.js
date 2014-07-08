@@ -3,13 +3,19 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        consts: {
-            DIST: 'www_dist/'
+        CONSTS: {
+            DIST: 'www-dist/',
+            REDIS: {
+                LOCAL: '/Users/oscartong/Dropbox/programming/libraries/redis-2.8.12/src/redis-server'
+            }
         },
 
+        //目录和文件发生变化时自动重新编译
         watch: {
-            files: ['Gruntfile.js', 'www/**'],
-            tasks: ['default']
+            www: {
+                files: ['Gruntfile.js', 'www/**'],
+                tasks: ['default']
+            }
         },
 
         //合并压缩JavaScript
@@ -19,8 +25,8 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    '<%= consts.DIST %>js/teacherSpace.min.js': [
-                        'www/js/utils/Constants/js',
+                    '<%= CONSTS.DIST %>js/teacherSpace.min.js': [
+                        'www/js/utils/Constants.js',
                         'www/js/services/UtilsService.js',
                         'www/js/services/UserService.js',
                         'www/js/services/ActivityService.js',
@@ -34,13 +40,15 @@ module.exports = function(grunt) {
                         'www/js/directives/ngEnter.js',
                         'www/js/teacherSpace.js'
                     ],
-                    '<%= consts.DIST %>js/activityPlay.min.js': [
+                    '<%= CONSTS.DIST %>js/activityPlay.min.js': [
+                        'www/js/utils/Constants.js',
                         'www/js/services/UtilsService.js',
-                        'www/js/services/UserService.js',
-                        'www/js/services/ActivityService.js',
-                        'www/js/controllers/PlayerMainController.js',
-                        'www/js/controllers/MainVideoUploaderController.js',
-                        'www/js/activityPlay.js'
+					    'www/js/services/UserService.js',
+					    'www/js/services/ActivityService.js',
+					    'www/js/controllers/PlayerMainController.js',
+					    'www/js/controllers/MainVideoUploaderController.js',
+                        //'www/js/directives/activityDate.js',
+					    'www/js/activityPlay.js'
                     ]
                 }
             }
@@ -50,13 +58,13 @@ module.exports = function(grunt) {
         cssmin: {
             minify: {
                 files: {
-                    '<%= consts.DIST %>css/teacherSpace.css': [
+                    '<%= CONSTS.DIST %>css/teacherSpace.min.css': [
                         'www/lib/bootstrap_tagsinput/bootstrap-tagsinput.css',
                         'www/lib/bootstrap_datetimepicker/bootstrap-datetimepicker.css',
                         'www/css/common.css',
                         'www/css/teacherSpace.css'
                     ],
-                    '<%= consts.DIST %>css/activityPlay.min.css': [
+                    '<%= CONSTS.DIST %>css/activityPlay.min.css': [
                         'www/css/common.css',
                         'www/css/activityPlay.css'
                     ]
@@ -76,7 +84,7 @@ module.exports = function(grunt) {
                         'img/**',
                         'player/**'
                     ],
-                    dest: '<%= consts.DIST %>'
+                    dest: '<%= CONSTS.DIST %>'
                 }]
             }
         },
@@ -84,8 +92,8 @@ module.exports = function(grunt) {
         //替换html文件的script引用等
         replace: {
             teacherSpace: {
-                src: ['<%= consts.DIST %>*.html'],
-                dest: '<%= consts.DIST %>',
+                src: ['<%= CONSTS.DIST %>*.html'],
+                dest: '<%= CONSTS.DIST %>',
                 replacements: [{
                     //<!-- grunt:teacherSpace.min.js --> ... <!-- end -->
                     from: /<!-- grunt:((\w+).min.js) -->(.|\n)*?<!-- end -->/g,
@@ -106,14 +114,26 @@ module.exports = function(grunt) {
                     collapseWhitespace: true
                 },
                 files: {
-                    '<%= consts.DIST %>teacher_space.html': '<%= consts.DIST %>teacher_space.html',
-                    '<%= consts.DIST %>activity_play.html': '<%= consts.DIST %>activity_play.html'
+                    '<%= CONSTS.DIST %>teacher_space.html': '<%= CONSTS.DIST %>teacher_space.html',
+                    '<%= CONSTS.DIST %>activity_play.html': '<%= CONSTS.DIST %>activity_play.html'
                 }
             }
         },
 
+        shell: {
+            //启动/关闭数据库等的命令
+            runRedis: {     command: '<%= CONSTS.REDIS.LOCAL %> app/configs/redis-local.conf'   },
+            runMongoDB: {   command: 'mongod --fork --logpath log/mongodb.log'                  },
+            killRedis: {    command: 'pkill -9 "redis-server"'                                  },
+            killMongoDB: {  command: 'pkill -9 "mongod"'                                        },
+
+            //后台
+            server: {       command: 'node app/server.js'   }
+        },
+
+        //清掉输出目录
         clean: {
-            build: ["<%= consts.DIST %>"]
+            build: ["<%= CONSTS.DIST %>"]
         }
     });
 
@@ -128,14 +148,14 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks('grunt-shell');
 
-    // Default task(s).
-    grunt.registerTask('default', [
-        'clean', //clean first
-        'uglify', //js
-        'cssmin', //css
-        'copy', //statis resources
-        'replace', 'htmlmin' //html
-    ]);
+    //默认任务：重新编译整个前段项目
+    grunt.registerTask('default', ['clean', 'uglify', 'cssmin', 'copy', 'replace', 'htmlmin']);
+
+    //后台相关的任务
+    grunt.registerTask('rundb', ['shell:runRedis', 'shell:runMongoDB']);
+    grunt.registerTask('killdb', ['shell:killRedis', 'shell:killMongoDB']);
+    grunt.registerTask('server', ['shell:server']);
 
 };

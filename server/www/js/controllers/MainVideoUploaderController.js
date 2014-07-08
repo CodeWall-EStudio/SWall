@@ -1,4 +1,4 @@
-document.domain = '71xiaoxue.com';
+//document.domain = '71xiaoxue.com';
 
 angular.module('ap.controllers.videoUploader', [
         'ts.services.activity',
