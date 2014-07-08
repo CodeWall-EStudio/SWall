@@ -4,7 +4,12 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         consts: {
-            DIST: 'www/dist/'
+            DIST: 'www_dist/'
+        },
+
+        watch: {
+            files: ['Gruntfile.js', 'www/**'],
+            tasks: ['default']
         },
 
         //合并压缩JavaScript
@@ -108,7 +113,7 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            build: ["www/dist"]
+            build: ["<%= consts.DIST %>"]
         }
     });
 
