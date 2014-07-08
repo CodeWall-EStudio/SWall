@@ -3,6 +3,9 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        consts: {
+            DIST: 'www/dist/'
+        },
 
         //合并压缩JavaScript
         uglify: {
@@ -11,7 +14,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'www/dist/js/teacherSpace.min.js': [
+                    '<%= consts.DIST %>js/teacherSpace.min.js': [
                         'www/js/utils/Constants/js',
                         'www/js/services/UtilsService.js',
                         'www/js/services/UserService.js',
@@ -26,7 +29,7 @@ module.exports = function(grunt) {
                         'www/js/directives/ngEnter.js',
                         'www/js/teacherSpace.js'
                     ],
-                    'www/dist/js/activityPlay.min.js': [
+                    '<%= consts.DIST %>js/activityPlay.min.js': [
                         'www/js/services/UtilsService.js',
                         'www/js/services/UserService.js',
                         'www/js/services/ActivityService.js',
@@ -42,13 +45,13 @@ module.exports = function(grunt) {
         cssmin: {
             minify: {
                 files: {
-                    'www/dist/css/teacherSpace.css': [
+                    '<%= consts.DIST %>css/teacherSpace.css': [
                         'www/lib/bootstrap_tagsinput/bootstrap-tagsinput.css',
                         'www/lib/bootstrap_datetimepicker/bootstrap-datetimepicker.css',
                         'www/css/common.css',
                         'www/css/teacherSpace.css'
                     ],
-                    'www/dist/css/activityPlay.min.css': [
+                    '<%= consts.DIST %>css/activityPlay.min.css': [
                         'www/css/common.css',
                         'www/css/activityPlay.css'
                     ]
@@ -68,7 +71,7 @@ module.exports = function(grunt) {
                         'img/**',
                         'player/**'
                     ],
-                    dest: 'www/dist/'
+                    dest: '<%= consts.DIST %>'
                 }]
             }
         },
@@ -76,8 +79,8 @@ module.exports = function(grunt) {
         //替换html文件的script引用等
         replace: {
             teacherSpace: {
-                src: ['www/dist/*.html'],
-                dest: 'www/dist/',
+                src: ['<%= consts.DIST %>*.html'],
+                dest: '<%= consts.DIST %>',
                 replacements: [{
                     //<!-- grunt:teacherSpace.min.js --> ... <!-- end -->
                     from: /<!-- grunt:((\w+).min.js) -->(.|\n)*?<!-- end -->/g,
@@ -98,8 +101,8 @@ module.exports = function(grunt) {
                     collapseWhitespace: true
                 },
                 files: {
-                    'www/dist/teacher_space.html': 'www/dist/teacher_space.html',
-                    'www/dist/activity_play.html': 'www/dist/activity_play.html'
+                    '<%= consts.DIST %>teacher_space.html': '<%= consts.DIST %>teacher_space.html',
+                    '<%= consts.DIST %>activity_play.html': '<%= consts.DIST %>activity_play.html'
                 }
             }
         },
@@ -123,6 +126,7 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask('default', [
+        'clean', //clean first
         'uglify', //js
         'cssmin', //css
         'copy', //statis resources
