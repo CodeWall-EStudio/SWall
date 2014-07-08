@@ -1,0 +1,17 @@
+{
+    "name": "swall",
+    "version": "1.0.0",
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-htmlmin": "*",
+        "grunt-contrib-cssmin": "*",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-qunit": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-contrib-jshint": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-contrib-clean": "*",
+        "grunt-text-replace": "*"
+    }
+}
