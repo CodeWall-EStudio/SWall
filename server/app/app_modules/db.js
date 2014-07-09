@@ -1,18 +1,18 @@
 var mongodb = require('mongodb');
 
 
-var HOST        = 'localhost', //正式環境：'192.168.98.59'
-    PORT        = 27017,
+//TODO 有没官方点的方法来替换这些环境变量？
+var HOST        = /* grunt:MONGODB.HOST */"localhost"/* end */, //正式環境：'192.168.98.59'
+    PORT        = /* grunt:MONGODB.PORT */"27017"/* end */,
     DB          = 'swall',
-    USERNAME    = 'nodejs',
-    PASSWORD    = 'ddhxs'; //党的好学生
+    USERNAME    = /* grunt:MONGODB.USERNAME */"swall"/* end */,
+    PASSWORD    = /* grunt:MONGODB.PASSWORD */"DfvszXKePFtfB9KM"/* end */;
 
 
 //connect to mongodb
 function connect(){
-    //TODO 这里是不是应该搞个连接池？还是说MongoDB自己维护了一个池？
-    //var url = 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + ':' + PORT + '/' + DB;
-    var url = 'mongodb://' + HOST + ':' + PORT + '/' + DB;
+    var url = (USERNAME && PASSWORD) ? 'mongodb://' + USERNAME + ':' + PASSWORD + '@' + HOST + ':' + PORT + '/' + DB
+                                     : 'mongodb://' + HOST + ':' + PORT + '/' + DB;
     mongodb.MongoClient.connect(url, null, function(err, db){
         if(err) throw err;
 

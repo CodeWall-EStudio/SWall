@@ -32,3 +32,4 @@ dump.rdb
 
 server/log
 server/www-dist
+server/deploy.zip

@@ -13,6 +13,7 @@
         "grunt-contrib-watch": "*",
         "grunt-contrib-clean": "*",
         "grunt-text-replace": "*",
-        "grunt-shell": "*"
+        "grunt-shell": "*",
+        "grunt-ssh": "*"
     }
 }
