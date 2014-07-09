@@ -152,7 +152,7 @@ module.exports = function(grunt) {
             killMongoDB: {  command: 'pkill -9 "mongod"' },
 
             //后台
-            runServer: {    command: 'node app/server.js' },
+            runServer: {    command: 'sudo node app/server.js' },
             killServer: {   command: 'pkill -9 "node"' },
 
             //打包发布包
@@ -187,7 +187,7 @@ module.exports = function(grunt) {
                     'cp -r server backups/server.<%= grunt.template.today("yyyymmddhhMMss") %>', //backup
                     'forever stop /home/swall/SWall/server/app/server.js', //stop server
                     'unzip -q -o deploy.zip -d server', //unzip new version
-                    'forever -a start /home/swall/SWall/server/app/server.js' //restart server
+                    'forever -a -m 10 start /home/swall/SWall/server/app/server.js' //restart server
                 ].join(' && '),
                 options: {
                     config: 'codeWallE'
@@ -197,7 +197,8 @@ module.exports = function(grunt) {
 
         //清掉输出目录
         clean: {
-            build: ["<%= CONSTS.DIST %>"]
+            build: ["<%= CONSTS.DIST %>"],
+            deploy: ['deploy.zip']
         }
     });
 
@@ -215,8 +216,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-ssh');
 
+    //TODO https://github.com/gruntjs/grunt-contrib-imagemin
+
     //默认任务：重新编译整个前段项目
-    grunt.registerTask('default', ['clean', 'uglify', 'cssmin', 'copy', 'replace:teacherSpace', 'htmlmin']);
+    grunt.registerTask('default', ['clean:build', 'uglify', 'cssmin', 'copy', 'replace:teacherSpace', 'htmlmin']);
 
     //后台相关的任务
     grunt.registerTask('rundb', ['shell:runRedis', 'shell:runMongoDB']);
@@ -230,7 +233,8 @@ module.exports = function(grunt) {
         'replace:mongoDBCodeWallE', //更新数据库连接配置
         'shell:zipDist',            //打包发布包
         'sftp:deploy',              //上传发布包
-        'sshexec:deploy'            //更新文件，重启后台服务
+        'sshexec:deploy',           //更新文件，重启后台服务
+        'clean:deploy'
     ])
 
 };

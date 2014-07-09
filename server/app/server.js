@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = 8090,
+var PORT = 80, //TODO 不同环境用不同端口！
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -811,12 +811,10 @@ app.put('/users/:uid/login', function(req, res){
             if(!error && status==200){
                 if(result){
                     var expiresDate = new Date(Date.now() + 3600000*24),
-                        options = {/*domain:'...', */path:'/', expires:expiresDate}/*,
-                        options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate}*/;
+                        options = {domain:'.codewalle.com', path:'/', expires:expiresDate};
                     res.cookie('uid', uid, options);
                     res.cookie('skey', result.skey, options);
-                    res.cookie('connect.sid', result.session, options);
-                    //res.cookie('skey', result.skey, options2);
+                    res.cookie('connect.sid', decodeURIComponent(result.session), options);
                     res.json(200, result);
                 }
                 else res.send(401);
