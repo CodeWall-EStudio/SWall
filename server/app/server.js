@@ -53,7 +53,13 @@ app.use(express.static(__dirname + '/../www-dist'));
 // /activities
 
 
-//创建活动
+/**
+ * Create new activity
+ * @function POST /activities
+ * @param {String} body.title
+ * @param {String} body.desc
+ * @return {Object} 201:{c:0, r:Object}; 500:{c:1, m:String}
+ */
 app.post('/activities', function(req, res){
     authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid     = userInfo['loginName'];
