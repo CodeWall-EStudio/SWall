@@ -30,6 +30,7 @@ proguard/
 
 dump.rdb
 
+.DS_Store
 server/log
 server/www-dist
 server/deploy.zip

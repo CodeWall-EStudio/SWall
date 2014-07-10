@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = 80, //TODO 不同环境用不同端口！
+var PORT = /* grunt:server.express.port */8090/* end */,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
