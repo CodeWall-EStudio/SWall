@@ -1,11 +1,10 @@
 var mongodb = require('mongodb');
 
 
-//TODO 有没官方点的方法来替换这些环境变量？
-var HOST        = /* grunt:server.mongodb.host */"localhost"/* end */, //正式環境：'192.168.98.59'
-    PORT        = /* grunt:server.mongodb.port */27017/* end */,
-    USERNAME    = /* grunt:server.mongodb.username */"swall"/* end */,
-    PASSWORD    = /* grunt:server.mongodb.password */"DfvszXKePFtfB9KM"/* end */,
+var HOST        = /* grunt|env:server.mongodb.host */"localhost"/* end */, //正式環境：'192.168.98.59'
+    PORT        = /* grunt|env:server.mongodb.port */27017/* end */,
+    USERNAME    = /* grunt|env:server.mongodb.username */"swall"/* end */,
+    PASSWORD    = /* grunt|env:server.mongodb.password */"DfvszXKePFtfB9KM"/* end */,
     DB          = 'swall';
 
 

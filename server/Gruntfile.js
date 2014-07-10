@@ -162,16 +162,15 @@ module.exports = function(grunt) {
 
         //替换模版内容
         replace: {
-            //替换环境变量
+            //替换环境变量 /* grunt|env:xxx */ ... /* end */
             env: {
                 src: [
-                    '<%= CONSTS.SERVER %>**/*.js',
-                    '<%= CONSTS.WWW_DIST %>**/*.html', '<%= CONSTS.WWW_DIST %>**/*.js'
+                    '<%= CONSTS.SERVER %>**/*.js'
                 ],
                 overwrite: true,
                 filter: 'isFile',
                 replacements: [{
-                    from: /(\/\* grunt:(.+?) \*\/)(.*?)(\/\* end \*\/)/g,
+                    from: /(\/\* grunt\|env:(.+?) \*\/)(.*?)(\/\* end \*\/)/g,
                     to: function(matchedWord, pos, fullContent, matches){
                         var env = grunt.option('env') || 'localhost';
                         return matches[0] + '<%= env.' + env + '.' + matches[1] + ' %>' + matches[3];
@@ -179,13 +178,12 @@ module.exports = function(grunt) {
                 }]
             },
 
-            //TODO 呢个要做得通用d
-            //替换页面的script引用: <!-- grunt:teacherSpace.min.js --> ... <!-- end -->
-            teacherSpace: {
+            //替换页面的script引用: <!-- grunt|minjs:teacherSpace.min.js --> ... <!-- end -->
+            minjs: {
                 src: ['<%= CONSTS.WWW_DIST %>*.html'],
-                dest: '<%= CONSTS.WWW_DIST %>',
+                overwrite: true,
                 replacements: [{
-                    from: /<!-- grunt:((\w+).min.js) -->(.|\n)*?<!-- end -->/g,
+                    from: /<!-- grunt\|minjs:((\w+).min.js) -->(.|\n)*?<!-- end -->/g,
                     to: function(matchedWord, pos, fullContent, matches){
                         var script = '<script src="js/' + matches[0] + '?' + (new Date()).getTime() + '"></script>'
                         console.log('Updated ' + script);
@@ -274,7 +272,7 @@ module.exports = function(grunt) {
 
 
     //默认任务：重新编译整个前端项目
-    grunt.registerTask('default', ['clean:build', 'uglify', 'cssmin', 'copy', 'replace:teacherSpace', 'htmlmin']);
+    grunt.registerTask('default', ['clean:build', 'uglify', 'cssmin', 'copy', 'replace:minjs', 'htmlmin']);
 
 
     //本地的后台服务任务

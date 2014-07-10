@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = /* grunt:server.express.port */8090/* end */,
+var PORT = /* grunt|env:server.express.port */8090/* end */,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -40,7 +40,7 @@ var customHeaders = function(req, res, next){
             break;
     }
     next();
-}
+};
 
 app.use(customHeaders);
 app.use(express.cookieParser());
