@@ -72,6 +72,7 @@ app.post('/activities', function(req, res){
             cls     = req.body['class'],
             subject = req.body['subject'],
             domain  = req.body['domain'],
+            link    = req.body['link'],
             type    = parseInt(req.body['type'])||0,
             ts      = parseInt(req.body['date'])||0;
 
@@ -104,7 +105,8 @@ app.post('/activities', function(req, res){
                                                     grade:      utf8.substr(grade,      0, SHORT_STR_MAXLEN),
                                                     'class':    utf8.substr(cls,        0, SHORT_STR_MAXLEN),
                                                     subject:    utf8.substr(subject,    0, SHORT_STR_MAXLEN),
-                                                    domain:     utf8.substr(domain,     0, SHORT_STR_MAXLEN)
+                                                    domain:     utf8.substr(domain,     0, SHORT_STR_MAXLEN),
+                                                    link:       link
                                                 }
                                             };
 
@@ -330,12 +332,15 @@ app.put('/activities/:aid', function(req, res){
                     cls     = req.body['class'],
                     subject = req.body['subject'],
                     domain  = req.body['domain'],
+                    link    = req.body['link'],
                     status  = req.body['status'],
                     type    = parseInt(req.body['type'])||0,
                     ts      = parseInt(req.body['date'])||0;
 
-                //如果是開放中的活動，則所有字段都可以編輯
                 var updates = {};
+                if(link) updates['info.link'] = link;
+
+                //如果是開放中的活動，則所有字段都可以編輯
                 if(doc.active){
                     if(status == 'closed'){
                         updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动

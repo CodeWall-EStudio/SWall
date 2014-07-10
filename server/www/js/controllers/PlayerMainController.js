@@ -28,6 +28,7 @@ angular.module('ap.controllers.main', [
             $scope.selectedResource = null;
             $scope.selectedRIndex = -1;
             $scope.autoRefresh = true;
+            $scope.showActivityDetails = false;
 
             $scope.shouldShowUploadMainButton = false;
 
@@ -387,6 +388,11 @@ angular.module('ap.controllers.main', [
                         autoRefreshTimeout = 0;
                     }
                 }
+            };
+
+
+            $scope.toggleActivityDetails = function(){
+
             };
 
 

@@ -112,7 +112,8 @@ angular.module('ts.controllers.activityPanel', [
                     grade:      gradeConfig ? gradeConfig.grade : '',
                     'class':    gradeConfig ? gradeConfig.cls[$scope.cls] : '',
                     subject:    subjectConfig || '',
-                    domain:     $scope.activity.info.domain || ''
+                    domain:     $scope.activity.info.domain || '',
+                    link:       $scope.activity.info.link || ''
                 };
                 ActivityService.createActivity(
                     params,
@@ -139,6 +140,7 @@ angular.module('ts.controllers.activityPanel', [
                     params['class']     = config.classes[$scope.grade].cls[$scope.cls] || '';
                     params['subject']   = config.subjects[$scope.subject] || '';
                     params['domain']    = $scope.activity.info.domain || '';
+                    params['link']      = $scope.activity.info.link || '';
                 }
                 ActivityService.updateActivity(
                     $scope.activity._id,
@@ -146,6 +148,12 @@ angular.module('ts.controllers.activityPanel', [
                     handleActivityCreatedOrUpdatedSuccess,
                     handleActivityCreatedOrUpdatedFail
                 );
+            };
+
+            $scope.handleTestLinkBtnClick = function(){
+                if($scope.activity.info.link){
+                    window.open($scope.activity.info.link, '_blank');
+                }
             };
 
             $scope.handleConfirmBtnClick = function(){
