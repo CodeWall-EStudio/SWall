@@ -45,7 +45,12 @@
             <p>开始时间：{{activity.info.date | date:'HH:mm'}}</p>
             <p ng-switch on="activity.info.type">
                 活动类型：
+                <!-- TODO 改成直接從數據裡讀取，不用這樣在頁面上寫死 -->
                 <span ng-switch-when="1">公开课</span>
+                <span ng-switch-when="2">学校活动</span>
+                <span ng-switch-when="3">区级活动</span>
+                <span ng-switch-when="4">市级活动</span>
+                <span ng-switch-when="5">其他活动</span>
                 <span ng-switch-default>其他</span>
             </p>
             <p class="autoRefreshSwitch">

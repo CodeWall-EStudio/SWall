@@ -78,10 +78,12 @@ body{
     padding-right: 0;
 }
 #mainContent .addComment{
-    padding: 5px 3px;
+    text-align: center;
+    padding: 5px 0;
 }
 #mainContent .userlist{
     padding: 10px;
+    overflow: hidden;
 }
 #mainContent .userlist li{
     cursor: pointer;
@@ -207,6 +209,7 @@ body{
 }
 #timeline .comment{
     color: #999;
+    padding-right: 180px;
 }
 
 #mainVideos{

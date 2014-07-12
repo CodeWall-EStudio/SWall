@@ -7,6 +7,7 @@
 
     <!-- TODO chagne to minify version -->
     <link href="lib/bootstrap_3.0.3/css/bootstrap.css" rel="stylesheet">
+    <link href="lib/bootstrap_treeview/bootstrap-treeview.min.css" rel="stylesheet">
     <link href="css/teacherSpace.min.css" rel="stylesheet">
     <script src="lib/jquery/jquery-2.0.3.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
@@ -124,7 +125,12 @@
                     <br/>
                     <p ng-switch on="selectedActivity.info.type">
                         活动类型：
+                        <!-- TODO 改成直接從數據裡讀取，不用這樣在頁面上寫死 -->
                         <span ng-switch-when="1">公开课</span>
+                        <span ng-switch-when="2">学校活动</span>
+                        <span ng-switch-when="3">区级活动</span>
+                        <span ng-switch-when="4">市级活动</span>
+                        <span ng-switch-when="5">其他活动</span>
                         <span ng-switch-default>未知类型</span>
                     </p>
                     <p>活动简介：{{selectedActivity.info.desc}}</p>
@@ -259,6 +265,7 @@
                                         <input type="text" id="na_users" data-role="tagsinput"
                                                ng-model="invitedUsers">
                                         <div class="alert alert-info">输入用户登录名后回车向列表添加用户，输入*后回车表示设定该活动为公开活动。</div>
+                                        <div id="orgTree"></div>
                                     </div>
                                 </div>
                             </fieldset>
@@ -286,6 +293,7 @@
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/bootstrap_tagsinput/bootstrap-tagsinput.js"></script>
     <script src="lib/bootstrap_datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="lib/bootstrap_treeview/bootstrap-treeview.min.js"></script>
     <script src="lib/underscore/underscore_1.5.2.js"></script>
 
     <!-- grunt|minjs:teacherSpace.min.js -->

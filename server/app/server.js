@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = /* grunt|env:server.express.port */8090/* end */,
+var PORT = /* grunt|env:server.express.port */80/* end */,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -134,94 +134,101 @@ app.get('/activities', function(req, res){
         var uid = userInfo['loginName'],
             query = {};
 
-        //根據活動狀態過濾，active(true) | closed(false)
-        var status = req.query['status'];
-        if(status){
-            switch(status){
-                case 'active': query.active = true;  break;
-                case 'closed': query.active = false; break;
-            }
-        }
-
-        //根據時間戳過濾，只返回指定時間段的活動
-        var afterTs = parseInt(req.query['after']),
-            beforeTs = parseInt(req.query['before']);
-        if(afterTs || beforeTs){
-            query['info.date'] = {};
-            if(afterTs)     query['info.date']['$gt'] = afterTs;
-            if(beforeTs)    query['info.date']['$lt'] = beforeTs;
-        }
-
-        //根據活動創建者過濾
-        var creator = req.query['creator'];
-        if(creator) query['users.creator'] = creator;
-
-        //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
-        query['$and'] = [];
-
-        //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
-        //默认会搜索所有符合这些条件的活动
-        var userQuery = {};
-        switch(req.query['authorize']){
-            case 'public':      userQuery['users.invitedUsers']  = {'$in':['*']}; break; //公开的
-            case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
-            case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
-            case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
-            default:
-                userQuery['$or'] = [
-                    {'users.creator': uid},
-                    {'users.invitedUsers': {'$in':['*', uid]}}
-                    //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
-                ];
-                break;
-        }
-        query['$and'].push(userQuery);
-
-        //根据关键字过滤
-        var keyword = req.query['kw'];
-        if(keyword){
-            var regex = {'$regex':keyword, '$options':'i'};
-            query['$and'].push({'$or': [
-                {'info.title':      regex},
-                {'info.desc':       regex},
-                {'info.teacher':    regex},
-                {'info.subject':    regex},
-                {'info.domain':     regex}
-            ]});
-        }
-
-        //控制起始位置和條數
-        //TODO 这里能根据id来确定从那条开始取不？
-        var index = (req.query['index'] || 0)| 0,
-            count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
-
-        //好现在来真的了我们马上去搜活动
-        console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
-        var cursor = db.activityDataCollection
-            .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
-            .limit(count)
-            .skip(index)
-            .sort({'info.date':-1, 'info.title':1});
-
-        cursor.count(false, function(err, total){ //先看看总共有多少条活动
-            var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
-            cursor.toArray(function(err, docs){
-                //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
-                if(err) res.json(500, {c:1, m:err.message});
-                else{
-                    //獲取活動相關的用戶profile
-                    var allUids = [];
-                    _.each(docs, function(doc){
-                        allUids = _.union(allUids, getAllUidsOfActivity(doc));
-                    });
-                    authModule.getProfilesOfUids(allUids, function(err, profiles){
-                        res.json(200, {c:0, r:{
-                            activities:docs,
-                            profiles: profiles,
-                            more:hasMore
-                        }});
-                    });
+        //检查是否超级用户哈
+        db.utils.isSuperUser(uid, function(isSuper)
+        {
+            //根據活動狀態過濾，active(true) | closed(false)
+            var status = req.query['status'];
+            if(status){
+                switch(status){
+                    case 'active': query.active = true;  break;
+                    case 'closed': query.active = false; break;
                 }
+            }
+
+            //根據時間戳過濾，只返回指定時間段的活動
+            var afterTs = parseInt(req.query['after']),
+                beforeTs = parseInt(req.query['before']);
+            if(afterTs || beforeTs){
+                query['info.date'] = {};
+                if(afterTs)     query['info.date']['$gt'] = afterTs;
+                if(beforeTs)    query['info.date']['$lt'] = beforeTs;
+            }
+
+            //根據活動創建者過濾
+            var creator = req.query['creator'];
+            if(creator) query['users.creator'] = creator;
+
+            //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
+            query['$and'] = [];
+
+            //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
+            //默认会搜索所有符合这些条件的活动
+            var userQuery = {};
+            switch(req.query['authorize']){
+                case 'public':      userQuery['users.invitedUsers']  = {'$in':['*']}; break; //公开的
+                case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
+                case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
+                case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
+                default:
+                    //如果是超级管理员，就不用受这个过滤条件限制了
+                    //if(!isSuper) {
+                        userQuery['$or'] = [
+                            {'users.creator': uid},
+                            {'users.invitedUsers': {'$in': ['*', uid]}}
+                            //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
+                        ];
+                    //}
+                    break;
+            }
+            query['$and'].push(userQuery);
+
+            //根据关键字过滤
+            var keyword = req.query['kw'];
+            if(keyword){
+                var regex = {'$regex':keyword, '$options':'i'};
+                query['$and'].push({'$or': [
+                    {'info.title':      regex},
+                    {'info.desc':       regex},
+                    {'info.teacher':    regex},
+                    {'info.subject':    regex},
+                    {'info.domain':     regex}
+                ]});
+            }
+
+            //控制起始位置和條數
+            //TODO 这里能根据id来确定从那条开始取不？
+            var index = (req.query['index'] || 0)| 0,
+                count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
+
+            //好现在来真的了我们马上去搜活动
+            console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
+            var cursor = db.activityDataCollection
+                .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
+                .limit(count)
+                .skip(index)
+                .sort({'info.date':-1, 'info.title':1});
+
+            cursor.count(false, function(err, total){ //先看看总共有多少条活动
+                var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
+                cursor.toArray(function(err, docs){
+                    //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
+                    if(err) res.json(500, {c:1, m:err.message});
+                    else{
+                        //獲取活動相關的用戶profile
+                        var allUids = [];
+                        _.each(docs, function(doc){
+                            allUids = _.union(allUids, getAllUidsOfActivity(doc));
+                        });
+                        authModule.getProfilesOfUids(allUids, function(err, profiles){
+                            res.json(200, {c:0, r:{
+                                activities:docs,
+                                profiles: profiles,
+                                more:hasMore
+                            }});
+                        });
+                    }
+                });
             });
         });
     });
@@ -834,6 +841,14 @@ app.put('/users/:uid/login', function(req, res){
         }
     );
 });
+
+
+/*app.get('/users/:uid/issuper', function(req, res){
+    var uid = req.params['uid'];
+    db.utils.isSuperUser(uid, function(result){
+        res.json(200, {uid:uid, super:result});
+    });
+});*/
 
 
 //獲取指定用戶的昵稱
