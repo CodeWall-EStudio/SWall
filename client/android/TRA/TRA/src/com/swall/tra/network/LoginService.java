@@ -168,7 +168,7 @@ public class LoginService extends ActionService {
 
             NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
                     Request.Method.PUT,
-                    Constants.getLoginUrl(),params,
+                    Constants.getLoginUrl(userName),params,
                     new Response.Listener<String>() {
                         public void onResponse(String response) {
                             Bundle result = new Bundle();

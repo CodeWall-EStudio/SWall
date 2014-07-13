@@ -61,9 +61,11 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        fetchCurrentActivity();
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus){
+            fetchCurrentActivity();
+        }
     }
 
     private void fetchCurrentActivity() {
@@ -92,6 +94,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
                         }
                     }
                 } catch (JSONException e) {
+                    retryFetchCurrentActivity();
                     e.printStackTrace();
                 }
 
@@ -100,7 +103,8 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
             }
         });
         if(!sent){
-
+            Toast.makeText(this,"出错了，正在重试",Toast.LENGTH_LONG);
+            retryFetchCurrentActivity();
         }
     }
 

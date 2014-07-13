@@ -36,6 +36,7 @@ public class TRAApplication extends Application {
     public static final String KEY_ENCODE_KEY = "encode_key";
     public static final String KEY_LOGIN_TIME = "login_time";
     public static final String KEY_SESION_ID = "session";
+    private static Context mContext;
 
 
     private ServiceManager mServiceManager;
@@ -72,6 +73,7 @@ public class TRAApplication extends Application {
 
     public TRAApplication(){
         sInstance = this;
+        mContext = this;
     }
 
 
@@ -313,6 +315,10 @@ public class TRAApplication extends Application {
     }
     private SharedPreferences.Editor getSharedPreferencesEditor(String name){
         return getSharedPreferences(name).edit();
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 
     // ############ 基本接口END  ####################

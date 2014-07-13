@@ -38,7 +38,7 @@ public class ServiceManager {
         public static String FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
 
 //        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
-        private static final String LOGIN_URL = "http://swall.codewalle.com/users/test/login";
+        private static final String LOGIN_URL = "http://swall.codewalle.com/users/";
 
 
         public static final String KEY_LOGIN_SUCCESS = "success";
@@ -83,10 +83,10 @@ public class ServiceManager {
                     FILE_SERVER_URL = "http://ydszone.hylc-edu.cn/";
             }
         }
-        public static String getLoginUrl() {
+        public static String getLoginUrl(String userId) {
             // DEMO
 //            return "http://qzone.codewalle.com/api/user/login?"+Math.random();
-            return LOGIN_URL+"?"+Math.random();
+            return LOGIN_URL+userId+"/login?"+Math.random();
         }
         public static String getPostResourceUrl(String aid, String uid){
             String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s&t=%d",aid,URLEncoder.encode(uid),
