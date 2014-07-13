@@ -26,9 +26,16 @@ angular.module('ts.services.user', [
             }
 
             function nick(){
-                var s = localStorage['login_result'];
-                var r = s ? JSON.parse(s) : {};
-                return r ? r.nick : '';
+                var uid = UtilsService.cookie.get('uid')
+                if(uid){
+                    //找一下localStorage里存储的登录结果，并对比uid确认是否当前用户
+                    var s = localStorage['login_result'],
+                        r = s ? JSON.parse(s) : {};
+                    return r ? r.nick : uid;
+                }
+                else {
+                    return '登录';
+                }
             }
 
             function login(username, password, success, error){
@@ -57,8 +64,9 @@ angular.module('ts.services.user', [
 
             function logout(){
                 var d = (new Date()).toGMTString();
-                document.cookie = 'uin=; path=/; expires=' + d;
-                document.cookie = 'skey=; path=/; expires=' + d;
+                document.cookie = 'uid=; domain=.codewalle.com; path=/; expires=' + d;
+                document.cookie = 'skey=; domain=.codewalle.com; path=/; expires=' + d;
+                document.cookie = 'connect.sid=; domain=.codewalle.com; path=/; expires=' + d;
                 localStorage.removeItem('login_result');
             }
 
@@ -100,7 +108,7 @@ angular.module('ts.services.user', [
                 });
 
                 xhr.withCredentials = true;
-                xhr.open('GET', 'http://qzone.codewalle.com/api/organization/tree');
+                xhr.open('GET', '/users/tree');
                 xhr.send();
                 console.log('[UserService] fetching organization tree ...')
             }

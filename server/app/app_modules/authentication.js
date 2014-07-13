@@ -11,6 +11,7 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com',     path:'/authenticatio
     VERIFY_ENCODE_KEY_API   = {host:'my.71xiaoxue.com',     path:'/authenticationKey.do'},
     GET_PROFILE_API         = {host:'mapp.71xiaoxue.com',   path:'/components/getUserInfo.htm'},
     GET_ORGANIZATION_TREE   = {host:'mapp.71xiaoxue.com',   path:'/components/getOrgTree.htm'},
+    UC_ORGANIZATION_TREE    = {host:'qzone.codewalle.com',  path:'/api/organization/tree'},
     UC_LOGIN_API            = {host:'qzone.codewalle.com',  path:'/api/user/login'},
     UC_VERIFY_API           = {host:'qzone.codewalle.com',  path:'/api/user/validate'};
 
@@ -213,6 +214,23 @@ function fetchOrganizationTree(encodeKey, callback){
     }
     else callback(new Error('Invalid EncodeKey'));
 }
+function fetchOrganizationTreeFromAZ(skey, session, callback){
+    if(skey && session){
+        request(
+            'GET',
+            UC_ORGANIZATION_TREE,
+            '',
+            {skey:skey, 'connect.sid':session},
+            function(responseText, res){
+                callback(null, res.statusCode, JSON.parse(responseText));
+            },
+            function(error){
+                callback(error, 200);
+            }
+        )
+    }
+    else callback(new Error('Invalid Keys'), 400);
+}
 //自動用我的帳號密碼登錄來拉取組織信息
 function fetchOrganizationTreeEveryHour(){
     console.log('[OrganizationTree] logging in ...');
@@ -295,9 +313,10 @@ function request(method, api, body, cookies, onData, onError){
 
 
 exports.api = {
-    login:                      login,
-    response401IfUnauthoirzed:  response401IfUnauthoirzed,
-    fetchOrganizationTree:      fetchOrganizationTree,
-    getProfileOfUid:            getProfileOfUid,
-    getProfilesOfUids:          getProfilesOfUids
+    login:                          login,
+    response401IfUnauthoirzed:      response401IfUnauthoirzed,
+    fetchOrganizationTree:          fetchOrganizationTree,
+    fetchOrganizationTreeFromAZ:    fetchOrganizationTreeFromAZ,
+    getProfileOfUid:                getProfileOfUid,
+    getProfilesOfUids:              getProfilesOfUids
 };

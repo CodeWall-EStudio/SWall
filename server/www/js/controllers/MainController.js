@@ -46,6 +46,7 @@ angular.module('ts.controllers.main', [
             $rootScope.$on(EVENT_LOGIN, function(event, status){
                 if(status == 200){
                     $rootScope.fetchActivities();
+                    UserService.fetchOrganizationTree();
                 }
             });
 

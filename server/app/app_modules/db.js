@@ -3,8 +3,8 @@ var mongodb = require('mongodb');
 
 var HOST        = /* grunt|env:server.mongodb.host */"localhost"/* end */, //正式環境：'192.168.98.59'
     PORT        = /* grunt|env:server.mongodb.port */27017/* end */,
-    USERNAME    = /* grunt|env:server.mongodb.username */""/* end */,
-    PASSWORD    = /* grunt|env:server.mongodb.password */""/* end */,
+    USERNAME    = /* grunt|env:server.mongodb.username */"swall"/* end */,
+    PASSWORD    = /* grunt|env:server.mongodb.password */"DfvszXKePFtfB9KM"/* end */,
     DB          = 'swall',
     CONFIG_VER  = 3; //TODO 修改了活动配置记得要改一下配置版本
 

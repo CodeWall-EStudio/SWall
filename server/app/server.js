@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = /* grunt|env:server.express.port */80/* end */,
+var PORT = /* grunt|env:server.express.port */8090/* end */,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -41,8 +41,8 @@ var customHeaders = function(req, res, next){
     }
     next();
 };
-
 app.use(customHeaders);
+
 app.use(express.cookieParser());
 app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
 app.use(connect.compress());
@@ -828,11 +828,13 @@ app.put('/users/:uid/login', function(req, res){
         function(error, status, result){
             if(!error && status==200){
                 if(result){
-                    var expiresDate = new Date(Date.now() + 3600000*24),
+                    var skey = result.skey,
+                        session = decodeURIComponent(result.session),
+                        expiresDate = new Date(Date.now() + 3600000*24),
                         options = {domain:'.codewalle.com', path:'/', expires:expiresDate};
                     res.cookie('uid', uid, options);
-                    res.cookie('skey', result.skey, options);
-                    res.cookie('connect.sid', decodeURIComponent(result.session), options);
+                    res.cookie('skey', skey, options);
+                    res.cookie('connect.sid ', session, options);
                     res.json(200, result);
                 }
                 else res.send(401);
@@ -858,6 +860,17 @@ app.get('/users/:uid/profile', function(req, res){
         if(err)         res.send(500);
         else if(!reply) res.send(404);
         else            res.json(200, reply);
+    });
+});
+
+
+//获取组织结构树
+app.get('/users/tree', function(req, res){
+    var skey = req.cookies['skey'],
+        session = req.cookies['connect.sid'];
+    authModule.fetchOrganizationTreeFromAZ(skey, session, function(err, status, tree){
+        if(!err && status == 200) res.json(200, tree);
+        else res.json(status, {error:err, tree:tree});
     });
 });
 

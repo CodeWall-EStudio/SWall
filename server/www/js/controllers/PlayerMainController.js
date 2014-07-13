@@ -621,7 +621,8 @@ angular.module('ap.controllers.main', [
 
                 res.width(res.width() + 1);
                 setTimeout(function(){
-                    res.width('auto');
+                    res[0].style.width = '50%';
+                    //res.width('auto');
                 }, 100);
             }
 

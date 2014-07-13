@@ -204,7 +204,7 @@ module.exports = function(grunt) {
 
             //后台
             runServer: {    command: 'sudo node app/server.js' },
-            killServer: {   command: 'pkill -9 "node"' },
+            killServer: {   command: 'sudo pkill -9 "node"' },
 
             //打包发布包
             zipDist: {      command: 'rm -f <%= CONSTS.DEPLOY %>.zip && zip -q -r <%= CONSTS.DEPLOY %> <%= CONSTS.SERVER %> <%= CONSTS.WWW_DIST %>' }
