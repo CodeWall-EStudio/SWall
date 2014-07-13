@@ -3,7 +3,10 @@ package com.swall.tra.network;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 import com.swall.tra.utils.AccountDatabaseHelper;
+import com.swall.tra.utils.NetworkUtils;
 import org.apache.http.HttpHeaders;
 
 import java.lang.ref.WeakReference;
@@ -11,16 +14,69 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by pxz on 13-12-13.
  */
 public abstract class ActionService {
     protected static Map<String, String> sRequestCookies = new HashMap<String, String>();
+
+    private static final String SET_COOKIE_KEY = "Set-Cookie";
+    private static Map<String,String> sessionCookies = new HashMap<String, String>();
+    public static String cookieString = "";
+
+    /**
+     * Checks the response headers for session cookie and saves it
+     * if it finds it.
+     * @param headers Response Headers.
+     */
+    public static final void saveCookies(Set<Pair<String, String>> headers) {
+        // fetch all cookies and save
+        for(Pair<String,String> entry : headers){
+            if(entry.first.equalsIgnoreCase(SET_COOKIE_KEY)){
+                String cookie = entry.second;
+                if (cookie.length() > 0) {
+                    String[] splitCookie = cookie.split(";");
+                    if(splitCookie.length < 0)continue;
+                    String[] splitSessionId = splitCookie[0].split("=");
+                    if(splitSessionId.length == 0)continue;
+                    String theKey = splitSessionId[0].trim();
+                    String theValue = "";
+                    if(splitSessionId.length > 1){
+                        theValue = splitSessionId[1].trim();
+                    }
+                    sessionCookies.put(theKey,theValue);
+                }
+            }
+            updateCookieString();
+            Log.i(NetworkUtils.class.getCanonicalName(), entry.first + entry.second);
+        }
+    }
+
+    private static void updateCookieString() {
+//        StringBuilder builder = new StringBuilder();
+//        for(String key:sessionCookies.keySet()){
+//            builder.append(key);
+//            builder.append("=");
+//            builder.append(sessionCookies.get(key));
+//            builder.append("; ");
+//        }
+//        cookieString = builder.toString();
+        cookieString =" skey="+sEncodeKey+"; connect.sid="+sSessionId+";";
+        sRequestCookies.put("Cookie",cookieString);
+    }
+
+    public static final void setCookie(String key,String value) {
+        sessionCookies.put(key,value);
+    }
+
+
+
     public static Map<String, String> getRequestHeaders(){
         if(sRequestCookies.isEmpty() || TextUtils.isEmpty(sEncodeKey)){
             sRequestCookies.put(HttpHeaders.CACHE_CONTROL,"no-cache");
-            sRequestCookies.put("Cookie","skey="+sEncodeKey);
+            sRequestCookies.put("Cookie", cookieString);
         }
         return sRequestCookies;
     }
@@ -35,14 +91,17 @@ public abstract class ActionService {
 
         return url + "skey="+sEncodeKey;
     }
-    public static void setEncodeKey(String encodeKey){
+    public static void setEncodeKey(String encodeKey,String sessionId){
         sEncodeKey = encodeKey;
+        sSessionId = sessionId;
         if(!TextUtils.isEmpty(encodeKey)){
             sRequestCookies.clear();
         }
+        updateCookieString();
     }
     protected String TAG;
     protected static String sEncodeKey;
+    protected static String sSessionId;
     protected WeakReference<Context> contextRef;
     protected WeakReference<ServiceManager> managerRef;
     public ActionService(Context context, ServiceManager manager){

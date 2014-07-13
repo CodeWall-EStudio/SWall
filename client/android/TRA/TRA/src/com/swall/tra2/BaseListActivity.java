@@ -43,7 +43,7 @@ public class BaseListActivity extends SherlockListActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         Toast.makeText(this, "quit", Toast.LENGTH_SHORT).show();
-        app.updateCurrentAccount(new AccountInfo("","","",""));
+        app.updateCurrentAccount(null);
         finish();
         return super.onMenuItemSelected(featureId, item);
     }

@@ -38,7 +38,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void gotoLogin() {
-        startActivity(new Intent(SplashActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        startActivity(new Intent(SplashActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("autoLogin",true));
         finish();
     }
 }

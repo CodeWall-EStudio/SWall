@@ -122,7 +122,7 @@ public class SettingActivity extends SherlockPreferenceActivity implements Prefe
 
 
     private void gotoLogin() {
-        TRAApplication.getApp().updateCurrentAccount(null);
+//        TRAApplication.getApp().updateCurrentAccount(null);
         Intent intent = new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|
                 Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

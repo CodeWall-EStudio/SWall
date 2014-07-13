@@ -38,7 +38,7 @@ public class QuitActivity extends BaseFragmentActivity implements View.OnClickLi
     }
 
     private void gotoLogin() {
-        app.updateCurrentAccount(null);
+//        app.updateCurrentAccount(null);
         Intent intent = new Intent(this,LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|
             Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

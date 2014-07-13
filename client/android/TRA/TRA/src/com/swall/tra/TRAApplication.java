@@ -4,13 +4,14 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
-import com.umeng.update.UmengUpdateAgent;
-import org.json.JSONArray;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.*;
 
@@ -34,6 +35,7 @@ public class TRAApplication extends Application {
     public static final String KEY_SHOW_NAME = "show_name";
     public static final String KEY_ENCODE_KEY = "encode_key";
     public static final String KEY_LOGIN_TIME = "login_time";
+    public static final String KEY_SESION_ID = "session";
 
 
     private ServiceManager mServiceManager;
@@ -52,13 +54,14 @@ public class TRAApplication extends Application {
                 case ServiceManager.Constants.ACTION_AUTO_LOGIN:
                     if(data == null || !data.getBoolean(ServiceManager.Constants.KEY_STATUS,false)){
                         // login fail
-                        updateCurrentAccount(null);
+//                        updateCurrentAccount(null);
                     }else{
                         AccountInfo accountInfo = new AccountInfo(
                                 data.getString(KEY_USER_NAME),
                                 data.getString(KEY_USER_PASSWORD),
                                 data.getString(KEY_SHOW_NAME),
-                                data.getString(KEY_ENCODE_KEY));
+                                data.getString(KEY_ENCODE_KEY),
+                                data.getString(KEY_SESION_ID));
                         updateCurrentAccount(accountInfo);
                     }
                     break;
@@ -76,12 +79,22 @@ public class TRAApplication extends Application {
     private Toast reloginingToast;
 
     public boolean doAction(final int action,final Bundle data,final ActionListener listener){
+
+        if(!isNetworkConnected()){
+            MobclickAgent.onEvent(getApplicationContext(),"network_status_fail");
+            Toast.makeText(this,"网络未连接，请检查网络",Toast.LENGTH_LONG);
+//            return false; 先不做处理，因为Volley有重试逻辑
+        }
+
         if(mAccountInfo != null &&
+                mAccountInfo.password != "" &&
                 System.currentTimeMillis() - mAccountInfo.getTime() > ServiceManager.Constants.MAX_LOGIN_EXPIRED_TIME){
-            Toast.makeText(getApplicationContext(),"登录失败，请重新登录",Toast.LENGTH_LONG).show();
-            updateCurrentAccount(null);
+            Toast.makeText(getApplicationContext(),"离上次登录时间太长，请重新登录",Toast.LENGTH_LONG).show();
+            MobclickAgent.onEvent(getApplicationContext(),"needRelogin");
+            updateCurrentAccount(mAccountInfo);
             startActivity(new Intent(getApplicationContext(),LoginActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    );
             /*
             if(reloginingToast != null){
                 reloginingToast.cancel();
@@ -115,6 +128,13 @@ public class TRAApplication extends Application {
         }else{
             return mServiceManager.doAction(action,data,listener);
         }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 
@@ -179,7 +199,7 @@ public class TRAApplication extends Application {
     // ###########
     public AccountInfo getCachedAccount(){
         if(mAccountInfo == null){
-            Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME});
+            Map<String,String> data = getMappingData(CACHED_USER_DATA,new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME,KEY_SESION_ID});
             String name = data.get(KEY_USER_NAME);
             String password = data.get(KEY_USER_PASSWORD);
             String showName = data.get(KEY_SHOW_NAME);
@@ -191,9 +211,9 @@ public class TRAApplication extends Application {
                 // do nothing
             }
             if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password) || loginTime == 0l){
-                return new AccountInfo("","","","");
+                return new AccountInfo("","","","", data.get(KEY_SESION_ID));
             }
-            mAccountInfo = new AccountInfo(name,password,showName,encodeKey);
+            mAccountInfo = new AccountInfo(name,password,showName,encodeKey, data.get(KEY_SESION_ID));
             mAccountInfo.setTime(loginTime);
         }
         return mAccountInfo;
@@ -206,17 +226,17 @@ public class TRAApplication extends Application {
     public void updateCurrentAccount(AccountInfo account,boolean autoLogin){
         long currentTime = System.currentTimeMillis();
         if(account == null){
-            account = new AccountInfo("","","","");
+            account = new AccountInfo("","","","", "");
             mAccountInfo = null;
             currentTime = 0;
         }else{
             mAccountInfo = account;
             mAccountInfo.setTime(currentTime);
         }
-        ActionService.setEncodeKey(account.encodeKey);
+        ActionService.setEncodeKey(account.encodeKey,account.sessionId);
         saveMappingData(CACHED_USER_DATA,
-                new String[]{KEY_USER_NAME,KEY_USER_PASSWORD,KEY_AUTO_LOGIN,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME},
-                new String[]{account.userName,account.password,autoLogin?"true":"false",account.showName,account.encodeKey,String.valueOf(currentTime)}
+                new String[]{KEY_SESION_ID,KEY_USER_NAME,KEY_USER_PASSWORD,KEY_AUTO_LOGIN,KEY_SHOW_NAME,KEY_ENCODE_KEY,KEY_LOGIN_TIME},
+                new String[]{account.sessionId,account.userName,account.password,autoLogin?"true":"false",account.showName,account.encodeKey,String.valueOf(currentTime)}
         );
     }
 

@@ -1,6 +1,8 @@
 package com.swall.tra;
 
+import android.accounts.Account;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,7 +24,7 @@ import org.json.JSONObject;
 /**
  * Created by pxz on 13-12-28.
  */
-public class LoginActivity extends BaseFragmentActivity implements View.OnClickListener, InputMethodRelativeLayout.onSizeChangedListenner, RadioGroup.OnCheckedChangeListener {
+public class LoginActivity extends BaseFragmentActivity implements View.OnClickListener, InputMethodRelativeLayout.onSizeChangedListenner, RadioGroup.OnCheckedChangeListener, DialogInterface.OnCancelListener {
 
     ActionListener listener = new ActionListener(LoginActivity.this) {
         @Override
@@ -61,6 +63,9 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
     private void updateAccounts(Bundle data) {
         String name = data.getString(ServiceManager.Constants.KEY_USER_NAME);
         String pwd = data.getString(ServiceManager.Constants.KEY_PASSWORD);
+        updateAccounts(name, "");
+    }
+    private void updateAccounts(String name,String pwd){
         if(!"".equals(name) && TextUtils.isEmpty(mEtUserName.getText().toString())){
             mEtUserName.setText(name);
             mEtPassword.setText(pwd);
@@ -102,8 +107,17 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
                 .setTitle("登录中，请稍候...")
                 .setCancelable(false)
                 .create();
+        mProgressDialog.setCancelable(true);
+        mProgressDialog.setOnCancelListener(this);
 
-        app.doAction(ServiceManager.Constants.ACTION_GET_ACCOUNTS,null,null);
+        Intent intent = getIntent();
+        if(intent.getBooleanExtra("autoLogin",false)) {
+            app.doAction(ServiceManager.Constants.ACTION_GET_ACCOUNTS, null, null);
+        }else{
+            AccountInfo accountInfo = app.getCachedAccount();
+            Log.i(TAG,accountInfo.userName);
+            updateAccounts(accountInfo.userName,accountInfo.password);
+        }
 
 
 
@@ -135,10 +149,13 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
                 if(TextUtils.isEmpty(userName) || TextUtils.isEmpty(pwd))return;
                 mLoginData.putString(ServiceManager.Constants.KEY_USER_NAME, userName);
                 mLoginData.putString(ServiceManager.Constants.KEY_PASSWORD, pwd);
-                app.doAction(ServiceManager.Constants.ACTION_LOGIN,mLoginData,listener);
-
-                disableLoginActions();
-                showLoginProgressDialog();
+                if(!app.doAction(ServiceManager.Constants.ACTION_LOGIN,mLoginData,listener)){
+                    dismissLoginProgressDialog();
+                    Toast.makeText(this,"登录失败",Toast.LENGTH_LONG);
+                }else {
+                    disableLoginActions();
+                    showLoginProgressDialog();
+                }
                 break;
         }
     }
@@ -188,5 +205,10 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
 
 
         }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        enableLoginActoins();
     }
 }

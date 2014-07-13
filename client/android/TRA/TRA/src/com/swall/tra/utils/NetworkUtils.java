@@ -1,11 +1,15 @@
 package com.swall.tra.utils;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.util.Log;
 import com.android.volley.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
@@ -26,12 +30,19 @@ import org.json.JSONObject;
  * Created by pxz on 13-12-25.
  */
 public class NetworkUtils {
+
     public static class StringRequestWithParams extends StringRequest{
 
         private Map<String,String> params;
         public StringRequestWithParams(int method, String url,Map<String,String> params, Response.Listener<String> listener, Response.ErrorListener errorListener) {
             super(method, url, listener, errorListener);
             this.params = params;
+        }
+
+        @Override
+        public Map<String, String> getHeaders() throws AuthFailureError {
+            Map<String, String> headers = ActionService.getRequestHeaders();
+            return headers;
         }
 
         public StringRequestWithParams(String url, Map<String,String> params, Response.Listener<String> listener, Response.ErrorListener errorListener) {
@@ -42,6 +53,7 @@ public class NetworkUtils {
 
         @Override
         protected Response<String> parseNetworkResponse(NetworkResponse response) {
+            ActionService.saveCookies(response.headerSet);
             String parsed;
             try {
                 parsed = new String(response.data, parseCharset(response.headers));
@@ -73,6 +85,7 @@ public class NetworkUtils {
         protected Map<String, String> getParams() throws AuthFailureError {
             return params;
         }
+
     }
 
     public static class MultipartRequest extends Request<String> {
@@ -84,7 +97,7 @@ public class NetworkUtils {
 
         private final Response.Listener<String> mListener;
 
-        public MultipartRequest(String url,String actiityId,String encodeKey,byte[] data, File file,ContentType contentType,Response.Listener<String> listener, Response.ErrorListener errorListener){
+        public MultipartRequest(String url, String actiityId, String encodeKey, byte[] data, File file, ContentType contentType, String activityTime, String activityName, Response.Listener<String> listener, Response.ErrorListener errorListener){
             super(Method.POST, url, errorListener);
             mListener = listener;
 
@@ -112,6 +125,8 @@ public class NetworkUtils {
             builder.addTextBody("name",fileName);
             builder.addTextBody("skey",""+encodeKey);
             builder.addTextBody("activityId",actiityId);
+            builder.addTextBody("activityTime",activityTime);
+            builder.addTextBody("activityName",activityName);
 //            builder.addTextBody("file",fileName);
 //            builder.setCharset(Charset.forName("UTF-8"));
             builder.setBoundary("----WebKitFormBoundaryOZP8ZyAfN79iuKUB--");

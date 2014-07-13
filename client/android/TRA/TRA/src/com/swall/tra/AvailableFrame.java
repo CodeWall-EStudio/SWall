@@ -65,6 +65,8 @@ public class AvailableFrame extends TabFrame implements AdapterView.OnItemClickL
         listListener = new ActionListener(getActivity()) {
             @Override
             public void onReceive(int action, Bundle data) {
+                Activity activity = getActivity();
+                if(activity == null)return;
                 pullToRefreshListView.onRefreshComplete();
                 if(data == null){
                     // TODO

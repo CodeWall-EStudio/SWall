@@ -1,19 +1,14 @@
 package com.swall.tra.network;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.swall.tra.MainActivity;
 import com.swall.tra.TRAApplication;
 import com.swall.tra.model.AccountInfo;
 import static com.swall.tra.network.ServiceManager.Constants;
@@ -23,9 +18,9 @@ import com.swall.tra.utils.NetworkUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -85,8 +80,9 @@ public class LoginService extends ActionService {
         String pwd = data.getString(Constants.KEY_PASSWORD,"");
         String showName = data.getString(TRAApplication.KEY_SHOW_NAME,"");
         String encodeKey = data.getString(TRAApplication.KEY_ENCODE_KEY,"");
+        String sessionId = data.getString(TRAApplication.KEY_SESION_ID);
         TRAApplication app = TRAApplication.getApp();
-        app.updateCurrentAccount(new AccountInfo(name, pwd,showName,encodeKey), autoLogin);
+        app.updateCurrentAccount(new AccountInfo(name, pwd,showName,encodeKey, sessionId),autoLogin);
     }
 
     private void doGetAccounts(Bundle data, final ActionListener listener) {
@@ -166,9 +162,12 @@ public class LoginService extends ActionService {
             Map<String,String> params = new HashMap<String,String>();
             params.put("loginName",userName);
             params.put("password",password);
+            params.put("name",userName);
+            params.put("pwd",password);
+            params.put("json","true");
 
             NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
-                    Request.Method.POST,
+                    Request.Method.PUT,
                     Constants.getLoginUrl(),params,
                     new Response.Listener<String>() {
                         public void onResponse(String response) {
@@ -181,17 +180,31 @@ public class LoginService extends ActionService {
                                 /*
                                 {"resultMsg":"","resultObject":{"email":null,"userId":"6ad7bae4-6c87-4bf3-a7cd-50f6bb6b8b50","encodeKey":"F3B14EA32A2226DEE7338A2EB44C672981FA33A6755D16ACC1E4783BECF419F3C3233795DD70209BBC4C403589741636D76FFE1EA73815345C51300D55C4228AF6016962C862351008A8403C0E359E18","gender":0,"userName":"æ½ç¥¥æº"},"success":true}
                                 */
+                                /*
+                                {
+  "err": 0,
+  "result": {
+    "skey": "8b8a6d982d405267b7bcb8eaf77fc762",
+    "userId": "539654ff05bf294863d12610",
+    "name": "xzone_admin",
+    "nick": "è¶çº§ç®¡çå"
+  }
+}
+
+                                * */
                                 o = new JSONObject(response);
                                 if(o != null){
-                                    JSONObject resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
-                                    String showName = JSONUtils.getString(resultObject,"userName","");
-                                    String encodeKey = JSONUtils.getString(resultObject,"encodeKey","");
+                                    JSONObject resultObject = o;//JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
+                                    String showName = JSONUtils.getString(resultObject, "nick", "");
+                                    String encodeKey = JSONUtils.getString(resultObject,"skey","");
+                                    String session = JSONUtils.getString(resultObject,"session","");
                                     if(TextUtils.isEmpty(encodeKey)){
                                         success = false;
                                     }else{
                                         result.putString(TRAApplication.KEY_SHOW_NAME,showName);
                                         result.putString(TRAApplication.KEY_ENCODE_KEY,encodeKey);
                                         result.putLong(TRAApplication.KEY_LOGIN_TIME,System.currentTimeMillis());
+                                        result.putString(TRAApplication.KEY_SESION_ID,session);
                                     }
                                 }else{
                                     success =false;

@@ -29,7 +29,7 @@ public class ServiceManager {
     public static class Constants{
 
 
-        public static final long MAX_LOGIN_EXPIRED_TIME = 23 * 60 * 60 * 1000;
+        public static final long MAX_LOGIN_EXPIRED_TIME = 22 * 60 * 60 * 1000;
         // TODO 此处不应该可改，仅为环境配置临时使之可改
 //        public static String RESOURCE_MAIN_URL = "http://szone.71xiaoxue.com/";
 //        public static String RESOURCE_MAIN_URL = "http://xzone.71xiaoxue.com/";
@@ -37,7 +37,8 @@ public class ServiceManager {
 //        public static String FILE_SERVER_URL = "http://xzone.codewalle.com/";
         public static String FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
 
-        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
+//        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
+        private static final String LOGIN_URL = "http://swall.codewalle.com/users/test/login";
 
 
         public static final String KEY_LOGIN_SUCCESS = "success";
@@ -69,8 +70,9 @@ public class ServiceManager {
                     FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
                     break;
                 case Constants.ENV_TEST:
-                    DATA_URL_PREFIX = "http://swall.71xiaoxue.com/";
-                    FILE_SERVER_URL = "http://xzone.codewalle.com/";
+                    // http://qzone.codewalle.com/
+                    DATA_URL_PREFIX = "http://swall.codewalle.com/";
+                    FILE_SERVER_URL = "http://qzone.codewalle.com/";
                     break;
                 case Constants.ENV_DEV:
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
@@ -82,7 +84,9 @@ public class ServiceManager {
             }
         }
         public static String getLoginUrl() {
-            return LOGIN_URL;
+            // DEMO
+//            return "http://qzone.codewalle.com/api/user/login?"+Math.random();
+            return LOGIN_URL+"?"+Math.random();
         }
         public static String getPostResourceUrl(String aid, String uid){
             String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s&t=%d",aid,URLEncoder.encode(uid),
@@ -100,7 +104,9 @@ public class ServiceManager {
                     System.currentTimeMillis());
             Log.w("SWall", url);
             return url;
+//            return "http://qzone.codewalle.com/api/user/info?"+Math.random();
         }
+
 
         public static String getJoinUrl(String userName, String id) {
             String url = DATA_URL_PREFIX + String.format("activities/%s/participators?uid=%s&t=%d",id,URLEncoder.encode(userName),
@@ -185,7 +191,7 @@ public class ServiceManager {
         listeners = new SparseArray<ArrayList<ActionListener>>();
         mDBHelper = new AccountDatabaseHelper(context);
 
-        Constants.setEnv(Constants.ENV_PUBLISH);
+        Constants.setEnv(Constants.ENV_TEST);
 
     }
 

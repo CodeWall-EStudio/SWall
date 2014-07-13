@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import com.android.volley.*;
+import com.swall.tra.TRAApplication;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.NetworkUtils;
+import com.umeng.analytics.MobclickAgent;
 import org.apache.http.entity.ContentType;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +67,7 @@ public class UploadService extends ActionService {
 
                     @Override
                     public void onResponse(JSONObject response) {
+                        MobclickAgent.onError(TRAApplication.getApp().getApplicationContext(),"err_comment_network_success");
                         Log.i("SWall", response.toString());
                         Bundle data = new Bundle();
                         data.putString("result",response.toString());
@@ -74,6 +77,13 @@ public class UploadService extends ActionService {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+
+                        MobclickAgent.onError(TRAApplication.getApp().getApplicationContext(),"err_comment_network_fail");
+                        if(error != null && error.networkResponse != null){
+                            MobclickAgent.onError(TRAApplication.getApp().getApplicationContext(),"err_comment_network_fail_"+error.networkResponse.statusCode);
+                        }else{
+                            MobclickAgent.onError(TRAApplication.getApp().getApplicationContext(),"err_comment_network_fail_other");
+                        }
                         notifyListener(action, null, listener);
                     }
                 }
@@ -125,6 +135,8 @@ public class UploadService extends ActionService {
                 comment,
                 bytes,
                 filePath,
+                data.getString("activityTime"),
+                data.getString("activityName"),
                 new ActionListener(null) {//此处不应该用ActionListener
                     @Override
                     public void onReceive(int action, Bundle data2) {
@@ -180,9 +192,12 @@ public class UploadService extends ActionService {
                                             listener
                                     );
                                     error = false;
+                                }else{
+                                    MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(), "err_upload_fail_but_connected");
                                 }
 
                             } catch (JSONException e) {
+                                MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(), "err_upload_fail_json");
                                 e.printStackTrace();
                             }
                         }
@@ -211,6 +226,8 @@ public class UploadService extends ActionService {
                           String comment,
                           byte[] data,
                           String filePath,
+                          String activityTime,
+                          String activityName,
                           final ActionListener listener,
                           ContentType contentType){
 
@@ -254,9 +271,13 @@ public class UploadService extends ActionService {
                 data,
                 file,
                 contentType,
+                activityTime,
+                activityName,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(),
+                                "err_upload_success_200");
                         Bundle data = new Bundle();
                         data.putString("data",response);
                         listener.onReceive(0,data);
@@ -266,6 +287,15 @@ public class UploadService extends ActionService {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(),
+                                "err_upload_fail_netwrk");
+                        if(error != null && error.networkResponse != null ){
+                            MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(),
+                                    "err_upload_fail_netwrk_"+error.networkResponse.statusCode);
+                        }else{
+                            MobclickAgent.onEvent(TRAApplication.getApp().getApplicationContext(),
+                                    "err_upload_fail_netwrk_other");
+                        }
                         listener.onReceive(-1,null);
                     }
                 }

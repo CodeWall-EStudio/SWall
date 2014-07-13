@@ -32,21 +32,21 @@
             android:visibility="visible"
             android:orientation="horizontal">
         <TextView
-                style="@style/buttonNegative"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="取消"
-                android:id="@+id/btn_negative"
-                android:layout_weight="1"
-                android:gravity="center_vertical|center_horizontal"
-                android:visibility="visible"
-                />
-        <TextView
                 style="@style/buttonPositive"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:text="保存"
                 android:id="@+id/btn_positive"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:visibility="visible"
+                />
+        <TextView
+                style="@style/buttonNegative"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="取消"
+                android:id="@+id/btn_negative"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal"
 

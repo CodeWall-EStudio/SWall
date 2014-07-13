@@ -28,6 +28,7 @@ import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.Utils;
 import com.swall.tra.widget.CustomDialog;
 import com.swall.tra.widget.UploadResourceProgressDialog;
+import com.umeng.analytics.MobclickAgent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,6 +153,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 Toast.makeText(CurrentTRAActivity.this, "上传完成", Toast.LENGTH_SHORT).show();
                 fetchCurrentActivity();
             }else{
+                MobclickAgent.onEvent(app.getApplicationContext(),"err_comment_fail");
                 Toast.makeText(CurrentTRAActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
             }
         }
@@ -514,6 +516,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
                 if(data != null){
                     gotoMainActivity();
                 }else{
+                    MobclickAgent.onEvent(app.getApplicationContext(), "err_quit");
                     Toast.makeText(CurrentTRAActivity.this,"退出活动失败!",Toast.LENGTH_SHORT).show();
                 }
             }
@@ -538,6 +541,9 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         defaultRequestData.putString("filePath",upd.getFilePath());
         defaultRequestData.putString("comment",upd.getCommentText());
         defaultRequestData.putString("id", mInfo.id);
+        defaultRequestData.putString("activityTime",mInfo.getTimeAndCreatorDesc());
+        defaultRequestData.putString("activityName",mInfo.title);
+        defaultRequestData.putString("activityId",mInfo.id);
         app.doAction(action,defaultRequestData,mUploadListener);
     }
 }

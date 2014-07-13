@@ -17,12 +17,12 @@ import com.actionbarsherlock.view.MenuItem;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
 import com.umeng.analytics.MobclickAgent;
-import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.*;
 
 /**
  * Created by pxz on 13-12-28.
  */
-public class BaseFragmentActivity extends SherlockFragmentActivity{
+public class BaseFragmentActivity extends SherlockFragmentActivity implements UmengUpdateListener {
     private static final int MESSAGE_CONFIRM_QUIT = 1;
     public TRAApplication app;
     protected String TAG;
@@ -101,7 +101,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mQuitProgramConfirmDialog.dismiss();
-                            app.updateCurrentAccount(null);
+//                            app.updateCurrentAccount(null);
                             finish();
                         }
                     })
@@ -132,8 +132,29 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
 
 
 
-        UmengUpdateAgent.setUpdateAutoPopup(true);
-        UmengUpdateAgent.update(this);
+        UmengUpdateAgent.setUpdateAutoPopup(false);
+        UmengUpdateAgent.setDialogListener(new UmengDialogButtonListener() {
+
+            @Override
+            public void onClick(int status) {
+                switch (status) {
+                    case UpdateStatus.Update:
+
+                        break;
+                    case UpdateStatus.Ignore:
+
+                        break;
+                    case UpdateStatus.NotNow:
+
+                        break;
+                }
+            }
+        });
+//        if(isIgnoredOnce) {
+//            UmengUpdateAgent.update(this);
+//        }
+        UmengUpdateAgent.setUpdateListener(this);
+        UmengUpdateAgent.update(app.getApplicationContext());
 
         showQuitButton();
 
@@ -183,5 +204,23 @@ public class BaseFragmentActivity extends SherlockFragmentActivity{
     protected void onDestroy() {
         Log.i("SWall", TAG + ":onDestroy");
         super.onDestroy();
+    }
+
+    @Override
+    public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
+        switch (updateStatus) {
+            case UpdateStatus.Yes: // has update
+                UmengUpdateAgent.showUpdateDialog(app.getApplicationContext(), updateInfo);
+                break;
+            case UpdateStatus.No: // has no update
+//                Toast.makeText(app.getApplicationContext(), "没有更新", Toast.LENGTH_SHORT).show();
+                break;
+            case UpdateStatus.NoneWifi: // none wifi
+                //Toast.makeText(app.getApplicationContext(), "没有wifi连接， 只在wifi下更新", Toast.LENGTH_SHORT).show();
+                break;
+            case UpdateStatus.Timeout: // time out
+                Toast.makeText(app.getApplicationContext(), "查询更新超时", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }
