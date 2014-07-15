@@ -13,12 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
+import com.swall.tra.utils.DateUtil;
 import com.swall.tra.utils.JSONUtils;
 import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,11 +70,15 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
         }
     }
 
+    long beginTime = 0;
+    long FETCH_TIMEOUT = 5000;
+    static final int MSG_TIMEOUT = 0;
     private void fetchCurrentActivity() {
-
+        mHandler.sendEmptyMessageDelayed(MSG_TIMEOUT,FETCH_TIMEOUT);
         boolean sent = app.doAction(ServiceManager.Constants.ACTION_GET_CURRENT_ACTIVITY_INFO,defaultRequestData,new ActionListener(this) {
             @Override
             public void onReceive(int action, Bundle data) {
+                mHandler.removeMessages(MSG_TIMEOUT);
                 if(isFinishing()){
                     return;
                 }
@@ -114,6 +120,9 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
             switch(msg.what){
                 case RETRY_FETCH_CURRENT:
                     fetchCurrentActivity();
+                    break;
+                case MSG_TIMEOUT:
+                    retryFetchCurrentActivity();
                     break;
             }
         }
