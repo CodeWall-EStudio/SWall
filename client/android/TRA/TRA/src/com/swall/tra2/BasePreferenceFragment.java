@@ -3,9 +3,9 @@ package com.swall.tra2;
 import android.os.Bundle;
 import android.view.View;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.swall.tra_qq.TRAApplication;
-import com.swall.tra_qq.model.AccountInfo;
-import com.swall.tra_qq.network.ServiceManager;
+import com.swall.tra.TRAApplication;
+import com.swall.tra.model.AccountInfo;
+import com.swall.tra.network.ServiceManager;
 import com.umeng.analytics.MobclickAgent;
 
 /**
