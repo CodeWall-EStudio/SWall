@@ -137,6 +137,8 @@ app.get('/activities', function(req, res){
         //检查是否超级用户哈
         db.utils.isSuperUser(uid, function(isSuper)
         {
+            console.log('[isSuper]', isSuper);
+
             //根據活動狀態過濾，active(true) | closed(false)
             var status = req.query['status'];
             if(status){
@@ -155,11 +157,14 @@ app.get('/activities', function(req, res){
                 if(beforeTs)    query['info.date']['$lt'] = beforeTs;
             }
 
-            //根據活動創建者過濾
-            var creator = req.query['creator'];
-            if(creator) query['users.creator'] = creator;
+            //根據活動創建者過濾，如果是超级用户那就取所有人创建的
+            if (!isSuper) {
+                var creator = req.query['creator'];
+                if (creator) query['users.creator'] = creator;
+            }
 
             //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
+            var filterQuery = [];
             query['$and'] = [];
 
             //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
@@ -172,13 +177,13 @@ app.get('/activities', function(req, res){
                 case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
                 default:
                     //如果是超级管理员，就不用受这个过滤条件限制了
-                    //if(!isSuper) {
+                    if(!isSuper) {
                         userQuery['$or'] = [
                             {'users.creator': uid},
                             {'users.invitedUsers': {'$in': ['*', uid]}}
                             //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
                         ];
-                    //}
+                    }
                     break;
             }
             query['$and'].push(userQuery);
@@ -262,52 +267,60 @@ app.get('/activities/:aid', function(req, res){
     });
 });
 function getActivityByID(uid, aid, callback){
-    var query = {
-            '_id': aid,
-            '$or': [
+    //检查是否超级用户
+    db.utils.isSuperUser(uid, function(isSuper) {
+        var query = {'_id': aid};
+        if (!isSuper){
+            query['$or'] = [
                 {'users.creator': uid},
                 {'users.invitedUsers': {'$in': ['*', uid]}}
-            ]
+            ];
         };
-    console.log('[server] find one document', query);
-    db.activityDataCollection.findOne(query, function(err, doc){
-        if(!err){ //檢索活動沒錯誤
-            if(!doc){ //沒返回活動
-                callback(404, null, {c:0});
+        console.log('[server] find one document', query);
+        db.activityDataCollection.findOne(query, function (err, doc) {
+            if (!err) { //檢索活動沒錯誤
+                if (!doc) { //沒返回活動
+                    callback(404, null, {c: 0});
+                }
+                else { //有返回活動，繼續去拉取用戶信息
+                    authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function (err, profiles) {
+                        if (err) callback(500, err, {c: 1, m: err.message}); //拉取用戶信息出錯
+                        else callback(200, null, {c: 0, r: doc, profiles: profiles}); //正常
+                    });
+                }
             }
-            else { //有返回活動，繼續去拉取用戶信息
-                authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
-                    if(err) callback(500, err, {c:1, m:err.message}); //拉取用戶信息出錯
-                    else callback(200, null, {c:0, r:doc, profiles:profiles}); //正常
-                });
-            }
-        }
-        else callback(500, err, {c:1, m:err.message}); //檢索活動出錯
+            else callback(500, err, {c: 1, m: err.message}); //檢索活動出錯
+        });
     });
 }
 
 //删除活动
+//TODO 有问题！貌似连自己都删唔到！
 app.delete('/activities/:aid', function(req, res){
     authModule.response401IfUnauthoirzed(req, res, function(userInfo){
-        var uid = userInfo['loginName'],
-            aid = new mongodb.ObjectID(req.params['aid']),
-            query = {
-                '_id': aid, //匹配id
-                'users.creator': uid, //自能刪我自己創建的活動
-                '$or': [
-                    //TODO 驗證一下這個邏輯
-                    //若是開放的活動：當前必須沒人參與且沒上傳過資源
-                    //若是已關閉的活動：必須是沒人上傳過資源的活動
-                    {'active':true, 'users.participators':{$size:0}, 'resources':{$size:0}},
-                    {'active':false, 'resources':{$size:0}}
-                ]
-            };
+        var uid = userInfo['loginName'];
+        db.utils.isSuperUser(uid, function(isSuper) {
+            var aid = new mongodb.ObjectID(req.params['aid']),
+                query = {
+                    '_id': aid, //匹配id
+                    '$or': [
+                        //若是開放的活動：當前必須沒人參與且沒上傳過資源
+                        //若是已關閉的活動：必須是沒人上傳過資源的活動
+                        {'active': true, 'users.participators': {$size: 0}, 'resources': {$size: 0}},
+                        {'active': false, 'resources': {$size: 0}}
+                    ]
+                };
 
-        console.log('[server] delete document that matches:', query);
-        db.activityDataCollection.remove(query, {w:1}, function(err, count){
-            if(err)         res.json(500, {c:1, m:err.message});
-            else if(!count) res.json(404, {c:0});
-            else            res.json(200, {c:0, r:count});
+            if(!isSuper){
+                query['users.creator'] = uid; //不是超级管理员就只能刪我自己創建的活動
+            }
+
+            console.log('[server] delete document that matches:', query);
+            db.activityDataCollection.remove(query, {w: 1}, function (err, count) {
+                if (err)         res.json(500, {c: 1, m: err.message});
+                else if (!count) res.json(404, {c: 0});
+                else             res.json(200, {c: 0, r: count});
+            });
         });
     });
 });
@@ -318,76 +331,78 @@ app.put('/activities/:aid', function(req, res){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']);
 
-        //先把這活動找出來
-        var query = {
-            '_id': aid,
-            'users.creator': uid
-        };
-        console.log('[server] looking for activity', query);
-        db.activityDataCollection.findOne(query, function(err, doc){
-            //沒找到或出錯的話就直接返回吧
-            if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:0});
-            else {
-                //把請求的參數都讀出來
-                var rawUids = req.body['uids'],
-                    uids    = rawUids ? rawUids.split(',') : [],
-                    title   = req.body['title'],
-                    desc    = req.body['desc'],
-                    teacher = req.body['teacher'],
-                    grade   = req.body['grade'],
-                    cls     = req.body['class'],
-                    subject = req.body['subject'],
-                    domain  = req.body['domain'],
-                    link    = req.body['link'],
-                    status  = req.body['status'],
-                    type    = parseInt(req.body['type'])||0,
-                    ts      = parseInt(req.body['date'])||0;
-
-                var updates = {};
-                if(link) updates['info.link'] = link;
-
-                //如果是開放中的活動，則所有字段都可以編輯
-                if(doc.active){
-                    if(status == 'closed'){
-                        updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
-                        updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
-                    }
-
-                    //if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
-                    if(type)        updates['info.type']            = type;
-                    if(ts)          updates['info.date']            = ts;
-                    if(desc)        updates['info.desc']            = utf8.substr(desc,     0, LONG_STR_MAXLEN);
-                    if(title)       updates['info.title']           = utf8.substr(title,    0, SHORT_STR_MAXLEN);
-                    if(teacher)     updates['info.teacher']         = utf8.substr(teacher,  0, SHORT_STR_MAXLEN);
-                    if(grade)       updates['info.grade']           = utf8.substr(grade,    0, SHORT_STR_MAXLEN);
-                    if(cls)         updates['info.class']           = utf8.substr(cls,      0, SHORT_STR_MAXLEN);
-                    if(subject)     updates['info.subject']         = utf8.substr(subject,  0, SHORT_STR_MAXLEN);
-                    if(domain)      updates['info.domain']          = utf8.substr(domain,   0, SHORT_STR_MAXLEN);
-                }
-                //否則的話就只能改用戶權限
-                //可以隨便新增用戶，但是只能刪除沒上傳過資源的用戶
-                if(uids.length){
-                    //先取出活动里上传过资源的用户uid
-                    var uidsWhichHaveResources = _.map(doc.resources, function(resource){
-                        return resource.user;
-                    });
-                    //合并请求传入的uids和上传过资源的用户uid，目的是保证上传过资源的用户uid必须是在合并结果里
-                    uids = _.uniq(uids.concat(uidsWhichHaveResources)); //TODO 验证一下这个逻辑
-                    updates['users.invitedUsers'] = uids;
-                }
-
-                //最後更新一下這個活動
-                console.log('[server] update activity', updates);
-                db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){
-                    if(err) res.json(500, {c:1, m:err.message});
-                    else {
-                        getActivityByID(uid, aid, function(status, err, result){
-                            res.json(status, result);
-                        });
-                    }
-                });
+        db.utils.isSuperUser(uid, function(isSuper) {
+            //先把這活動找出來
+            var query = {'_id': aid};
+            if(!isSuper){
+                query['users.creator'] = uid;
             }
+            console.log('[server] looking for activity', query);
+            db.activityDataCollection.findOne(query, function (err, doc) {
+                //沒找到或出錯的話就直接返回吧
+                if (err)         res.json(500, {c: 1, m: err.message});
+                else if (!doc)   res.json(404, {c: 0});
+                else {
+                    //把請求的參數都讀出來
+                    var rawUids = req.body['uids'],
+                        uids = rawUids ? rawUids.split(',') : [],
+                        title = req.body['title'],
+                        desc = req.body['desc'],
+                        teacher = req.body['teacher'],
+                        grade = req.body['grade'],
+                        cls = req.body['class'],
+                        subject = req.body['subject'],
+                        domain = req.body['domain'],
+                        link = req.body['link'],
+                        status = req.body['status'],
+                        type = parseInt(req.body['type']) || 0,
+                        ts = parseInt(req.body['date']) || 0;
+
+                    var updates = {};
+                    if (link) updates['info.link'] = link;
+
+                    //如果是開放中的活動，則所有字段都可以編輯
+                    if (doc.active) {
+                        if (status == 'closed') {
+                            updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
+                            updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
+                        }
+
+                        //if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
+                        if (type)        updates['info.type'] = type;
+                        if (ts)          updates['info.date'] = ts;
+                        if (desc)        updates['info.desc'] = utf8.substr(desc, 0, LONG_STR_MAXLEN);
+                        if (title)       updates['info.title'] = utf8.substr(title, 0, SHORT_STR_MAXLEN);
+                        if (teacher)     updates['info.teacher'] = utf8.substr(teacher, 0, SHORT_STR_MAXLEN);
+                        if (grade)       updates['info.grade'] = utf8.substr(grade, 0, SHORT_STR_MAXLEN);
+                        if (cls)         updates['info.class'] = utf8.substr(cls, 0, SHORT_STR_MAXLEN);
+                        if (subject)     updates['info.subject'] = utf8.substr(subject, 0, SHORT_STR_MAXLEN);
+                        if (domain)      updates['info.domain'] = utf8.substr(domain, 0, SHORT_STR_MAXLEN);
+                    }
+                    //否則的話就只能改用戶權限
+                    //可以隨便新增用戶，但是只能刪除沒上傳過資源的用戶
+                    if (uids.length) {
+                        //先取出活动里上传过资源的用户uid
+                        var uidsWhichHaveResources = _.map(doc.resources, function (resource) {
+                            return resource.user;
+                        });
+                        //合并请求传入的uids和上传过资源的用户uid，目的是保证上传过资源的用户uid必须是在合并结果里
+                        uids = _.uniq(uids.concat(uidsWhichHaveResources)); //TODO 验证一下这个逻辑
+                        updates['users.invitedUsers'] = uids;
+                    }
+
+                    //最後更新一下這個活動
+                    console.log('[server] update activity', updates);
+                    db.activityDataCollection.update(doc, {$set: updates}, {w: 1}, function (err, count) {
+                        if (err) res.json(500, {c: 1, m: err.message});
+                        else {
+                            getActivityByID(uid, aid, function (status, err, result) {
+                                res.json(status, result);
+                            });
+                        }
+                    });
+                }
+            });
         });
     });
 });

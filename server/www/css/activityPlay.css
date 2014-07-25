@@ -210,6 +210,9 @@ body{
 #timeline .comment{
     color: #999;
     padding-right: 180px;
+    word-break: break-all;
+    max-height: 6em;
+    overflow-y: hidden;
 }
 
 #mainVideos{
@@ -288,6 +291,10 @@ body{
     padding: 20px;
     height: 100%;
     overflow-y: scroll;
+}
+#preview .mediaContent .text{
+    text-align: center;
+    word-break: break-all;
 }
 #preview .mediaContent .image, #preview .mediaContent .video{
     text-align: center;

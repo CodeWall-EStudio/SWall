@@ -3,8 +3,12 @@ angular.module('ts.controllers.activityDetail', [
         'ts.services.activity'
     ])
     .controller('ActivityDetailController', [
-        '$rootScope', '$scope', 'ActivityService', 'EVENT_MODE_CHANGE', 'CMD_SHOW_ACTIVITY_PANEL',
-        function($rootScope, $scope, ActivityService, EVENT_MODE_CHANGE, CMD_SHOW_ACTIVITY_PANEL){
+        '$rootScope', '$scope', 'ActivityService', 'UserService', 'EVENT_MODE_CHANGE', 'CMD_SHOW_ACTIVITY_PANEL',
+        function($rootScope, $scope, ActivityService, UserService, EVENT_MODE_CHANGE, CMD_SHOW_ACTIVITY_PANEL){
+            $scope.uid2nick = function(activity){
+                return activity ? UserService.uid2nick(activity.users.creator) : '';
+            };
+
             $scope.userCount = function(){
                 if($rootScope.selectedActivity){
                     if($rootScope.selectedActivity.active){

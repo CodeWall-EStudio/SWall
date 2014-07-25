@@ -96,10 +96,7 @@ angular.module('ap.controllers.main', [
             });
 
             $rootScope.uid2nick = function(uid){
-                if($rootScope.profiles[uid]){
-                    return $rootScope.profiles[uid].nick;
-                }
-                return uid;
+                return uid ? UserService.uid2nick(uid) : '';
             };
 
             //计算时间轴开始时间（也就是第一个资源上传的时间）
@@ -281,7 +278,7 @@ angular.module('ap.controllers.main', [
             $scope.showResourceDetail = function(resource, g, r){
                 $scope.highlightSpecifyResource(resource, g, r, true);
                 //如果是正在播放主视频，就不需要显示资源预览了
-                if(resource.type && !$rootScope.selectedMainVideo){
+                if(!$rootScope.selectedMainVideo){
                     $scope.selectedResource = resource;
                     $scope.selectedRIndex = $rootScope.presources.indexOf(resource);
                 }

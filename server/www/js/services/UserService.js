@@ -5,8 +5,11 @@ angular.module('ts.services.user', [
     .service('UserService', [
         '$rootScope', '$http', 'UtilsService', 'BACKEND_SERVER', 'EVENT_LOGIN',
         function($rootScope, $http, UtilsService, BACKEND_SERVER, EVENT_LOGIN){
+            var storedUinIndex = localStorage.getItem('orgTree_uidIndex');
+
             $rootScope.orgTree = {};
             $rootScope.orgUserIndex = {};
+            $rootScope.orgUidIndex = storedUinIndex ? JSON.parse(storedUinIndex) : {};
             $rootScope.processedOrgTree = [];
 
             function uid(){
@@ -90,15 +93,18 @@ angular.module('ts.services.user', [
                          */
                         var rawTree = json['result']['data']/*['children']*/,
                             userIndex = {},
-                            processed = processOrganizationTree(rawTree, false, userIndex);
+                            uidIndex = {},
+                            processed = processOrganizationTree(rawTree, false, userIndex, uidIndex);
 
                         processed.nodes.unshift({text:'全员', icon:'glyphicon glyphicon-user', value:'*', id:'*'});
                         $rootScope.orgTree = rawTree;
                         $rootScope.orgUserIndex = userIndex;
+                        $rootScope.orgUidIndex = uidIndex;
                         $rootScope.processedOrgTree = processed.nodes || [];
-                        console.log('orgTree',          $rootScope.orgTree);
-                        console.log('orgUserIndex',     $rootScope.orgUserIndex);
-                        console.log('processedOrgTree', $rootScope.processedOrgTree);
+
+                        //save them to local storage
+                        localStorage.setItem('orgTree_uidIndex', JSON.stringify(uidIndex));
+
                         callback();
                     }
                 });
@@ -113,7 +119,7 @@ angular.module('ts.services.user', [
                 console.log('[UserService] fetching organization tree ...')
             }
 
-            function processOrganizationTree(tree, isUser, userIndex){
+            function processOrganizationTree(tree, isUser, userIndex, uidIndex){
                 /**
                  * full node specification:
                  * {
@@ -131,6 +137,7 @@ angular.module('ts.services.user', [
                  */
                 if(isUser) {
                     userIndex[tree['_id']] = tree;
+                    uidIndex[tree['name']] = tree;
                     return {
                         text:   tree.nick,
                         icon:   'glyphicon glyphicon-user',
@@ -140,10 +147,10 @@ angular.module('ts.services.user', [
                 }
                 else {
                     var userNodes = _.map(tree.users, function(user){
-                            return processOrganizationTree(user, true, userIndex);
+                            return processOrganizationTree(user, true, userIndex, uidIndex);
                         }),
                         childNodes = _.map(tree.children, function(child){
-                            return processOrganizationTree(child, false, userIndex);
+                            return processOrganizationTree(child, false, userIndex, uidIndex);
                         });
                     return {
                         text:       tree.name,
@@ -159,10 +166,15 @@ angular.module('ts.services.user', [
 
             }
 
+            function uid2nick(uid){
+                return $rootScope.orgUidIndex[uid] ? $rootScope.orgUidIndex[uid]['nick'] : uid;
+            }
+
             return {
                 uid:                    uid,
                 hasLoggedIn:            hasLoggedIn,
                 nick:                   nick,
+                uid2nick:               uid2nick,
                 login:                  login,
                 logout:                 logout,
                 fetchProfile:           fetchProfile,

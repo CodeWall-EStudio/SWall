@@ -50,6 +50,8 @@ angular.module('ts.controllers.main', [
                 }
             });
 
+            window.rs = $rootScope;
+
             function main(){
                 if(UserService.hasLoggedIn()){
                     $rootScope.fetchActivities();
