@@ -11,6 +11,7 @@ import com.swall.tra.adapter.ActivityResourceAdapter;
 import com.swall.tra.model.ResourceInfo;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ServiceManager;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-1-1.

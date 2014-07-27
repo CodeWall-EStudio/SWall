@@ -28,6 +28,7 @@ import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.utils.Utils;
 import com.swall.tra.widget.CustomDialog;
 import com.swall.tra.widget.UploadResourceProgressDialog;
+import com.swall.tra_demo.R;
 import com.umeng.analytics.MobclickAgent;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -10,7 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
-import com.swall.tra.R;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-1-1.

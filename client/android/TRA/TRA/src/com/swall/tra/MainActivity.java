@@ -15,6 +15,7 @@ import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.DateUtil;
 import com.swall.tra.utils.JSONUtils;
+import com.swall.tra_demo.R;
 import com.umeng.update.UmengUpdateAgent;
 import org.json.JSONArray;
 import org.json.JSONException;

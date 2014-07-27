@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 import com.swall.tra.network.ActionListener;
+import com.swall.tra_demo.R;
 
 import static com.swall.tra.network.ServiceManager.Constants;
 

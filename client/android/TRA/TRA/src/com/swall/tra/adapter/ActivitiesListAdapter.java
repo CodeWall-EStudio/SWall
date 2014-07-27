@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.swall.tra.R;
+import com.swall.tra_demo.R;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.BaseFragmentActivity;

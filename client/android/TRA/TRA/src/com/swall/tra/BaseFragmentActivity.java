@@ -16,6 +16,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
+import com.swall.tra_demo.R;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.*;
 
@@ -124,7 +125,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity implements Um
         if(actionBar != null){
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(R.drawable.icon);
+            actionBar.setIcon(R.drawable.icon_hong);
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));

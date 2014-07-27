@@ -1,6 +1,7 @@
 package com.swall.tra;
 
 import android.os.Bundle;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-2-17.

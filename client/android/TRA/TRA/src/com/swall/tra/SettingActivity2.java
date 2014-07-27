@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import com.swall.tra.model.AccountInfo;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 13-12-25.

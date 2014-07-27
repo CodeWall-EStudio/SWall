@@ -18,6 +18,7 @@ import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
 import com.swall.tra.widget.InputMethodRelativeLayout;
+import com.swall.tra_demo.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -183,9 +184,9 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     public void onSizeChange(boolean isOpen, int preH, int curH) {
         if(isOpen){
-            mSchoolNameView.setImageResource(R.drawable.login_school_input);
+            mSchoolNameView.setImageResource(R.drawable.login_school_input_hong);
         }else{
-            mSchoolNameView.setImageResource(R.drawable.login_school_normal);
+            mSchoolNameView.setImageResource(R.drawable.login_school_normal_hong);
         }
     }
 

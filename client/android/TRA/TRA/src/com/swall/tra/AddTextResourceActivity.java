@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-1-1.

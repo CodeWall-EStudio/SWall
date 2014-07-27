@@ -11,6 +11,7 @@ import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
+import com.swall.tra_demo.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

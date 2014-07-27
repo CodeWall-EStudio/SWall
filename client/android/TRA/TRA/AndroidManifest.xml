@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.swall.tra"
+          package="com.swall.tra_demo"
           android:versionCode="20"
           android:versionName="1.0_20140713">
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -11,7 +11,7 @@
     <application android:name="com.swall.tra.TRAApplication"
                  android:label="@string/app_name"
                  android:theme="@style/MyTheme"
-                 android:icon="@drawable/icon"
+                 android:icon="@drawable/icon_hong"
             >
 
         <activity android:name="com.swall.tra.SplashActivity"
@@ -46,7 +46,8 @@
         <activity android:name="com.swall.tra.UploadProgressActivity"/>
 
         <!-- 友盟 -->
-        <meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />
+        <!--<meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />--><!-- 71 -->
+        <meta-data android:value="5327d32356240b93e009a6ff" android:name="UMENG_APPKEY" /><!-- demo -->
         <meta-data android:value="c_0001" android:name="UMENG_CHANNEL"/>
         <service
                 android:name="com.umeng.common.net.DownloadingService"

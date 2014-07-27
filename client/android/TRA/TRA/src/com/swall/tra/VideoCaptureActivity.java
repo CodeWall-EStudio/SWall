@@ -6,6 +6,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.*;
+import com.swall.tra_demo.R;
 
 import java.io.IOException;
 

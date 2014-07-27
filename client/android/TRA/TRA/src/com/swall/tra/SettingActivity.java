@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.swall.tra.utils.Utils;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 13-12-17.
@@ -28,7 +29,7 @@ public class SettingActivity extends SherlockPreferenceActivity implements Prefe
         if(actionBar != null){
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(R.drawable.icon);
+            actionBar.setIcon(R.drawable.icon_hong);
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));

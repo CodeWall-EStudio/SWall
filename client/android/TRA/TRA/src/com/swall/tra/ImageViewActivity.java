@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import com.android.volley.toolbox.NetworkImageView;
 import com.swall.tra.network.MyVolley;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 13-12-25.

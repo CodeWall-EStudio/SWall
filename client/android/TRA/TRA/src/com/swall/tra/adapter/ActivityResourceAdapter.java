@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
-import com.swall.tra.R;
+import com.swall.tra_demo.R;
 import com.swall.tra.model.ResourceInfo;
 import com.swall.tra.model.TRAInfo;
 import com.swall.tra.network.ActionService;
@@ -181,7 +181,7 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     imageView.setVisibility(View.VISIBLE);
                     commentTextView.setVisibility(View.VISIBLE);
 
-                    imageView.setDefaultImageResId(R.drawable.icon);
+                    imageView.setDefaultImageResId(R.drawable.icon_hong);
                     //如果本地存在，拿本地图片，否则从网络获取
                     //File file = new File(Utils.getUrlFileName(item.content));
                     //if(file.exists()){

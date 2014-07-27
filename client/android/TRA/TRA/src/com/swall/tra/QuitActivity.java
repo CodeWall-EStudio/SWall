@@ -8,6 +8,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ServiceManager;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-1-1.

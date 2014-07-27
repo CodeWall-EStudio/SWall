@@ -10,7 +10,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.swall.tra.CurrentTRAActivity;
-import com.swall.tra.R;
+import com.swall.tra_demo.R;
 
 /**
  * Created by pxz on 14-1-12.
