@@ -149,7 +149,7 @@
                     <p ng-show="selectedActivity.resources.length">
                         资源明细：{{resourceCount(0)}}段文字, {{resourceCount(1)}}张图片, {{resourceCount(2)}}段视频
                     </p>
-                    <p ng-show="selectedActivity.info.link">引用链接：{{selectedActivity.info.link}}</p>
+                    <p ng-show="selectedActivity.info.link">引用链接：<a target="_blank" ng-href="{{selectedActivity.info.link}}">{{selectedActivity.info.link}}</a></p>
                 </div>
             </div>
         </div>
