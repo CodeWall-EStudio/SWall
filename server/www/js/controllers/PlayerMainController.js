@@ -460,6 +460,20 @@ angular.module('ap.controllers.main', [
             };
 
 
+            $scope.showLinkPanel = function(){
+                $scope.linkPanelVisible = true;
+                var panel = document.getElementById('linkPanel'),
+                    iframe = document.getElementById('linkPanelFrame');
+                if(!iframe.src) {
+                    $(panel).draggable();
+                    iframe.src = $rootScope.activity.info.link;
+                }
+            };
+            $scope.hideLinkPanel = function(){
+                $scope.linkPanelVisible = false;
+            };
+
+
             function clearSelection(){
                 $scope.selectedResource = null;
                 $scope.selectedRIndex = -1;

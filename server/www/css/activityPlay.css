@@ -340,3 +340,15 @@ body{
 .dateInput{
     width: 60px;
 }
+
+#linkPanel{
+    position: absolute;
+    left: 10px;
+    top: 100px;
+}
+#linkPanel .panel-body{
+    padding: 0;
+}
+#linkPanel iframe{
+    border: none;
+}
