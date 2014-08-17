@@ -37,8 +37,8 @@ public class ServiceManager {
 //        public static String FILE_SERVER_URL = "http://xzone.codewalle.com/";
         public static String FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
 
-//        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
-        private static final String LOGIN_URL = "http://swall.codewalle.com/users/";
+        private static final String LOGIN_URL = "http://my.71xiaoxue.com/authenticationUser.do";
+        private static final String LOGIN_URL_TEST = "http://swall.codewalle.com/users/";
 
 
         public static final String KEY_LOGIN_SUCCESS = "success";
@@ -49,7 +49,11 @@ public class ServiceManager {
         public static final int ENV_PUBLISH = 2;
         public static final int ENV_DEV = 3;
         private static final int ENV_ERXIAON = 4;
+        private static int sEnv = ENV_PUBLISH;
 
+        public static int getCurEnv(){
+            return sEnv;
+        }
         /*
     正式环境：
     数据：media.71xiaoxue.com
@@ -64,12 +68,13 @@ public class ServiceManager {
     资源：http://szone.71xiaoxue.com/
         **/
         public static void setEnv(int env){
+            sEnv = env;
             switch (env){
-                case Constants.ENV_PUBLISH:
+                case Constants.ENV_PUBLISH: // 71环境
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
                     FILE_SERVER_URL = "http://szone.71xiaoxue.com/";
                     break;
-                case Constants.ENV_TEST:
+                case Constants.ENV_TEST:// demo 环境 2041.7.26
                     // http://qzone.codewalle.com/
                     DATA_URL_PREFIX = "http://swall.codewalle.com/";
                     FILE_SERVER_URL = "http://qzone.codewalle.com/";
@@ -86,7 +91,11 @@ public class ServiceManager {
         public static String getLoginUrl(String userId) {
             // DEMO
 //            return "http://qzone.codewalle.com/api/user/login?"+Math.random();
-            return LOGIN_URL+userId+"/login?"+Math.random();
+            if(getCurEnv() == ENV_TEST) {
+                return LOGIN_URL_TEST + userId + "/login?" + Math.random();
+            } else {
+                return LOGIN_URL + "?t="+Math.random();
+            }
         }
         public static String getPostResourceUrl(String aid, String uid){
             String url =  DATA_URL_PREFIX + String.format("activities/%s/resources?uid=%s&t=%d",aid,URLEncoder.encode(uid),
@@ -191,7 +200,11 @@ public class ServiceManager {
         listeners = new SparseArray<ArrayList<ActionListener>>();
         mDBHelper = new AccountDatabaseHelper(context);
 
-        Constants.setEnv(Constants.ENV_TEST);
+        if(context.getApplicationInfo().packageName.endsWith("tra")) {
+            Constants.setEnv(Constants.ENV_PUBLISH);
+        }else{
+            Constants.setEnv(Constants.ENV_TEST);
+        }
 
     }
 

@@ -9,6 +9,7 @@ import android.preference.PreferenceScreen;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.Utils;
 import com.swall.tra_demo.R;
 
@@ -29,7 +30,12 @@ public class SettingActivity extends SherlockPreferenceActivity implements Prefe
         if(actionBar != null){
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(R.drawable.icon_hong);
+            if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
+                actionBar.setIcon(R.drawable.icon_qiyi);
+            }else{
+                actionBar.setIcon(R.drawable.icon_hong);
+            }
+
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));

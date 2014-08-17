@@ -180,8 +180,11 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     textView.setVisibility(View.GONE);
                     imageView.setVisibility(View.VISIBLE);
                     commentTextView.setVisibility(View.VISIBLE);
-
-                    imageView.setDefaultImageResId(R.drawable.icon_hong);
+                    if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
+                        imageView.setDefaultImageResId(R.drawable.icon_qiyi);
+                    }else{
+                        imageView.setDefaultImageResId(R.drawable.icon_hong);
+                    }
                     //如果本地存在，拿本地图片，否则从网络获取
                     //File file = new File(Utils.getUrlFileName(item.content));
                     //if(file.exists()){

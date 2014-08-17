@@ -543,7 +543,7 @@ public class CurrentTRAActivity extends BaseFragmentActivity implements AdapterV
         defaultRequestData.putString("comment",upd.getCommentText());
         defaultRequestData.putString("id", mInfo.id);
         defaultRequestData.putString("activityTime",mInfo.getTimeAndCreatorDesc());
-        defaultRequestData.putString("activityName",mInfo.title);
+        defaultRequestData.putString("activityName",""+mInfo.createDate);
         defaultRequestData.putString("activityId",mInfo.id);
         app.doAction(action,defaultRequestData,mUploadListener);
     }

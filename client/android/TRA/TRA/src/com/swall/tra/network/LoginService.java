@@ -165,9 +165,16 @@ public class LoginService extends ActionService {
             params.put("name",userName);
             params.put("pwd",password);
             params.put("json","true");
+            int method = Request.Method.POST;
+
+            if(Constants.getCurEnv() == Constants.ENV_TEST){
+                // 演示环境用的是PUT
+                method = Request.Method.PUT;
+            }
+
 
             NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
-                    Request.Method.PUT,
+                    method,
                     Constants.getLoginUrl(userName),params,
                     new Response.Listener<String>() {
                         public void onResponse(String response) {
@@ -194,10 +201,20 @@ public class LoginService extends ActionService {
                                 * */
                                 o = new JSONObject(response);
                                 if(o != null){
-                                    JSONObject resultObject = o;//JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
-                                    String showName = JSONUtils.getString(resultObject, "nick", "");
-                                    String encodeKey = JSONUtils.getString(resultObject,"skey","");
-                                    String session = JSONUtils.getString(resultObject,"session","");
+                                    JSONObject resultObject = o;
+                                    String showName = "",encodeKey = "", session = "";
+
+                                    if(Constants.getCurEnv() == Constants.ENV_PUBLISH) {
+                                        // 71环境
+                                        resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
+                                        showName = JSONUtils.getString(resultObject, "userName", "");
+                                        encodeKey = JSONUtils.getString(resultObject, "encodeKey", "");
+                                    } else {
+                                        // 演示环境，多了个session
+                                        showName = JSONUtils.getString(resultObject, "nick", "");
+                                        encodeKey = JSONUtils.getString(resultObject, "skey", "");
+                                        session = JSONUtils.getString(resultObject, "session", "");
+                                    }
                                     if(TextUtils.isEmpty(encodeKey)){
                                         success = false;
                                     }else{

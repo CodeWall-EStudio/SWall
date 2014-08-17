@@ -125,7 +125,11 @@ public class BaseFragmentActivity extends SherlockFragmentActivity implements Um
         if(actionBar != null){
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(R.drawable.icon_hong);
+            if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
+                actionBar.setIcon(R.drawable.icon_qiyi);
+            }else{
+                actionBar.setIcon(R.drawable.icon_hong);
+            }
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));
