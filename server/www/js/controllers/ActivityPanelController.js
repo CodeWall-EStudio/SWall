@@ -1,11 +1,17 @@
 angular.module('ts.controllers.activityPanel', [
         'ts.utils.constants',
         'ts.services.activity',
+        'ts.services.user',
         'ts.services.utils'
     ])
     .controller('ActivityPanelController', [
-        '$rootScope', '$scope', '$http', 'ActivityService', 'UtilsService', 'CMD_SHOW_ACTIVITY_PANEL',
-        function($rootScope, $scope, $http, ActivityService, UtilService, CMD_SHOW_ACTIVITY_PANEL){
+        '$rootScope', '$scope', '$http', 'ActivityService', 'UserService', 'UtilsService', 'CMD_SHOW_ACTIVITY_PANEL',
+        function($rootScope, $scope, $http, ActivityService, UserService, UtilService, CMD_SHOW_ACTIVITY_PANEL){
+
+            //initialize scope
+            $scope.grade = $scope.cls = $scope.subject = 0;
+
+            //get elements and default configs
             var modal                       = $('#createActivityModal'),
                 usersInput                  = $('input[data-role="tagsinput"]'),
                 datetimePicker              = document.getElementById('na_date'),
@@ -28,6 +34,9 @@ angular.module('ts.controllers.activityPanel', [
             if(datetimePicker.type != 'datetime-local'){
                 $('#na_data').datetimepicker('setEndDate',null);
             }
+
+            //get organization tree
+            UserService.fetchOrganizationTree(function(){});
 
             $rootScope.$on(CMD_SHOW_ACTIVITY_PANEL, function(event, data){
                 //initialize $scope
@@ -64,6 +73,29 @@ angular.module('ts.controllers.activityPanel', [
                 //初始化授權用戶
                 _.each($scope.activity.users.invitedUsers, function(item){
                     usersInput.tagsinput('add', item);
+                });
+
+                //初始化用戶列表
+                $('#orgTree').treeview({
+                    data: $rootScope.processedOrgTree,
+                    onNodeSelected: function(event, node) {
+                        if(node.id){
+                            var username;
+                            if(node.id == '*'){
+                                username = '*';
+                            }
+                            else {
+                                var userInfo = $rootScope.orgUserIndex[node.id];
+                                if(userInfo){
+                                    username = userInfo.name;
+                                }
+                            }
+
+                            if(username){
+                                usersInput.tagsinput('add', username);
+                            }
+                        }
+                    }
                 });
 
                 //show the panel's dom
@@ -112,7 +144,8 @@ angular.module('ts.controllers.activityPanel', [
                     grade:      gradeConfig ? gradeConfig.grade : '',
                     'class':    gradeConfig ? gradeConfig.cls[$scope.cls] : '',
                     subject:    subjectConfig || '',
-                    domain:     $scope.activity.info.domain || ''
+                    domain:     $scope.activity.info.domain || '',
+                    link:       $scope.activity.info.link || ''
                 };
                 ActivityService.createActivity(
                     params,
@@ -139,6 +172,7 @@ angular.module('ts.controllers.activityPanel', [
                     params['class']     = config.classes[$scope.grade].cls[$scope.cls] || '';
                     params['subject']   = config.subjects[$scope.subject] || '';
                     params['domain']    = $scope.activity.info.domain || '';
+                    params['link']      = $scope.activity.info.link || '';
                 }
                 ActivityService.updateActivity(
                     $scope.activity._id,
@@ -146,6 +180,12 @@ angular.module('ts.controllers.activityPanel', [
                     handleActivityCreatedOrUpdatedSuccess,
                     handleActivityCreatedOrUpdatedFail
                 );
+            };
+
+            $scope.handleTestLinkBtnClick = function(){
+                if($scope.activity.info.link){
+                    window.open($scope.activity.info.link, '_blank');
+                }
             };
 
             $scope.handleConfirmBtnClick = function(){

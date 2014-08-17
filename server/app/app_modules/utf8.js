@@ -17,8 +17,8 @@ function substring(str, start, end){
         var buf = new Buffer(str);
         if(start < 0) start = 0;
         if(end >= buf.length) end = buf.length;
-        while(buf[start] > 127 && buf[start] < 192 && start < buf.length){ /*console.log('+');*/ ++start; }
-        while(buf[end] > 127 && buf[end] < 192 && end > 0){ /*console.log('-');*/ --end; }
+        while(buf[start] > 127 && buf[start] < 192 && start < buf.length){ ++start; }
+        while(buf[end] > 127 && buf[end] < 192 && end > 0){ --end; }
         if(start >= end) return '';
         else return buf.slice(start, end).toString();
     }

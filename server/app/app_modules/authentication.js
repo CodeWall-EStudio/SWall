@@ -7,21 +7,25 @@ var http = require('http'),
 var redisClient = redis.createClient();
 
 
-var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com', path:'/authenticationUser.do'},
-    VERIFY_ENCODE_KEY_API   = {host:'my.71xiaoxue.com', path:'/authenticationKey.do'},
-    GET_PROFILE_API         = {host:'mapp.71xiaoxue.com', path:'/components/getUserInfo.htm'},
-    GET_ORGANIZATION_TREE   = {host:'mapp.71xiaoxue.com', path:'/components/getOrgTree.htm'};
+var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com',     path:'/authenticationUser.do'},
+    VERIFY_ENCODE_KEY_API   = {host:'my.71xiaoxue.com',     path:'/authenticationKey.do'},
+    GET_PROFILE_API         = {host:'mapp.71xiaoxue.com',   path:'/components/getUserInfo.htm'},
+    GET_ORGANIZATION_TREE   = {host:'mapp.71xiaoxue.com',   path:'/components/getOrgTree.htm'},
+    UC_ORGANIZATION_TREE    = {host:'qzone.codewalle.com',  path:'/api/organization/tree'},
+    UC_LOGIN_API            = {host:'qzone.codewalle.com',  path:'/api/user/login'},
+    UC_VERIFY_API           = {host:'qzone.codewalle.com',  path:'/api/user/validate'};
 
 
 function login(username, password, callback){
+    console.log('[login] username=' + username + ', pwd=' + password);
     if(username && password){
-        //FOR LOCAL TESTING ONLY
         /*callback(null, 200, {
             uid: username,
             skey: '----------',
             nick: username
         });*/
-        post(
+
+        /*post(
             GET_ENCODE_KEY_API,
             'loginName=' + username + '&password=' + password,
             function(data, res){
@@ -48,7 +52,44 @@ function login(username, password, callback){
             function(e){
                 callback(e);
             }
-        )
+        )*/
+
+        //小龙提供的用户中心登录接口
+        post(
+            UC_LOGIN_API,
+            'name=' + username + '&pwd=' + password + '&json=true',
+            null,
+            function(data, res){
+                try {
+                    var json = JSON.parse(data);
+                    if(json && !json['err'] && json['result']){
+                        var cookies = res.headers['set-cookie'].join('; '),
+                            //从响应头里获取skey和sid
+                            mSkey = cookies.match(/skey=(.*?);/),
+                            mSession = cookies.match(/connect\.sid=(.*?);/),
+                            skey = (mSkey && mSkey[1]) ? mSkey[1] : '',
+                            session = (mSession && mSession[1]) ? mSession[1] : '',
+                            //从响应内容里读取昵称
+                            nick = json['result']['nick'];
+                        callback(null, res.statusCode, {
+                            uid: username,
+                            nick: nick,
+                            skey: skey,
+                            session: session
+                        });
+                    }
+                    else {
+                        callback(null, res.statusCode);
+                    }
+                }
+                catch(e){
+                    callback(e);
+                }
+            },
+            function(e){
+                callback(e);
+            }
+        );
     }
     else callback(new Error('Invaild username or password'));
 }
@@ -56,12 +97,17 @@ function login(username, password, callback){
 
 /**
  * verify encodeKey and returns the user info object
- * @param {String} encodeKey
+ * @param req
  * @param {Function} callback function(error:Error, statusCode:int, userInfo:Object)
  */
-function verifyEncodeKey(encodeKey, callback){
+//function verifyEncodeKey(encodeKey, callback){
+function verifyKeys(req, callback){
+    var skey = req.cookies['skey'],
+        session = req.cookies['connect.sid'];
+
     //callback(null, 200, {loginName:'tangqihong'});
-    if(encodeKey){
+
+    /*if(encodeKey){
         post(
             GET_PROFILE_API,
             'encodeKey='+encodeKey,
@@ -79,7 +125,29 @@ function verifyEncodeKey(encodeKey, callback){
             }
         );
     }
-    else callback(new Error('Invalid EncodeKey'));
+    else callback(new Error('Invalid EncodeKey'));*/
+
+    if(skey && session){
+        request(
+            'GET',
+            UC_VERIFY_API,
+            '',
+            {skey:skey, 'connect.sid':session},
+            function(data, res){
+                try{
+                    var json = JSON.parse(data);
+                    callback(null, res.statusCode, json);
+                }
+                catch(e){
+                    callback(e);
+                }
+            },
+            function(e){
+                callback(e);
+            }
+        );
+    }
+    else callback(new Error('Invalid Keys'));
 }
 /**
  * verify the request, if no vaild encodeKey response 401, otherwise callback with user info
@@ -88,13 +156,23 @@ function verifyEncodeKey(encodeKey, callback){
  * @param {Function} callback function(userInfo:Object)
  */
 function response401IfUnauthoirzed(req, res, callback){
-    var encodeKey = req.cookies['skey'];
-    verifyEncodeKey(encodeKey, function(error, statusCode, userInfo){
-        if(error || statusCode!=200 || !userInfo || !userInfo['loginName']){
+    verifyKeys(req, function(error, statusCode, json){
+        /*if(error || statusCode!=200 || !userInfo || !userInfo['loginName']){
             res.json(401, {c:10, m:'Unauthoirzed'});
         }
         else {
             callback(userInfo);
+        }*/
+        console.log('error:', error);
+        console.log('status:', statusCode);
+        console.log('json:', json);
+        if (error || statusCode!=200 || !json || json['err']){
+            res.json(401, {c:10, m:'Unauthorized'});
+        }
+        else {
+            callback({
+                loginName: json['result']['name']
+            });
         }
     });
 }
@@ -110,6 +188,7 @@ function fetchOrganizationTree(encodeKey, callback){
         post(
             GET_ORGANIZATION_TREE,
             'encodeKey='+encodeKey,
+            null,
             function(data, res){
                 var json = JSON.parse(data),
                     result = {};
@@ -134,6 +213,23 @@ function fetchOrganizationTree(encodeKey, callback){
         )
     }
     else callback(new Error('Invalid EncodeKey'));
+}
+function fetchOrganizationTreeFromAZ(skey, session, callback){
+    if(skey && session){
+        request(
+            'GET',
+            UC_ORGANIZATION_TREE,
+            '',
+            {skey:skey, 'connect.sid':session},
+            function(responseText, res){
+                callback(null, res.statusCode, JSON.parse(responseText));
+            },
+            function(error){
+                callback(error, 200);
+            }
+        )
+    }
+    else callback(new Error('Invalid Keys'), 400);
 }
 //自動用我的帳號密碼登錄來拉取組織信息
 function fetchOrganizationTreeEveryHour(){
@@ -178,14 +274,26 @@ function getProfilesOfUids(uids, callback){
     }
 }
 
-function post(api, body, onData, onError){
+function post(api, body, cookies, onData, onError){
+    request('POST', api, body, cookies, onData, onError);
+}
+function request(method, api, body, cookies, onData, onError){
+    var cookieHeader = '';
+    if(cookies){
+        cookieHeader = _.map(cookies, function(value, key){
+            return key + '=' + value;
+        }).join('; ');
+    }
+    console.log('cookie:', cookieHeader);
     var options = {
         hostname: api.host,
         path: api.path,
         port: 80,
-        method: 'POST',
+        method: method,
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': body.length,
+            'Cookie': cookieHeader
         }
     };
     var req = http.request(options, function(res) {
@@ -205,10 +313,10 @@ function post(api, body, onData, onError){
 
 
 exports.api = {
-    login:                      login,
-    verifyEncodeKey:            verifyEncodeKey,
-    response401IfUnauthoirzed:  response401IfUnauthoirzed,
-    fetchOrganizationTree:      fetchOrganizationTree,
-    getProfileOfUid:            getProfileOfUid,
-    getProfilesOfUids:          getProfilesOfUids
+    login:                          login,
+    response401IfUnauthoirzed:      response401IfUnauthoirzed,
+    fetchOrganizationTree:          fetchOrganizationTree,
+    fetchOrganizationTreeFromAZ:    fetchOrganizationTreeFromAZ,
+    getProfileOfUid:                getProfileOfUid,
+    getProfilesOfUids:              getProfilesOfUids
 };

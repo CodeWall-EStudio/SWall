@@ -22,15 +22,22 @@ angular.module('ts.controllers.loginForm', [
                     $scope.uid = $scope.pwd = $scope.errMsg = '';
                 }
 
-                if($scope.uid){
-                    if($scope.pwd){
+                if($scope.uid) {
+                    if ($scope.pwd) {
                         UserService.login(
                             $scope.uid, $scope.pwd,
                             handleResult, handleResult
                         );
                     }
-                    else $scope.errMsg = '请输入密码'; }
-                else $scope.errMsg = '请输入帐号名';
+                    else {
+                        $scope.errMsg = '请输入密码';
+                        $scope.$apply();
+                    }
+                }
+                else {
+                    $scope.errMsg = '请输入帐号名';
+                    $scope.$apply();
+                }
             };
 
             $rootScope.$on(CMD_SHOW_LOGIN_PANEL, function(){

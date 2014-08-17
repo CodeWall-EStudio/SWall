@@ -9,7 +9,7 @@ var fs          = require('fs'),
     utf8        = require('./app_modules/utf8');
 
 
-var PORT = 8090,
+var PORT = /* grunt|env:server.express.port */8090/* end */,
     FILE_UPLOAD_DIRECTORY = '/root/tmp/'/*'/tmp/'*/;
 
 
@@ -40,20 +40,26 @@ var customHeaders = function(req, res, next){
             break;
     }
     next();
-}
-
+};
 app.use(customHeaders);
+
 app.use(express.cookieParser());
 app.use(express.bodyParser({keepExtensions:true, uploadDir:FILE_UPLOAD_DIRECTORY}));
 app.use(connect.compress());
-app.use(express.static(__dirname + '/../www'));
+app.use(express.static(__dirname + '/../www-dist'));
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // /activities
 
 
-//创建活动
+/**
+ * Create new activity
+ * @function POST /activities
+ * @param {String} body.title
+ * @param {String} body.desc
+ * @return {Object} 201:{c:0, r:Object}; 500:{c:1, m:String}
+ */
 app.post('/activities', function(req, res){
     authModule.response401IfUnauthoirzed(req, res, function(userInfo){
         var uid     = userInfo['loginName'];
@@ -66,6 +72,7 @@ app.post('/activities', function(req, res){
             cls     = req.body['class'],
             subject = req.body['subject'],
             domain  = req.body['domain'],
+            link    = req.body['link'],
             type    = parseInt(req.body['type'])||0,
             ts      = parseInt(req.body['date'])||0;
 
@@ -93,12 +100,13 @@ app.post('/activities', function(req, res){
                                                     date:       ts,
                                                     createDate: new Date().getTime(),
                                                     title:      utf8.substr(title,      0, LONG_STR_MAXLEN),
-                                                    desc:       utf8.substr(desc || '', 0, SHORT_STR_MAXLEN),
+                                                    desc:       utf8.substr(desc || '', 0, LONG_CONTENT_MAXLEN),
                                                     teacher:    utf8.substr(teacher,    0, SHORT_STR_MAXLEN),
                                                     grade:      utf8.substr(grade,      0, SHORT_STR_MAXLEN),
                                                     'class':    utf8.substr(cls,        0, SHORT_STR_MAXLEN),
                                                     subject:    utf8.substr(subject,    0, SHORT_STR_MAXLEN),
-                                                    domain:     utf8.substr(domain,     0, SHORT_STR_MAXLEN)
+                                                    domain:     utf8.substr(domain,     0, SHORT_STR_MAXLEN),
+                                                    link:       link
                                                 }
                                             };
 
@@ -126,94 +134,106 @@ app.get('/activities', function(req, res){
         var uid = userInfo['loginName'],
             query = {};
 
-        //根據活動狀態過濾，active(true) | closed(false)
-        var status = req.query['status'];
-        if(status){
-            switch(status){
-                case 'active': query.active = true;  break;
-                case 'closed': query.active = false; break;
-            }
-        }
+        //检查是否超级用户哈
+        db.utils.isSuperUser(uid, function(isSuper)
+        {
+            console.log('[isSuper]', isSuper);
 
-        //根據時間戳過濾，只返回指定時間段的活動
-        var afterTs = parseInt(req.query['after']),
-            beforeTs = parseInt(req.query['before']);
-        if(afterTs || beforeTs){
-            query['info.date'] = {};
-            if(afterTs)     query['info.date']['$gt'] = afterTs;
-            if(beforeTs)    query['info.date']['$lt'] = beforeTs;
-        }
-
-        //根據活動創建者過濾
-        var creator = req.query['creator'];
-        if(creator) query['users.creator'] = creator;
-
-        //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
-        query['$and'] = [];
-
-        //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
-        //默认会搜索所有符合这些条件的活动
-        var userQuery = {};
-        switch(req.query['authorize']){
-            case 'public':      userQuery['users.invitedUsers']  = {'$in':['*']}; break; //公开的
-            case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
-            case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
-            case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
-            default:
-                userQuery['$or'] = [
-                    {'users.creator': uid},
-                    {'users.invitedUsers': {'$in':['*', uid]}}
-                    //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
-                ];
-                break;
-        }
-        query['$and'].push(userQuery);
-
-        //根据关键字过滤
-        var keyword = req.query['kw'];
-        if(keyword){
-            var regex = {'$regex':keyword, '$options':'i'};
-            query['$and'].push({'$or': [
-                {'info.title':      regex},
-                {'info.desc':       regex},
-                {'info.teacher':    regex},
-                {'info.subject':    regex},
-                {'info.domain':     regex}
-            ]});
-        }
-
-        //控制起始位置和條數
-        //TODO 这里能根据id来确定从那条开始取不？
-        var index = (req.query['index'] || 0)| 0,
-            count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
-
-        //好现在来真的了我们马上去搜活动
-        console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
-        var cursor = db.activityDataCollection
-            .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
-            .limit(count)
-            .skip(index)
-            .sort({'info.date':-1, 'info.title':1});
-
-        cursor.count(false, function(err, total){ //先看看总共有多少条活动
-            var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
-            cursor.toArray(function(err, docs){
-                //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
-                if(err) res.json(500, {c:1, m:err.message});
-                else{
-                    //獲取活動相關的用戶profile
-                    var allUids = [];
-                    _.each(docs, function(doc){
-                        allUids = _.union(allUids, getAllUidsOfActivity(doc));
-                    });
-                    authModule.getProfilesOfUids(allUids, function(err, profiles){
-                        res.json(200, {c:0, r:{
-                            activities:docs,
-                            profiles: profiles,
-                            more:hasMore
-                        }});
-                    });
+            //根據活動狀態過濾，active(true) | closed(false)
+            var status = req.query['status'];
+            if(status){
+                switch(status){
+                    case 'active': query.active = true;  break;
+                    case 'closed': query.active = false; break;
                 }
+            }
+
+            //根據時間戳過濾，只返回指定時間段的活動
+            var afterTs = parseInt(req.query['after']),
+                beforeTs = parseInt(req.query['before']);
+            if(afterTs || beforeTs){
+                query['info.date'] = {};
+                if(afterTs)     query['info.date']['$gt'] = afterTs;
+                if(beforeTs)    query['info.date']['$lt'] = beforeTs;
+            }
+
+            //根據活動創建者過濾，如果是超级用户那就取所有人创建的
+            if (!isSuper) {
+                var creator = req.query['creator'];
+                if (creator) query['users.creator'] = creator;
+            }
+
+            //这个是用来放根据授权和根据关键字过滤的条件的，因为这两类过滤都需要用到$or
+            var filterQuery = [];
+            query['$and'] = [];
+
+            //根據活動授權過濾，只能搜出開放的、或是授權我能參與的、或是我正在参与的、或是我创建的活動
+            //默认会搜索所有符合这些条件的活动
+            var userQuery = {};
+            switch(req.query['authorize']){
+                case 'public':      userQuery['users.invitedUsers']  = {'$in':['*']}; break; //公开的
+                case 'invited':     userQuery['users.invitedUsers']  = {'$in':[uid]}; break; //我受邀请参与的
+                case 'available':   userQuery['users.invitedUsers']  = {'$in':['*', uid]}; break; //public+invited
+                case 'joined':      userQuery['users.participators'] = {'$in':[uid]}; break; //我正在参与的
+                default:
+                    //如果是超级管理员，就不用受这个过滤条件限制了
+                    if(!isSuper) {
+                        userQuery['$or'] = [
+                            {'users.creator': uid},
+                            {'users.invitedUsers': {'$in': ['*', uid]}}
+                            //这里就不用加上participators这个条件了，因为和invitedUsers是重合的
+                        ];
+                    }
+                    break;
+            }
+            query['$and'].push(userQuery);
+
+            //根据关键字过滤
+            var keyword = req.query['kw'];
+            if(keyword){
+                var regex = {'$regex':keyword, '$options':'i'};
+                query['$and'].push({'$or': [
+                    {'info.title':      regex},
+                    {'info.desc':       regex},
+                    {'info.teacher':    regex},
+                    {'info.subject':    regex},
+                    {'info.domain':     regex}
+                ]});
+            }
+
+            //控制起始位置和條數
+            //TODO 这里能根据id来确定从那条开始取不？
+            var index = (req.query['index'] || 0)| 0,
+                count = (req.query['count'] == undefined ? 20 : req.query['count'])|0;
+
+            //好现在来真的了我们马上去搜活动
+            console.log('[server] find documents', query, 'limit=' + count + ', skip=' + index);
+            var cursor = db.activityDataCollection
+                .find(query/*, {'resources':0}*/) //TODO 將資源列表一同返回會唔會令響應太大？
+                .limit(count)
+                .skip(index)
+                .sort({'info.date':-1, 'info.title':1});
+
+            cursor.count(false, function(err, total){ //先看看总共有多少条活动
+                var hasMore = !count ? false : (index + count < total); //计算一下后面还有没有活动
+                cursor.toArray(function(err, docs){
+                    //TODO 需要将活动按天分组，不过现在不知道怎么通过ts来按天分组，所以直接返回列表，前端页面来自己分组吧
+                    if(err) res.json(500, {c:1, m:err.message});
+                    else{
+                        //獲取活動相關的用戶profile
+                        var allUids = [];
+                        _.each(docs, function(doc){
+                            allUids = _.union(allUids, getAllUidsOfActivity(doc));
+                        });
+                        authModule.getProfilesOfUids(allUids, function(err, profiles){
+                            res.json(200, {c:0, r:{
+                                activities:docs,
+                                profiles: profiles,
+                                more:hasMore
+                            }});
+                        });
+                    }
+                });
             });
         });
     });
@@ -247,52 +267,60 @@ app.get('/activities/:aid', function(req, res){
     });
 });
 function getActivityByID(uid, aid, callback){
-    var query = {
-            '_id': aid,
-            '$or': [
+    //检查是否超级用户
+    db.utils.isSuperUser(uid, function(isSuper) {
+        var query = {'_id': aid};
+        if (!isSuper){
+            query['$or'] = [
                 {'users.creator': uid},
                 {'users.invitedUsers': {'$in': ['*', uid]}}
-            ]
+            ];
         };
-    console.log('[server] find one document', query);
-    db.activityDataCollection.findOne(query, function(err, doc){
-        if(!err){ //檢索活動沒錯誤
-            if(!doc){ //沒返回活動
-                callback(404, null, {c:0});
+        console.log('[server] find one document', query);
+        db.activityDataCollection.findOne(query, function (err, doc) {
+            if (!err) { //檢索活動沒錯誤
+                if (!doc) { //沒返回活動
+                    callback(404, null, {c: 0});
+                }
+                else { //有返回活動，繼續去拉取用戶信息
+                    authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function (err, profiles) {
+                        if (err) callback(500, err, {c: 1, m: err.message}); //拉取用戶信息出錯
+                        else callback(200, null, {c: 0, r: doc, profiles: profiles}); //正常
+                    });
+                }
             }
-            else { //有返回活動，繼續去拉取用戶信息
-                authModule.getProfilesOfUids(getAllUidsOfActivity(doc), function(err, profiles){
-                    if(err) callback(500, err, {c:1, m:err.message}); //拉取用戶信息出錯
-                    else callback(200, null, {c:0, r:doc, profiles:profiles}); //正常
-                });
-            }
-        }
-        else callback(500, err, {c:1, m:err.message}); //檢索活動出錯
+            else callback(500, err, {c: 1, m: err.message}); //檢索活動出錯
+        });
     });
 }
 
 //删除活动
+//TODO 有问题！貌似连自己都删唔到！
 app.delete('/activities/:aid', function(req, res){
     authModule.response401IfUnauthoirzed(req, res, function(userInfo){
-        var uid = userInfo['loginName'],
-            aid = new mongodb.ObjectID(req.params['aid']),
-            query = {
-                '_id': aid, //匹配id
-                'users.creator': uid, //自能刪我自己創建的活動
-                '$or': [
-                    //TODO 驗證一下這個邏輯
-                    //若是開放的活動：當前必須沒人參與且沒上傳過資源
-                    //若是已關閉的活動：必須是沒人上傳過資源的活動
-                    {'active':true, 'users.participators':{$size:0}, 'resources':{$size:0}},
-                    {'active':false, 'resources':{$size:0}}
-                ]
-            };
+        var uid = userInfo['loginName'];
+        db.utils.isSuperUser(uid, function(isSuper) {
+            var aid = new mongodb.ObjectID(req.params['aid']),
+                query = {
+                    '_id': aid, //匹配id
+                    '$or': [
+                        //若是開放的活動：當前必須沒人參與且沒上傳過資源
+                        //若是已關閉的活動：必須是沒人上傳過資源的活動
+                        {'active': true, 'users.participators': {$size: 0}, 'resources': {$size: 0}},
+                        {'active': false, 'resources': {$size: 0}}
+                    ]
+                };
 
-        console.log('[server] delete document that matches:', query);
-        db.activityDataCollection.remove(query, {w:1}, function(err, count){
-            if(err)         res.json(500, {c:1, m:err.message});
-            else if(!count) res.json(404, {c:0});
-            else            res.json(200, {c:0, r:count});
+            if(!isSuper){
+                query['users.creator'] = uid; //不是超级管理员就只能刪我自己創建的活動
+            }
+
+            console.log('[server] delete document that matches:', query);
+            db.activityDataCollection.remove(query, {w: 1}, function (err, count) {
+                if (err)         res.json(500, {c: 1, m: err.message});
+                else if (!count) res.json(404, {c: 0});
+                else             res.json(200, {c: 0, r: count});
+            });
         });
     });
 });
@@ -303,73 +331,78 @@ app.put('/activities/:aid', function(req, res){
         var uid = userInfo['loginName'],
             aid = new mongodb.ObjectID(req.params['aid']);
 
-        //先把這活動找出來
-        var query = {
-            '_id': aid,
-            'users.creator': uid
-        };
-        console.log('[server] looking for activity', query);
-        db.activityDataCollection.findOne(query, function(err, doc){
-            //沒找到或出錯的話就直接返回吧
-            if(err)         res.json(500, {c:1, m:err.message});
-            else if(!doc)   res.json(404, {c:0});
-            else {
-                //把請求的參數都讀出來
-                var rawUids = req.body['uids'],
-                    uids    = rawUids ? rawUids.split(',') : [],
-                    title   = req.body['title'],
-                    desc    = req.body['desc'],
-                    teacher = req.body['teacher'],
-                    grade   = req.body['grade'],
-                    cls     = req.body['class'],
-                    subject = req.body['subject'],
-                    domain  = req.body['domain'],
-                    status  = req.body['status'],
-                    type    = parseInt(req.body['type'])||0,
-                    ts      = parseInt(req.body['date'])||0;
-
-                //如果是開放中的活動，則所有字段都可以編輯
-                var updates = {};
-                if(doc.active){
-                    if(status == 'closed'){
-                        updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
-                        updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
-                    }
-
-                    //if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
-                    if(type)        updates['info.type']            = type;
-                    if(ts)          updates['info.date']            = ts;
-                    if(desc)        updates['info.desc']            = utf8.substr(desc,     0, LONG_STR_MAXLEN);
-                    if(title)       updates['info.title']           = utf8.substr(title,    0, SHORT_STR_MAXLEN);
-                    if(teacher)     updates['info.teacher']         = utf8.substr(teacher,  0, SHORT_STR_MAXLEN);
-                    if(grade)       updates['info.grade']           = utf8.substr(grade,    0, SHORT_STR_MAXLEN);
-                    if(cls)         updates['info.class']           = utf8.substr(cls,      0, SHORT_STR_MAXLEN);
-                    if(subject)     updates['info.subject']         = utf8.substr(subject,  0, SHORT_STR_MAXLEN);
-                    if(domain)      updates['info.domain']          = utf8.substr(domain,   0, SHORT_STR_MAXLEN);
-                }
-                //否則的話就只能改用戶權限
-                //可以隨便新增用戶，但是只能刪除沒上傳過資源的用戶
-                if(uids.length){
-                    //先取出活动里上传过资源的用户uid
-                    var uidsWhichHaveResources = _.map(doc.resources, function(resource){
-                        return resource.user;
-                    });
-                    //合并请求传入的uids和上传过资源的用户uid，目的是保证上传过资源的用户uid必须是在合并结果里
-                    uids = _.uniq(uids.concat(uidsWhichHaveResources)); //TODO 验证一下这个逻辑
-                    updates['users.invitedUsers'] = uids;
-                }
-
-                //最後更新一下這個活動
-                console.log('[server] update activity', updates);
-                db.activityDataCollection.update(doc, {$set:updates}, {w:1}, function(err, count){
-                    if(err) res.json(500, {c:1, m:err.message});
-                    else {
-                        getActivityByID(uid, aid, function(status, err, result){
-                            res.json(status, result);
-                        });
-                    }
-                });
+        db.utils.isSuperUser(uid, function(isSuper) {
+            //先把這活動找出來
+            var query = {'_id': aid};
+            if(!isSuper){
+                query['users.creator'] = uid;
             }
+            console.log('[server] looking for activity', query);
+            db.activityDataCollection.findOne(query, function (err, doc) {
+                //沒找到或出錯的話就直接返回吧
+                if (err)         res.json(500, {c: 1, m: err.message});
+                else if (!doc)   res.json(404, {c: 0});
+                else {
+                    //把請求的參數都讀出來
+                    var rawUids = req.body['uids'],
+                        uids = rawUids ? rawUids.split(',') : [],
+                        title = req.body['title'],
+                        desc = req.body['desc'],
+                        teacher = req.body['teacher'],
+                        grade = req.body['grade'],
+                        cls = req.body['class'],
+                        subject = req.body['subject'],
+                        domain = req.body['domain'],
+                        link = req.body['link'],
+                        status = req.body['status'],
+                        type = parseInt(req.body['type']) || 0,
+                        ts = parseInt(req.body['date']) || 0;
+
+                    var updates = {};
+                    if (link) updates['info.link'] = link;
+
+                    //如果是開放中的活動，則所有字段都可以編輯
+                    if (doc.active) {
+                        if (status == 'closed') {
+                            updates['active'] = false; //只能關閉開放中的活動，不能重新开放已关闭的活动
+                            updates['users.participators'] = []; //活动关闭后，自动把所有参与者踢出去
+                        }
+
+                        //if(desc == undefined || utf8.length(desc) <= SHORT_STR_MAXLEN) updates['info.desc'] = desc;
+                        if (type)        updates['info.type'] = type;
+                        if (ts)          updates['info.date'] = ts;
+                        if (desc)        updates['info.desc'] = utf8.substr(desc, 0, LONG_STR_MAXLEN);
+                        if (title)       updates['info.title'] = utf8.substr(title, 0, SHORT_STR_MAXLEN);
+                        if (teacher)     updates['info.teacher'] = utf8.substr(teacher, 0, SHORT_STR_MAXLEN);
+                        if (grade)       updates['info.grade'] = utf8.substr(grade, 0, SHORT_STR_MAXLEN);
+                        if (cls)         updates['info.class'] = utf8.substr(cls, 0, SHORT_STR_MAXLEN);
+                        if (subject)     updates['info.subject'] = utf8.substr(subject, 0, SHORT_STR_MAXLEN);
+                        if (domain)      updates['info.domain'] = utf8.substr(domain, 0, SHORT_STR_MAXLEN);
+                    }
+                    //否則的話就只能改用戶權限
+                    //可以隨便新增用戶，但是只能刪除沒上傳過資源的用戶
+                    if (uids.length) {
+                        //先取出活动里上传过资源的用户uid
+                        var uidsWhichHaveResources = _.map(doc.resources, function (resource) {
+                            return resource.user;
+                        });
+                        //合并请求传入的uids和上传过资源的用户uid，目的是保证上传过资源的用户uid必须是在合并结果里
+                        uids = _.uniq(uids.concat(uidsWhichHaveResources)); //TODO 验证一下这个逻辑
+                        updates['users.invitedUsers'] = uids;
+                    }
+
+                    //最後更新一下這個活動
+                    console.log('[server] update activity', updates);
+                    db.activityDataCollection.update(doc, {$set: updates}, {w: 1}, function (err, count) {
+                        if (err) res.json(500, {c: 1, m: err.message});
+                        else {
+                            getActivityByID(uid, aid, function (status, err, result) {
+                                res.json(status, result);
+                            });
+                        }
+                    });
+                }
+            });
         });
     });
 });
@@ -810,12 +843,13 @@ app.put('/users/:uid/login', function(req, res){
         function(error, status, result){
             if(!error && status==200){
                 if(result){
-                    var expiresDate = new Date(Date.now() + 3600000*24),
-                        options = {/*domain:'...', */path:'/', expires:expiresDate}/*,
-                        options2 = {domain:'xzone.codewalle.com', path:'/', expires:expiresDate}*/;
+                    var skey = result.skey,
+                        session = decodeURIComponent(result.session),
+                        expiresDate = new Date(Date.now() + 3600000*24),
+                        options = {domain:'.codewalle.com', path:'/', expires:expiresDate};
                     res.cookie('uid', uid, options);
-                    res.cookie('skey', result.skey, options);
-                    //res.cookie('skey', result.skey, options2);
+                    res.cookie('skey', skey, options);
+                    res.cookie('connect.sid ', session, options);
                     res.json(200, result);
                 }
                 else res.send(401);
@@ -826,6 +860,14 @@ app.put('/users/:uid/login', function(req, res){
 });
 
 
+/*app.get('/users/:uid/issuper', function(req, res){
+    var uid = req.params['uid'];
+    db.utils.isSuperUser(uid, function(result){
+        res.json(200, {uid:uid, super:result});
+    });
+});*/
+
+
 //獲取指定用戶的昵稱
 app.get('/users/:uid/profile', function(req, res){
     var uid = req.params['uid'];
@@ -833,6 +875,17 @@ app.get('/users/:uid/profile', function(req, res){
         if(err)         res.send(500);
         else if(!reply) res.send(404);
         else            res.json(200, reply);
+    });
+});
+
+
+//获取组织结构树
+app.get('/users/tree', function(req, res){
+    var skey = req.cookies['skey'],
+        session = req.cookies['connect.sid'];
+    authModule.fetchOrganizationTreeFromAZ(skey, session, function(err, status, tree){
+        if(!err && status == 200) res.json(200, tree);
+        else res.json(status, {error:err, tree:tree});
     });
 });
 

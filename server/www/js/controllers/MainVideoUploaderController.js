@@ -1,4 +1,4 @@
-document.domain = '71xiaoxue.com';
+document.domain = 'codewalle.com';
 
 angular.module('ap.controllers.videoUploader', [
         'ts.services.activity',
@@ -79,8 +79,10 @@ angular.module('ap.controllers.videoUploader', [
                     //构造请求
                     var form = new FormData(),
                         xhr = new XMLHttpRequest(),
-                        api = 'http://szone.71xiaoxue.com/upload';
+                        api = 'http://qzone.codewalle.com/upload';
+                    //带上skey & session
                     form.append('skey', UtilsService.cookie.get('skey'));
+                    form.append('connect.sid', UtilsService.cookie.get('connect.sid'));
                     form.append('file', $scope.videoFile);
                     form.append('name', $scope.videoName);
                     form.append('media', 1);
@@ -99,6 +101,7 @@ angular.module('ap.controllers.videoUploader', [
                         try{
                             var json = JSON.parse(xhr.responseText),
                                 fid = json['data']['fid'];
+                            //TODO handle error: {"err":1001, "msg":"..."}
                             addVideoToActivity(fid);
                         }
                         catch(exception){
@@ -134,7 +137,7 @@ angular.module('ap.controllers.videoUploader', [
                     alert('上传视频失败，请输入有效的视频名字');
                 }
                 else {
-                    $scope.videoURL = 'http://szone.71xiaoxue.com/api/media/download?fileId=' + fileID;
+                    $scope.videoURL = 'http://qzone.codewalle.com/api/file/download?fileId=' + fileID;
 
                     var aid = $location.search()['aid'],
                         form = new FormData(),

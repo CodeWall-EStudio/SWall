@@ -4,9 +4,12 @@
     <title>教师空间</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/teacherSpace.min.css?20140310001" rel="stylesheet">
-    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+
+    <!-- TODO chagne to minify version -->
+    <link href="lib/bootstrap_3.0.3/css/bootstrap.css" rel="stylesheet">
+    <link href="lib/bootstrap_treeview/bootstrap-treeview.min.css" rel="stylesheet">
+    <link href="css/teacherSpace.min.css" rel="stylesheet">
+    <script src="lib/jquery/jquery-2.0.3.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
 </head>
 <body class="fixedTopNavbar" ng-controller="MainController">
@@ -118,11 +121,16 @@
                             </fieldset>
                         </form>
                     </p>
-                    <p>活动创建人：{{profiles[selectedActivity.users.creator].nick}}</p>
+                    <p>活动创建人：{{uid2nick(selectedActivity)}}</p>
                     <br/>
                     <p ng-switch on="selectedActivity.info.type">
                         活动类型：
+                        <!-- TODO 改成直接從數據裡讀取，不用這樣在頁面上寫死 -->
                         <span ng-switch-when="1">公开课</span>
+                        <span ng-switch-when="2">学校活动</span>
+                        <span ng-switch-when="3">区级活动</span>
+                        <span ng-switch-when="4">市级活动</span>
+                        <span ng-switch-when="5">其他活动</span>
                         <span ng-switch-default>未知类型</span>
                     </p>
                     <p>活动简介：{{selectedActivity.info.desc}}</p>
@@ -141,6 +149,7 @@
                     <p ng-show="selectedActivity.resources.length">
                         资源明细：{{resourceCount(0)}}段文字, {{resourceCount(1)}}张图片, {{resourceCount(2)}}段视频
                     </p>
+                    <p ng-show="selectedActivity.info.link">引用链接：<a target="_blank" ng-href="{{selectedActivity.info.link}}">{{selectedActivity.info.link}}</a></p>
                 </div>
             </div>
         </div>
@@ -159,10 +168,10 @@
                     </div>
                     <form>
                         <div class="form-group">
-                            <input type="text" class="form-control input-lg" placeholder="用户名" ng-model="uid">
+                            <input type="text" class="form-control input-lg" placeholder="用户名" ng-model="uid" ng-enter="login()">
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control input-lg" placeholder="密码" ng-model="pwd">
+                            <input type="password" class="form-control input-lg" placeholder="密码" ng-model="pwd" ng-enter="login()">
                         </div>
                     </form>
                 </div>
@@ -257,7 +266,17 @@
                                         <input type="text" id="na_users" data-role="tagsinput"
                                                ng-model="invitedUsers">
                                         <div class="alert alert-info">输入用户登录名后回车向列表添加用户，输入*后回车表示设定该活动为公开活动。</div>
+                                        <div id="orgTree"></div>
                                     </div>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label for="na_link" class="col-sm-2 control-label">引用链接</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control input-sm" id="na_link" ng-model="activity.info.link">
+                                    </div>
+                                    <button type="button" class="btn btn-link" ng-click="handleTestLinkBtnClick()">测试</button>
                                 </div>
                             </fieldset>
                         </fieldset>
@@ -271,10 +290,15 @@
         </div>
     </div>
 
+    <!-- TODO change to minify version -->
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
     <script src="lib/bootstrap_tagsinput/bootstrap-tagsinput.js"></script>
     <script src="lib/bootstrap_datetimepicker/bootstrap-datetimepicker.min.js"></script>
-    <script src="lib/underscore/underscore_1.5.2.min.js"></script>
-    <script src="js/teacherSpace.min.js?20140310001"></script>
+    <script src="lib/bootstrap_treeview/bootstrap-treeview.min.js"></script>
+    <script src="lib/underscore/underscore_1.5.2.js"></script>
+
+    <!-- grunt|minjs:teacherSpace.min.js -->
+    <script src="js/teacherSpace.min.js"></script>
+    <!-- end -->
 </body>
 </html>

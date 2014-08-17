@@ -92,3 +92,15 @@
     padding-left: 20px;
     margin: 10px 0;
 }
+
+#orgTree{
+    overflow: scroll;
+    max-height: 200px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+#orgTree li{
+    background: none;
+    border: none;
+    padding: 5px 15px;
+}

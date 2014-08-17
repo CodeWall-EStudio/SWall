@@ -4,10 +4,11 @@
     <title>{{activity.info.title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="lib/bootstrap_3.0.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/activityPlay.min.css?20140317003" rel="stylesheet">
+    <link href="lib/bootstrap_3.0.3/css/bootstrap.css" rel="stylesheet">
+    <link href="css/activityPlay.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="player/video.min.css">
-    <script src="lib/jquery/jquery-2.0.3.min.js"></script>
+    <script src="lib/jquery/jquery-2.0.3.js"></script>
+    <script src="lib/jquery-ui-1.11.0.custom/jquery-ui.js"></script>
     <script src="lib/angular/angular_1.2.6.js"></script>
     <script type="text/javascript" src="player/video.dev.js"></script>
     <script>
@@ -27,6 +28,9 @@
                     <li>
                         <a class="navbar-brand">{{activity.active ? '展示' : '回放'}}活动：{{activity.info.title}}</a>
                     </li>
+                    <li>
+                        <a ng-click="showActivityDetails = !showActivityDetails">展示活动详情</a>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a ng-click="showLoginModal()">{{username}}</a></li>
@@ -36,13 +40,18 @@
     </div>
 
     <!-- 活动信息 -->
-    <div class="row" id="activityInfo">
+    <div class="row" id="activityInfo" ng-class="{shown:showActivityDetails}">
         <div class="col-sm-4 section1">
             <p>活动日期：{{activity.info.date | date:'yyyy年MM月dd日'}}</p>
             <p>开始时间：{{activity.info.date | date:'HH:mm'}}</p>
             <p ng-switch on="activity.info.type">
                 活动类型：
+                <!-- TODO 改成直接從數據裡讀取，不用這樣在頁面上寫死 -->
                 <span ng-switch-when="1">公开课</span>
+                <span ng-switch-when="2">学校活动</span>
+                <span ng-switch-when="3">区级活动</span>
+                <span ng-switch-when="4">市级活动</span>
+                <span ng-switch-when="5">其他活动</span>
                 <span ng-switch-default>其他</span>
             </p>
             <p class="autoRefreshSwitch">
@@ -65,14 +74,18 @@
                 <span ng-hide="activity.active">共{{userCount}}位参与者</span>
             </p>
             <p>资源：共上传{{activity.resources.length}}个资源</p>
-            <p style="max-height:4.2em; overflow:hidden;">活动简介：{{activity.info.desc}}</p>
+            <p id="descP">活动简介：{{activity.info.desc}}</p>
+            <p id="linkP">
+                <span class="text">引用链接：</span>
+                <a ng-click="showLinkPanel()" ng-show="activity.info.link">{{activity.info.link}}</a>
+            </p>
         </div>
     </div>
 
     <!-- 主要内容 -->
     <div class="row hbox full" id="mainContent">
         <!-- 侧边栏 -->
-        <div class="col-sm-2 sidebar">
+        <div class="col-sm-1 sidebar">
             <div class="addComment" ng-show="activity.active">
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addCommentModal">添加评论</button>
             </div>
@@ -106,7 +119,7 @@
         </div>
         <!-- 时间线和资源列表 -->
         <div id="timeline"
-             ng-class="{min:selectedResource, playMode:selectedMainVideo, 'col-sm-10':activity.active, 'col-sm-8':!activity.active && !selectedMainVideo, 'col-sm-5':!activity.active && selectedMainVideo}">
+             ng-class="{min:selectedResource, playMode:selectedMainVideo, 'col-sm-11':activity.active, 'col-sm-9':!activity.active && !selectedMainVideo, 'col-sm-6':!activity.active && selectedMainVideo}">
             <!-- 按时间（同一分钟内）分组资源 -->
             <div class="resourceGroup"
                  ng-show="groupContainsResourceOfSelectedUser(group)"
@@ -269,10 +282,16 @@
             </div>
         </div>
         <!-- 资源预览 -->
-        <div id="preview" class="vbox" ng-class="{shown:selectedResource}">
+        <div id="preview" class="" ng-class="{shown:selectedResource}">
+            <!--
+            关闭按钮放到了预览图底下
             <div class="toolbar">
                 <button type="button" class="btn btn-link" ng-click="hideResourceDetail()">x</button>
             </div>
+            -->
+
+            <!--
+            下面这段代码在chrome上样式有问题，大图显示得很小
             <div class="hbox full content">
                 <button type="button" class="btn btn-link"
                         ng-disabled="!hasPreviousPreviewableResource()"
@@ -284,42 +303,12 @@
                             <img class="image" ng-switch-when="1" style="height: inherit;max-width:100%;max-height:70%" ng-src="{{selectedResource.content}}" />
                             <video class="video" ng-switch-when="2" autoplay controls id="videoPlayer"></video>
                         </div>
-                        <!-- ngSwitchWhen: 2 -->
                         <div>
                             <span ng-switch-when="1">图片</span>
                             <span ng-switch-when="2">视频</span>
                             <span>{{uid2nick(selectedResource.user)}}</span>
                         </div>
                         <div>{{selectedResource.comment}}</div>
-                </div>
-                <button type="button" class="btn btn-link"
-                        ng-disabled="!hasNextPreviewableResource()"
-                        ng-click="selectNextPreviewableResource()">
-                    下一页
-                </button>
-            </div>
-            <!--
-            <div class="hbox full content">
-                <button type="button" class="btn btn-link"
-                        ng-disabled="!hasPreviousPreviewableResource()"
-                        ng-click="selectPreviousPreviewableResource()">
-                    上一页
-                </button>
-                <div class="mediaContent full" ng-switch on="selectedResource.type">
-                    <div class="contentWrapper">
-                        <div ng-switch-when="1" class="image">
-                            <img ng-src="{{selectedResource.content}}">
-                        </div>
-                        <div ng-switch-when="2" class="video">
-                            <video autoplay controls id="videoPlayer"></video>
-                        </div>
-                        <div>
-                            <span ng-switch-when="1">图片</span>
-                            <span ng-switch-when="2">视频</span>
-                            <span>{{uid2nick(selectedResource.user)}}</span>
-                        </div>
-                        <div>{{selectedResource.comment}}</div>
-                    </div>
                 </div>
                 <button type="button" class="btn btn-link"
                         ng-disabled="!hasNextPreviewableResource()"
@@ -328,6 +317,45 @@
                 </button>
             </div>
             -->
+            <div class="mediaContent" ng-switch on="selectedResource.type">
+                <div class="contentWrapper">
+                    <div ng-switch-when="0" class="text">
+                        <span>{{selectedResource.content}}</span>
+                    </div>
+                    <div ng-switch-when="1" class="image">
+                        <img ng-src="{{selectedResource.content}}">
+                    </div>
+                    <div ng-switch-when="2" class="video">
+                        <video autoplay controls id="videoPlayer"></video>
+                    </div>
+                    <div>
+                        <span ng-switch-when="0">文字</span>
+                        <span ng-switch-when="1">图片</span>
+                        <span ng-switch-when="2">视频</span>
+                        <span>{{uid2nick(selectedResource.user)}}</span>
+                    </div>
+                    <div class="desc">{{selectedResource.comment}}</div>
+                </div>
+            </div>
+            <div class="hbox controls-bar">
+                <div>
+                    <button type="button" class="btn btn-link"
+                            ng-disabled="!hasPreviousPreviewableResource()"
+                            ng-click="selectPreviousPreviewableResource()">
+                        上一页
+                    </button>
+                </div>
+                <div class="full" style="text-align: center">
+                    <button type="button" class="btn" ng-click="hideResourceDetail()">关闭大图</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-link"
+                            ng-disabled="!hasNextPreviewableResource()"
+                            ng-click="selectNextPreviewableResource()">
+                        下一页
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -378,7 +406,7 @@
     <div class="modal fade" id="uploadMainVideoModal" ng-controller="MainVideoUploaderController">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="uploadMainVideoForm" action="http://szone.71xiaoxue.com/upload" method="post" target="uploadCallback" enctype="multipart/form-data">
+                <form id="uploadMainVideoForm" action="http://qzone.codewalle.com/upload" method="post" target="uploadCallback" enctype="multipart/form-data">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                         <h4 class="modal-title">添加主视频</h4>
@@ -425,12 +453,25 @@
         </div>
     </div>
 
+    <div id="linkPanel" class="panel panel-default" ng-show="linkPanelVisible">
+        <div class="panel-heading">
+            <button class="close" ng-click="hideLinkPanel()">x</button>
+            <h3 class="panel-title">引用链接</h3>
+        </div>
+        <div class="panel-body">
+            <iframe id="linkPanelFrame" width="500" height="350"></iframe>
+        </div>
+    </div>
+
     <script src="lib/bootstrap_3.0.3/js/bootstrap.js"></script>
-    <script src="lib/underscore/underscore_1.5.2.min.js"></script>
+    <script src="lib/underscore/underscore_1.5.2.js"></script>
     <script src="lib/amcharts/amcharts.js"></script>
     <script src="lib/amcharts/pie.js"></script>
     <script src="lib/amcharts/serial.js"></script>
     <script src="lib/amcharts/themes/light.js"></script>
+
+    <!-- grunt:activityPlay.min.js -->
     <script src="js/activityPlay.min.js?20140402001"></script>
+    <!-- end -->
 </body>
 </html>
