@@ -5,7 +5,7 @@
     <databaseInfo>
         <version>134481920</version>
         <UUID>267100BF-9E8E-4A3F-BFD0-E4067D4BCF94</UUID>
-        <nextObjectID>270</nextObjectID>
+        <nextObjectID>272</nextObjectID>
         <metadata>
             <plist version="1.0">
                 <dict>
@@ -1094,7 +1094,7 @@
         <attribute name="order" type="int64">0</attribute>
         <attribute name="name" type="string">用戶中心接口</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z253 z248 z251 z257"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM" idrefs="z271 z248 z251 z253 z257"></relationship>
         <relationship name="bodyparameters" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE"></relationship>
         <relationship name="urlparameters" type="0/0" destination="LMKEYVALUE"></relationship>
@@ -1108,8 +1108,8 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">POST</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">0</attribute>
-        <attribute name="name" type="string">Login</attribute>
+        <attribute name="order" type="int64">1</attribute>
+        <attribute name="name" type="string">Login (codewalle)</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z249"></relationship>
@@ -1133,11 +1133,11 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">1</attribute>
+        <attribute name="order" type="int64">2</attribute>
         <attribute name="name" type="string">Logoff</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z269 z270"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z270 z269"></relationship>
     </object>
     <object type="LMREQUEST" id="z253">
         <attribute name="uuid" type="string">1A80481A-07D3-466B-8151-013898B6D81C</attribute>
@@ -1147,7 +1147,7 @@
         <attribute name="redirectauthorization" type="bool">0</attribute>
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
-        <attribute name="order" type="int64">2</attribute>
+        <attribute name="order" type="int64">3</attribute>
         <attribute name="name" type="string">Validate User</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -1186,7 +1186,7 @@
         <attribute name="method" type="string">GET</attribute>
         <attribute name="followredirects" type="bool">0</attribute>
         <attribute name="body" type="string">[{"name":"com.luckymarmot.Paw.DynamicValue","data":"62706C6973743030D40102030405063B3C582476657273696F6E58246F626A65637473592461726368697665725424746F7012000186A0AF101007080D141A1B1C1D23292A2B3132333655246E756C6CD2090A0B0C596B657956616C7565735624636C6173738002800FD20E0A0F135A4E532E6F626A65637473A310111280038008800B800ED20E0A1519A31617188004800580068007546E616D65547465737409D21E1F20215A24636C6173736E616D655824636C6173736573574E534172726179A22022584E534F626A656374D20E0A2419A32526188009800A80068007537077645438383838D20E0A2C19A32D2E18800C800D80068007546A736F6E5474727565D21E1F34355E4E534D757461626C654172726179A3342022D21E1F37385F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C7565A3393A225F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C75655E4C4D44796E616D696356616C75655F100F4E534B657965644172636869766572D13D3E54726F6F74800100080011001A0023002D00320037004A00500055005F00660068006A006F007A007E0080008200840086008B008F0091009300950097009C00A100A200A700B200BB00C300C600CF00D400D800DA00DC00DE00E000E400E900EE00F200F400F600F800FA00FF010401090118011C012101420146016701760188018B01900000000000000201000000000000003F00000000000000000000000000000192"}]</attribute>
-        <attribute name="order" type="int64">3</attribute>
+        <attribute name="order" type="int64">4</attribute>
         <attribute name="name" type="string">Get Organization Tree</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
@@ -1275,5 +1275,30 @@
         <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
         <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z251"></relationship>
+    </object>
+    <object type="LMREQUEST" id="z271">
+        <attribute name="uuid" type="string">024CCEBC-F2EB-44D7-A57E-8644DA2E9D54</attribute>
+        <attribute name="url" type="string">http://szone.hylc-edu.cn/api/user/login</attribute>
+        <attribute name="timeoutinterval" type="float">30</attribute>
+        <attribute name="redirectmethod" type="bool">0</attribute>
+        <attribute name="redirectauthorization" type="bool">0</attribute>
+        <attribute name="method" type="string">POST</attribute>
+        <attribute name="followredirects" type="bool">0</attribute>
+        <attribute name="body" type="string">[{"name":"com.luckymarmot.Paw.DynamicValue","data":"62706C6973743030D40102030405063B3C582476657273696F6E58246F626A65637473592461726368697665725424746F7012000186A0AF101007080D141A1B1C1D23292A2B3132333655246E756C6CD2090A0B0C596B657956616C7565735624636C6173738002800FD20E0A0F135A4E532E6F626A65637473A310111280038008800B800ED20E0A1519A31617188004800580068007546E616D655A7A686F7577656E6A696509D21E1F20215A24636C6173736E616D655824636C6173736573574E534172726179A22022584E534F626A656374D20E0A2419A32526188009800A80068007537077645438383838D20E0A2C19A32D2E18800C800D80068007546A736F6E5474727565D21E1F34355E4E534D757461626C654172726179A3342022D21E1F37385F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C7565A3393A225F101E4C4D426F6479466F726D4B657956616C756544796E616D696356616C75655E4C4D44796E616D696356616C75655F100F4E534B657965644172636869766572D13D3E54726F6F74800100080011001A0023002D00320037004A00500055005F00660068006A006F007A007E0080008200840086008B008F0091009300950097009C00A700A800AD00B800C100C900CC00D500DA00DE00E000E200E400E600EA00EF00F400F800FA00FC00FE01000105010A010F011E012201270148014C016D017C018E019101960000000000000201000000000000003F00000000000000000000000000000198"}]</attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string">Login (aliyun)</attribute>
+        <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM" idrefs="z247"></relationship>
+        <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z272"></relationship>
+    </object>
+    <object type="LMKEYVALUE" id="z272">
+        <attribute name="value" type="string"></attribute>
+        <attribute name="order" type="int64">0</attribute>
+        <attribute name="name" type="string"></attribute>
+        <attribute name="enabled" type="bool">1</attribute>
+        <relationship name="groupforbodyparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforheaders" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="groupforurlparameters" type="0/1" destination="LMREQUESTGROUP"></relationship>
+        <relationship name="request" type="0/1" destination="LMREQUEST" idrefs="z271"></relationship>
     </object>
 </database>
