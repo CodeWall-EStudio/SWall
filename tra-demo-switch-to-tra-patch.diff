@@ -1,0 +1,389 @@
+diff --git a/client/android/TRA/TRA/AndroidManifest.xml b/client/android/TRA/TRA/AndroidManifest.xml
+index b294315..5d606de 100644
+--- a/client/android/TRA/TRA/AndroidManifest.xml
++++ b/client/android/TRA/TRA/AndroidManifest.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-          package="com.swall.tra_demo"
++          package="com.swall.tra"
+           android:versionCode="20"
+           android:versionName="1.0_20140713">
+     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+@@ -8,13 +8,13 @@
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+ 
+     <uses-sdk android:minSdkVersion="14"/>
+-    <application android:name="com.swall.tra.TRAApplication"
++    <application android:name=".TRAApplication"
+                  android:label="@string/app_name"
+                  android:theme="@style/MyTheme"
+-                 android:icon="@drawable/icon_hong"
++                 android:icon="@drawable/icon_qiyi"
+             >
+ 
+-        <activity android:name="com.swall.tra.SplashActivity"
++        <activity android:name=".SplashActivity"
+                   android:theme="@style/Theme.Sherlock.Light.NoActionBar"
+                 >
+             <intent-filter>
+@@ -22,32 +22,32 @@
+                 <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
+         </activity>
+-        <activity android:name="com.swall.tra.LoginActivity"
++        <activity android:name=".LoginActivity"
+                   android:theme="@style/Theme.Sherlock.Light.NoActionBar"
+                   android:configChanges="orientation|keyboardHidden|screenSize"
+                   android:windowSoftInputMode="adjustResize"
+                 />
+-        <activity android:name="com.swall.tra.MainActivity"
++        <activity android:name=".MainActivity"
+                   android:theme="@style/MyTheme"
+                 />
+-        <activity android:name="com.swall.tra.SettingActivity"/>
+-        <activity android:name="com.swall.tra.JoinActivityIntent"
++        <activity android:name=".SettingActivity"/>
++        <activity android:name=".JoinActivityIntent"
+                 android:theme="@style/MyTheme"
+                 />
+-        <activity android:name="com.swall.tra.ResourceListActivity"/>
+-        <activity android:name="com.swall.tra.ImageViewActivity"/>
+-        <activity android:name="com.swall.tra.VideoCaptureActivity"/>
+-        <activity android:name="com.swall.tra.TRAInfoActivity"/>
+-        <activity android:name="com.swall.tra.CurrentTRAActivity"/>
+-        <activity android:name="com.swall.tra.TRAResourceListAcitivity"/>
+-        <activity android:name="com.swall.tra.QuitActivity"/>
+-        <activity android:name="com.swall.tra.AddTextResourceActivity"
++        <activity android:name=".ResourceListActivity"/>
++        <activity android:name=".ImageViewActivity"/>
++        <activity android:name=".VideoCaptureActivity"/>
++        <activity android:name=".TRAInfoActivity"/>
++        <activity android:name=".CurrentTRAActivity"/>
++        <activity android:name=".TRAResourceListAcitivity"/>
++        <activity android:name=".QuitActivity"/>
++        <activity android:name=".AddTextResourceActivity"
+                 android:windowSoftInputMode="adjustResize"/>
+-        <activity android:name="com.swall.tra.UploadProgressActivity"/>
++        <activity android:name=".UploadProgressActivity"/>
+ 
+         <!-- 友盟 -->
+-        <!--<meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" />--><!-- 71 -->
+-        <meta-data android:value="5327d32356240b93e009a6ff" android:name="UMENG_APPKEY" /><!-- demo -->
++        <meta-data android:value="52a3238756240b119207f74f" android:name="UMENG_APPKEY" /> <!-- 71 -->
++        <!-- meta-data android:value="5327d32356240b93e009a6ff" android:name="UMENG_APPKEY" / --> <!-- demo -->
+         <meta-data android:value="c_0001" android:name="UMENG_CHANNEL"/>
+         <service
+                 android:name="com.umeng.common.net.DownloadingService"
+@@ -57,12 +57,10 @@
+                 android:name="com.umeng.update.UpdateDialogActivity"
+                 android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+         </activity>
+-        <activity android:name="com.swall.tra.SettingsActivity"/>
++        <activity android:name=".SettingsActivity"/>
+     </application>
+ 
+ 
+-    <!-- 友盟 -->
+-
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+diff --git a/client/android/TRA/TRA/res/layout/activity_login.xml b/client/android/TRA/TRA/res/layout/activity_login.xml
+index ab1a404..c780cfd 100644
+--- a/client/android/TRA/TRA/res/layout/activity_login.xml
++++ b/client/android/TRA/TRA/res/layout/activity_login.xml
+@@ -7,7 +7,7 @@
+                 android:layout_height="match_parent">
+ 
+     <ImageView
+-            android:src="@drawable/login_school_normal_hong"
++            android:src="@drawable/login_school_normal_qiyi"
+             android:layout_gravity="center_vertical"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/AddTextResourceActivity.java b/client/android/TRA/TRA/src/com/swall/tra/AddTextResourceActivity.java
+index 9f9ab19..21f8c05 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/AddTextResourceActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/AddTextResourceActivity.java
+@@ -10,7 +10,7 @@ import android.text.TextWatcher;
+ import android.view.View;
+ import android.widget.EditText;
+ import android.widget.TextView;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-1-1.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/AvailableFrame.java b/client/android/TRA/TRA/src/com/swall/tra/AvailableFrame.java
+index 8f0fa16..e522e88 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/AvailableFrame.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/AvailableFrame.java
+@@ -18,7 +18,7 @@ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ActionListener;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.JSONUtils;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/BaseFragmentActivity.java b/client/android/TRA/TRA/src/com/swall/tra/BaseFragmentActivity.java
+index 403bbfd..8b5395b 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/BaseFragmentActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/BaseFragmentActivity.java
+@@ -16,7 +16,7 @@ import com.actionbarsherlock.view.Menu;
+ import com.actionbarsherlock.view.MenuItem;
+ import com.swall.tra.model.AccountInfo;
+ import com.swall.tra.network.ServiceManager;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import com.umeng.analytics.MobclickAgent;
+ import com.umeng.update.*;
+ 
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/CurrentTRAActivity.java b/client/android/TRA/TRA/src/com/swall/tra/CurrentTRAActivity.java
+index 514ffdd..127d5c7 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/CurrentTRAActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/CurrentTRAActivity.java
+@@ -28,7 +28,7 @@ import com.swall.tra.utils.JSONUtils;
+ import com.swall.tra.utils.Utils;
+ import com.swall.tra.widget.CustomDialog;
+ import com.swall.tra.widget.UploadResourceProgressDialog;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import com.umeng.analytics.MobclickAgent;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/ExpiredActivitiesFrame.java b/client/android/TRA/TRA/src/com/swall/tra/ExpiredActivitiesFrame.java
+index c664665..715f4da 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/ExpiredActivitiesFrame.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/ExpiredActivitiesFrame.java
+@@ -14,7 +14,7 @@ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ActionListener;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.JSONUtils;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/ImageViewActivity.java b/client/android/TRA/TRA/src/com/swall/tra/ImageViewActivity.java
+index 52a1509..fb58752 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/ImageViewActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/ImageViewActivity.java
+@@ -4,7 +4,7 @@ import android.app.Activity;
+ import android.os.Bundle;
+ import com.android.volley.toolbox.NetworkImageView;
+ import com.swall.tra.network.MyVolley;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 13-12-25.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/JoinActivityIntent.java b/client/android/TRA/TRA/src/com/swall/tra/JoinActivityIntent.java
+index f3c955d..8bfedca 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/JoinActivityIntent.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/JoinActivityIntent.java
+@@ -5,7 +5,7 @@ import android.os.Bundle;
+ import android.util.Log;
+ import android.widget.Toast;
+ import com.swall.tra.network.ActionListener;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ import static com.swall.tra.network.ServiceManager.Constants;
+ 
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/LoginActivity.java b/client/android/TRA/TRA/src/com/swall/tra/LoginActivity.java
+index 443d382..cf5767b 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/LoginActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/LoginActivity.java
+@@ -18,7 +18,7 @@ import com.swall.tra.network.ActionListener;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.JSONUtils;
+ import com.swall.tra.widget.InputMethodRelativeLayout;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+ 
+@@ -184,9 +184,9 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
+     @Override
+     public void onSizeChange(boolean isOpen, int preH, int curH) {
+         if(isOpen){
+-            mSchoolNameView.setImageResource(R.drawable.login_school_input_hong);
++            mSchoolNameView.setImageResource(R.drawable.login_school_input_qiyi);
+         }else{
+-            mSchoolNameView.setImageResource(R.drawable.login_school_normal_hong);
++            mSchoolNameView.setImageResource(R.drawable.login_school_normal_qiyi);
+         }
+     }
+ 
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/MainActivity.java b/client/android/TRA/TRA/src/com/swall/tra/MainActivity.java
+index dd95847..1c1b62a 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/MainActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/MainActivity.java
+@@ -15,7 +15,7 @@ import com.swall.tra.network.ActionListener;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.DateUtil;
+ import com.swall.tra.utils.JSONUtils;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import com.umeng.update.UmengUpdateAgent;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/QuitActivity.java b/client/android/TRA/TRA/src/com/swall/tra/QuitActivity.java
+index 35a2bc2..17263b7 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/QuitActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/QuitActivity.java
+@@ -8,7 +8,7 @@ import android.widget.RadioGroup;
+ import android.widget.TextView;
+ import com.swall.tra.model.AccountInfo;
+ import com.swall.tra.network.ServiceManager;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-1-1.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/ResourceListActivity.java b/client/android/TRA/TRA/src/com/swall/tra/ResourceListActivity.java
+index cf69f38..911f539 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/ResourceListActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/ResourceListActivity.java
+@@ -13,7 +13,7 @@ import com.swall.tra.adapter.ActivityResourceAdapter;
+ import com.swall.tra.model.ResourceInfo;
+ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ServiceManager;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+ 
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/SettingActivity.java b/client/android/TRA/TRA/src/com/swall/tra/SettingActivity.java
+index 309a5c2..952edf1 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/SettingActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/SettingActivity.java
+@@ -11,7 +11,7 @@ import com.actionbarsherlock.app.ActionBar;
+ import com.actionbarsherlock.app.SherlockPreferenceActivity;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.Utils;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 13-12-17.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/SettingActivity2.java b/client/android/TRA/TRA/src/com/swall/tra/SettingActivity2.java
+index b5d6410..83cceb0 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/SettingActivity2.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/SettingActivity2.java
+@@ -4,7 +4,7 @@ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.widget.TextView;
+ import com.swall.tra.model.AccountInfo;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 13-12-25.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/SettingsActivity.java b/client/android/TRA/TRA/src/com/swall/tra/SettingsActivity.java
+index eba9911..f686257 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/SettingsActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/SettingsActivity.java
+@@ -1,7 +1,7 @@
+ package com.swall.tra;
+ 
+ import android.os.Bundle;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-2-17.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/TRAInfoActivity.java b/client/android/TRA/TRA/src/com/swall/tra/TRAInfoActivity.java
+index 32fda38..2deb3a2 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/TRAInfoActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/TRAInfoActivity.java
+@@ -11,7 +11,7 @@ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ActionListener;
+ import com.swall.tra.network.ServiceManager;
+ import com.swall.tra.utils.JSONUtils;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import org.json.JSONArray;
+ import org.json.JSONException;
+ import org.json.JSONObject;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/TRAResourceListAcitivity.java b/client/android/TRA/TRA/src/com/swall/tra/TRAResourceListAcitivity.java
+index dc41b89..b7541b3 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/TRAResourceListAcitivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/TRAResourceListAcitivity.java
+@@ -11,7 +11,7 @@ import com.swall.tra.adapter.ActivityResourceAdapter;
+ import com.swall.tra.model.ResourceInfo;
+ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ServiceManager;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-1-1.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/VideoCaptureActivity.java b/client/android/TRA/TRA/src/com/swall/tra/VideoCaptureActivity.java
+index 1b41b59..b536130 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/VideoCaptureActivity.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/VideoCaptureActivity.java
+@@ -6,7 +6,7 @@ import android.media.CamcorderProfile;
+ import android.media.MediaRecorder;
+ import android.os.Bundle;
+ import android.view.*;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ import java.io.IOException;
+ 
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivitiesListAdapter.java b/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivitiesListAdapter.java
+index c0235d7..41def17 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivitiesListAdapter.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivitiesListAdapter.java
+@@ -7,7 +7,7 @@ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.BaseAdapter;
+ import android.widget.TextView;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.utils.JSONUtils;
+ import com.swall.tra.BaseFragmentActivity;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivityResourceAdapter.java b/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivityResourceAdapter.java
+index 5c38424..affbae5 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivityResourceAdapter.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/adapter/ActivityResourceAdapter.java
+@@ -13,7 +13,7 @@ import android.view.ViewGroup;
+ import android.widget.BaseAdapter;
+ import android.widget.TextView;
+ import com.android.volley.toolbox.NetworkImageView;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ import com.swall.tra.model.ResourceInfo;
+ import com.swall.tra.model.TRAInfo;
+ import com.swall.tra.network.ActionService;
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/widget/CustomDialog.java b/client/android/TRA/TRA/src/com/swall/tra/widget/CustomDialog.java
+index cb7c43a..7aac2cc 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/widget/CustomDialog.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/widget/CustomDialog.java
+@@ -10,7 +10,7 @@ import android.view.Window;
+ import android.view.WindowManager;
+ import android.widget.TextView;
+ import com.actionbarsherlock.app.ActionBar;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-1-1.
+diff --git a/client/android/TRA/TRA/src/com/swall/tra/widget/UploadResourceProgressDialog.java b/client/android/TRA/TRA/src/com/swall/tra/widget/UploadResourceProgressDialog.java
+index b941582..e806e7b 100644
+--- a/client/android/TRA/TRA/src/com/swall/tra/widget/UploadResourceProgressDialog.java
++++ b/client/android/TRA/TRA/src/com/swall/tra/widget/UploadResourceProgressDialog.java
+@@ -10,7 +10,7 @@ import android.view.WindowManager;
+ import android.widget.EditText;
+ import android.widget.TextView;
+ import com.swall.tra.CurrentTRAActivity;
+-import com.swall.tra_demo.R;
++import com.swall.tra.R;
+ 
+ /**
+  * Created by pxz on 14-1-12.
