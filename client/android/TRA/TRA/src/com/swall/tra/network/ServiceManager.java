@@ -76,8 +76,8 @@ public class ServiceManager {
                     break;
                 case Constants.ENV_TEST:// demo 环境 2041.7.26
                     // http://qzone.codewalle.com/
-                    DATA_URL_PREFIX = "http://swall.codewalle.com/";
-                    FILE_SERVER_URL = "http://qzone.codewalle.com/";
+                    DATA_URL_PREFIX = "http://szone.hylc-edu.cn/";
+                    FILE_SERVER_URL = "http://media.hylc-edu.cn/";
                     break;
                 case Constants.ENV_DEV:
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
