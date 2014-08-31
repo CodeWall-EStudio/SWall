@@ -352,3 +352,6 @@ body{
 #linkPanel iframe{
     border: none;
 }
+.panel-heading{
+    min-height: 40px;
+}

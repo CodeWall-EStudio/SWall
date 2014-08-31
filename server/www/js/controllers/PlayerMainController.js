@@ -8,7 +8,9 @@ angular.module('ap.controllers.main', [
         function($rootScope, $scope, $location, $sce, ActivityService, UserService, UtilsService){
             var aid = $location.search()['aid'],
                 autoRefreshTimeout = 0,
-                player = document.getElementById('player');
+                player = document.getElementById('player'),
+                linkPanel = document.getElementById('linkPanel'),
+                linkPanelIframe = document.getElementById('linkPanelFrame');
 
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
@@ -462,15 +464,12 @@ angular.module('ap.controllers.main', [
 
             $scope.showLinkPanel = function(){
                 $scope.linkPanelVisible = true;
-                var panel = document.getElementById('linkPanel'),
-                    iframe = document.getElementById('linkPanelFrame');
-                if(!iframe.src) {
-                    $(panel).draggable();
-                    iframe.src = $rootScope.activity.info.link;
-                }
+                $(linkPanel).draggable();
+                linkPanelIframe.src = $rootScope.activity.info.link;
             };
             $scope.hideLinkPanel = function(){
                 $scope.linkPanelVisible = false;
+                linkPanelIframe.src = '';
             };
 
 

@@ -27,6 +27,17 @@ module.exports = function(grunt) {
                         port: 27017,
                         username: '""',
                         password: '""'
+                    },
+                    api: {
+                        login: {
+                            host: '"szone.hylc-edu.cn"'
+                        },
+                        cookie: {
+                            host: '".hylc-edu.cn"'
+                        },
+                        uploader: {
+                            domain: '"hylc-edu.cn"'
+                        }
                     }
                 }
             },
@@ -42,12 +53,55 @@ module.exports = function(grunt) {
                         username: '"swall"',
                         password: '"DfvszXKePFtfB9KM"'
                     },
+                    api: {
+                        login: {
+                            host: '"qzone.codewalle.com"'
+                        },
+                        cookie: {
+                            host: '".codewalle.com"'
+                        },
+                        uploader: {
+                            domain: '"codewalle.com"'
+                        }
+                    },
                     //部署路径和服务器
                     home: '/home/swall/SWall',
                     ssh: {
                         host: 'codewalle.com',
                         username: 'root',
                         password: 'uswveYrvGr93wjvA'
+                    }
+                }
+            },
+            //阿里云体验环境
+            'aliyun': {
+                server: {
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"localhost"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        login: {
+                            host: '"szone.hylc-edu.cn"'
+                        },
+                        cookie: {
+                            host: '".hylc-edu.cn"'
+                        },
+                        uploader: {
+                            domain: '"hylc-edu.cn"'
+                        }
+                    },
+                    //部署路径和服务器
+                    home: '/data/public/media',
+                    ssh: {
+                        host: '112.126.66.147',
+                        username: 'root',
+                        password: '2eefc9e3'
                     }
                 }
             },
@@ -165,7 +219,8 @@ module.exports = function(grunt) {
             //替换环境变量 /* grunt|env:xxx */ ... /* end */
             env: {
                 src: [
-                    '<%= CONSTS.SERVER %>**/*.js'
+                    '<%= CONSTS.SERVER %>**/*.js',
+                    '<%= CONSTS.WWW_SOURCE %>js/controllers/MainVideoUploaderController.js'
                 ],
                 overwrite: true,
                 filter: 'isFile',

@@ -846,7 +846,11 @@ app.put('/users/:uid/login', function(req, res){
                     var skey = result.skey,
                         session = decodeURIComponent(result.session),
                         expiresDate = new Date(Date.now() + 3600000*24),
-                        options = {domain:'.codewalle.com', path:'/', expires:expiresDate};
+                        options = {
+                            domain: /* grunt|env:server.api.cookie.host */".hylc-edu.cn"/* end */,
+                            path: '/',
+                            expires: expiresDate
+                        };
                     res.cookie('uid', uid, options);
                     res.cookie('skey', skey, options);
                     res.cookie('connect.sid ', session, options);
