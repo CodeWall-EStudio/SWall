@@ -97,7 +97,8 @@ module.exports = function(grunt) {
                         }
                     },
                     //部署路径和服务器
-                    home: '/data/public/media',
+                    //home: '/data/public/media',
+                    home: '/data/public/media/server/www-dist',
                     ssh: {
                         host: '112.126.66.147',
                         username: 'root',
