@@ -1,4 +1,4 @@
-document.domain = /* grunt|env:server.api.uploader.domain */"hylc-edu.cn"/* end */;
+document.domain = /* grunt|env:server.host */"71xiaoxue.com"/* end */;
 //document.domain = 'codewalle.com';
 
 angular.module('ap.controllers.videoUploader', [

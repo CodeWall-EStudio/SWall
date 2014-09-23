@@ -35,6 +35,12 @@ fi
 
 echo "- Unzipping new server version ..."
 unzip -q -o "$ZIP" -d server
+
+echo "- Updating nodejs packages ..."
+cd server/app
+npm install
+cd ../..
+
 echo "- Restarting server ..."
 forever -a -m 10 start "$SERVER/server/app/server.js"
 echo "- All done :)"

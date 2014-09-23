@@ -11,9 +11,9 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com',     path:'/authenticatio
     VERIFY_ENCODE_KEY_API   = {host:'my.71xiaoxue.com',     path:'/authenticationKey.do'},
     GET_PROFILE_API         = {host:'mapp.71xiaoxue.com',   path:'/components/getUserInfo.htm'},
     GET_ORGANIZATION_TREE   = {host:'mapp.71xiaoxue.com',   path:'/components/getOrgTree.htm'},
-    UC_ORGANIZATION_TREE    = {host:/* grunt|env:server.api.login.host */"szone.hylc-edu.cn"/* end */,  path:'/api/organization/tree'},
-    UC_LOGIN_API            = {host:/* grunt|env:server.api.login.host */"szone.hylc-edu.cn"/* end */,  path:'/api/user/login'},
-    UC_VERIFY_API           = {host:/* grunt|env:server.api.login.host */"szone.hylc-edu.cn"/* end */,  path:'/api/user/validate'};
+    UC_ORGANIZATION_TREE    = {host:/* grunt|env:server.api.login.host */"szone.71xiaoxue.com"/* end */,  path:'/api/organization/tree'},
+    UC_LOGIN_API            = {host:/* grunt|env:server.api.login.host */"szone.71xiaoxue.com"/* end */,  path:'/api/user/login'},
+    UC_VERIFY_API           = {host:/* grunt|env:server.api.login.host */"szone.71xiaoxue.com"/* end */,  path:'/api/user/validate'};
 
 
 function login(username, password, callback){

@@ -19,6 +19,7 @@ module.exports = function(grunt) {
             //localhost
             localhost: {
                 server: {
+                    host: '"hylc-edu.cn"',
                     express: {
                         port: 80
                     },
@@ -31,19 +32,15 @@ module.exports = function(grunt) {
                     api: {
                         login: {
                             host: '"szone.hylc-edu.cn"'
-                        },
-                        cookie: {
-                            host: '".hylc-edu.cn"'
-                        },
-                        uploader: {
-                            domain: '"hylc-edu.cn"'
                         }
                     }
                 }
             },
-            //swall.codewalle.com
+
+            //swall.codewalle.com 測試環境
             'codewalle': {
                 server: {
+                    host: '"codewalle.com"',
                     express: {
                         port: 8090
                     },
@@ -56,12 +53,6 @@ module.exports = function(grunt) {
                     api: {
                         login: {
                             host: '"qzone.codewalle.com"'
-                        },
-                        cookie: {
-                            host: '".codewalle.com"'
-                        },
-                        uploader: {
-                            domain: '"codewalle.com"'
                         }
                     },
                     //部署路径和服务器
@@ -73,9 +64,10 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            //阿里云体验环境
+            //阿里云 体验环境
             'aliyun': {
                 server: {
+                    host: '"hylc-edu.cn"',
                     express: {
                         port: 8090
                     },
@@ -88,21 +80,68 @@ module.exports = function(grunt) {
                     api: {
                         login: {
                             host: '"szone.hylc-edu.cn"'
-                        },
-                        cookie: {
-                            host: '".hylc-edu.cn"'
-                        },
-                        uploader: {
-                            domain: '"hylc-edu.cn"'
                         }
                     },
                     //部署路径和服务器
-                    //home: '/data/public/media',
                     home: '/data/public/media/server/www-dist',
                     ssh: {
                         host: '112.126.66.147',
                         username: 'root',
                         password: '2eefc9e3'
+                    }
+                }
+            },
+
+            //延慶二小
+            'yqex47': {
+                server: {
+                    host: '"71xiaoxue.com"',
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"58.118.161.49"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        login: {
+                            host: '"szone.71xiaoxue.com"'
+                        }
+                    },
+                    //部署路径和服务器
+                    home: '/data/project/Media',
+                    ssh: {
+                        host: '58.118.161.47',
+                        username: 'root',
+                        password: 'yqex123'
+                    }
+                }
+            },
+            'yqex49': {
+                server: {
+                    host: '"71xiaoxue.com"',
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"localhost"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        login: {
+                            host: '"szone.71xiaoxue.com"'
+                        }
+                    },
+                    //部署路径和服务器
+                    home: '/data/project/Media',
+                    ssh: {
+                        host: '58.118.161.49',
+                        username: 'root',
+                        password: 'yqex123'
                     }
                 }
             },
@@ -263,7 +302,7 @@ module.exports = function(grunt) {
             killServer: {   command: 'sudo pkill -9 "node"' },
 
             //打包发布包
-            zipDist: {      command: 'rm -f <%= CONSTS.DEPLOY %>.zip && zip -q -r <%= CONSTS.DEPLOY %> <%= CONSTS.SERVER %> <%= CONSTS.WWW_DIST %>' }
+            zipDist: {      command: 'rm -f <%= CONSTS.DEPLOY %>.zip && zip -q -r <%= CONSTS.DEPLOY %> <%= CONSTS.SERVER %> <%= CONSTS.WWW_DIST %> -x <%= CONSTS.SERVER %>node_modules\\*' }
         },
 
 
@@ -272,7 +311,10 @@ module.exports = function(grunt) {
         sftp: {
             deploy: {
                 files: {
-                    "./": "<%= CONSTS.DEPLOY %>.zip"
+                    "./": [
+                        "deploy.sh", //解壓和更新代碼的腳本
+                        "<%= CONSTS.DEPLOY %>.zip" //發佈包
+                    ]
                 },
                 options: {
                     path: '<%= env.value("server.home") %>',
@@ -287,11 +329,9 @@ module.exports = function(grunt) {
         sshexec: {
             deploy: {
                 command: [
-                    'cd <%= env.value("server.home") %>', //goto home directory
-                    'cp -r server backups/server.<%= grunt.template.today("yyyymmddhhMMss") %>', //backup
-                    'forever stop <%= env.value("server.home") %>/server/app/server.js', //stop server
-                    'unzip -q -o <%= CONSTS.DEPLOY %>.zip -d server', //unzip new version
-                    'forever -a -m 10 start <%= env.value("server.home") %>/server/app/server.js' //restart server
+                    'cd <%= env.value("server.home") %>',
+                    'chmod u+x deploy.sh',
+                    './deploy.sh <%= env.value("server.home") %> <%= CONSTS.DEPLOY %>.zip'
                 ].join(' && '),
                 options: {
                     host: '<%= env.value("server.ssh.host") %>',
