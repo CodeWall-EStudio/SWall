@@ -1,7 +1,7 @@
 var mongodb = require('mongodb');
 
 
-var HOST        = /* grunt|env:server.mongodb.host */"58.118.161.49"/* end */, //正式環境：'192.168.98.59'
+var HOST        = /* grunt|env:server.mongodb.host */"localhost"/* end */, //正式環境：'192.168.98.59'
     PORT        = /* grunt|env:server.mongodb.port */27017/* end */,
     USERNAME    = /* grunt|env:server.mongodb.username */""/* end */,
     PASSWORD    = /* grunt|env:server.mongodb.password */""/* end */,

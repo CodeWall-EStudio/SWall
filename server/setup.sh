@@ -33,9 +33,8 @@ if [[ "${args[*]}" != *"-n"* ]]; then
     make
     make install
     cd ..
-
-    npm install -g forever
 fi
+npm install -g forever
 
 #install mongodb
 if [[ "${args[*]}" != *"-m"* ]]; then

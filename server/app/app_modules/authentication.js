@@ -19,41 +19,6 @@ var GET_ENCODE_KEY_API      = {host:'my.71xiaoxue.com',     path:'/authenticatio
 function login(username, password, callback){
     console.log('[login] username=' + username + ', pwd=' + password);
     if(username && password){
-        /*callback(null, 200, {
-            uid: username,
-            skey: '----------',
-            nick: username
-        });*/
-
-        /*post(
-            GET_ENCODE_KEY_API,
-            'loginName=' + username + '&password=' + password,
-            function(data, res){
-                try{
-                    var json = JSON.parse(data);
-                    if(json && json['success'] && json['resultObject']){
-                        var obj = json['resultObject'] || {},
-                            nick = obj['userName'],
-                            encodeKey = obj['encodeKey'];
-                        callback(null, res.statusCode, {
-                            uid: username,
-                            skey: encodeKey,
-                            nick: nick
-                        });
-                    }
-                    else {
-                        callback(null, res.statusCode);
-                    }
-                }
-                catch(e){
-                    callback(e);
-                }
-            },
-            function(e){
-                callback(e);
-            }
-        )*/
-
         //小龙提供的用户中心登录接口
         post(
             UC_LOGIN_API,
@@ -61,6 +26,7 @@ function login(username, password, callback){
             null,
             function(data, res){
                 try {
+                    console.log('[login] json =', data);
                     var json = JSON.parse(data);
                     if(json && !json['err'] && json['result']){
                         var cookies = res.headers['set-cookie'].join('; '),
@@ -70,23 +36,28 @@ function login(username, password, callback){
                             skey = (mSkey && mSkey[1]) ? mSkey[1] : '',
                             session = (mSession && mSession[1]) ? mSession[1] : '',
                             //从响应内容里读取昵称
-                            nick = json['result']['nick'];
-                        callback(null, res.statusCode, {
-                            uid: username,
-                            nick: nick,
-                            skey: skey,
-                            session: session
-                        });
+                            nick = json['result']['nick'],
+                            result = {
+                                uid: username,
+                                nick: nick,
+                                skey: skey,
+                                session: session
+                            };
+                        console.log('[login] result =', result);
+                        callback(null, res.statusCode, result);
                     }
                     else {
+                        console.error('[login] response error ' + res.statusCode);
                         callback(null, res.statusCode);
                     }
                 }
                 catch(e){
+                    console.error('[login] logic error', e);
                     callback(e);
                 }
             },
             function(e){
+                console.error('[login] post error', e);
                 callback(e);
             }
         );
@@ -104,29 +75,6 @@ function login(username, password, callback){
 function verifyKeys(req, callback){
     var skey = req.cookies['skey'],
         session = req.cookies['connect.sid'];
-
-    //callback(null, 200, {loginName:'tangqihong'});
-
-    /*if(encodeKey){
-        post(
-            GET_PROFILE_API,
-            'encodeKey='+encodeKey,
-            function (data, res) {
-                try{
-                    var json = JSON.parse(data);
-                    callback(null, res.statusCode, json['userInfo']);
-                }
-                catch(e){
-                    callback(e);
-                }
-            },
-            function(e) {
-                callback(e);
-            }
-        );
-    }
-    else callback(new Error('Invalid EncodeKey'));*/
-
     if(skey && session){
         request(
             'GET',
@@ -157,12 +105,6 @@ function verifyKeys(req, callback){
  */
 function response401IfUnauthoirzed(req, res, callback){
     verifyKeys(req, function(error, statusCode, json){
-        /*if(error || statusCode!=200 || !userInfo || !userInfo['loginName']){
-            res.json(401, {c:10, m:'Unauthoirzed'});
-        }
-        else {
-            callback(userInfo);
-        }*/
         console.log('error:', error);
         console.log('status:', statusCode);
         console.log('json:', json);
@@ -284,28 +226,28 @@ function request(method, api, body, cookies, onData, onError){
             return key + '=' + value;
         }).join('; ');
     }
-    console.log('cookie:', cookieHeader);
-    var options = {
-        hostname: api.host,
-        path: api.path,
-        port: 80,
-        method: method,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': body.length,
-            'Cookie': cookieHeader
-        }
-    };
-    var req = http.request(options, function(res) {
-        var responseText = '';
-        res.setEncoding('utf8');
-        res.on('data', function(chunk){
-            responseText += chunk;
+    var hostAndPort = api.host.split(':'),
+        options = {
+            hostname: hostAndPort[0],
+            path: api.path,
+            port: parseInt(hostAndPort[1]) || 80,
+            method: method,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Length': body.length,
+                'Cookie': cookieHeader
+            }
+        },
+        req = http.request(options, function(res) {
+            var responseText = '';
+            res.setEncoding('utf8');
+            res.on('data', function(chunk){
+                responseText += chunk;
+            });
+            res.on('end', function(){
+                onData(responseText, res);
+            });
         });
-        res.on('end', function(){
-            onData(responseText, res);
-        });
-    });
     req.on('error', onError);
     req.write(body);
     req.end();
