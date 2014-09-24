@@ -1,5 +1,4 @@
 document.domain = /* grunt|env:server.host */"71xiaoxue.com"/* end */;
-//document.domain = 'codewalle.com';
 
 angular.module('ap.controllers.videoUploader', [
         'ts.services.activity',
@@ -10,6 +9,7 @@ angular.module('ap.controllers.videoUploader', [
         function($rootScope, $scope, $location, ActivityService, UserService, UtilsService)
         {
             var mainVideoInput = document.getElementById('mainVideoFile');
+            var apiHost = /* grunt|env:server.api.uploader.host */"szone.71xiaoxue.com"/* end */;
 
             $scope.skey = UtilsService.cookie.get('skey');
 
@@ -80,7 +80,7 @@ angular.module('ap.controllers.videoUploader', [
                     //构造请求
                     var form = new FormData(),
                         xhr = new XMLHttpRequest(),
-                        api = 'http://qzone.codewalle.com/upload';
+                        api = 'http://' + apiHost + '/upload';
                     //带上skey & session
                     form.append('skey', UtilsService.cookie.get('skey'));
                     form.append('connect.sid', UtilsService.cookie.get('connect.sid'));
@@ -138,7 +138,7 @@ angular.module('ap.controllers.videoUploader', [
                     alert('上传视频失败，请输入有效的视频名字');
                 }
                 else {
-                    $scope.videoURL = 'http://qzone.codewalle.com/api/file/download?fileId=' + fileID;
+                    $scope.videoURL = 'http://' + apiHost + '/api/file/download?fileId=' + fileID;
 
                     var aid = $location.search()['aid'],
                         form = new FormData(),

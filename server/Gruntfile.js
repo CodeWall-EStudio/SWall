@@ -18,6 +18,9 @@ module.exports = function(grunt) {
         env: {
             //localhost
             localhost: {
+                www: {
+                    img: { logo: '<img src="img/logo2.png">' }
+                },
                 server: {
                     host: '"hylc-edu.cn"',
                     express: {
@@ -30,15 +33,17 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {
-                            host: '"szone.hylc-edu.cn"'
-                        }
+                        login: {    host: '"szone.hylc-edu.cn"' },
+                        uploader: { host: '"szone.hylc-edu.cn"' }
                     }
                 }
             },
 
             //swall.codewalle.com 測試環境
             'codewalle': {
+                www: {
+                    img: { logo: '<img src="img/logo2.png">' }
+                },
                 server: {
                     host: '"codewalle.com"',
                     express: {
@@ -51,9 +56,8 @@ module.exports = function(grunt) {
                         password: '"DfvszXKePFtfB9KM"'
                     },
                     api: {
-                        login: {
-                            host: '"qzone.codewalle.com"'
-                        }
+                        login: {    host: '"qzone.codewalle.com"'   },
+                        uploader: { host: '"qzone.codewalle.com"'   }
                     },
                     //部署路径和服务器
                     home: '/home/swall/SWall',
@@ -66,6 +70,9 @@ module.exports = function(grunt) {
             },
             //阿里云 体验环境
             'aliyun': {
+                www: {
+                    img: { logo: '<img src="img/logo3.png">' }
+                },
                 server: {
                     host: '"hylc-edu.cn"',
                     express: {
@@ -78,9 +85,8 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {
-                            host: '"szone.hylc-edu.cn"'
-                        }
+                        login: {    host: '"szone.hylc-edu.cn"' },
+                        uploader: { host: '"szone.hylc-edu.cn"' }
                     },
                     //部署路径和服务器
                     home: '/data/public/media/server/www-dist',
@@ -94,6 +100,9 @@ module.exports = function(grunt) {
 
             //延慶二小
             'yqex47': {
+                www: {
+                    img: { logo: '<img src="img/logo_yqex.png">' }
+                },
                 server: {
                     host: '"71xiaoxue.com"',
                     express: {
@@ -106,9 +115,8 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {
-                            host: '"szone.71xiaoxue.com"'
-                        }
+                        login: {    host: '"localhost:8091"'        },
+                        uploader: { host: '"szone.71xiaoxue.com"'   }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
@@ -120,6 +128,9 @@ module.exports = function(grunt) {
                 }
             },
             'yqex49': {
+                www: {
+                    img: { logo: '<img src="img/logo_yqex.png">' }
+                },
                 server: {
                     host: '"71xiaoxue.com"',
                     express: {
@@ -132,9 +143,8 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {
-                            host: '"szone.71xiaoxue.com"'
-                        }
+                        login: {    host: '"localhost:8091"'        },
+                        uploader: { host: '"szone.71xiaoxue.com"'   }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
@@ -256,19 +266,22 @@ module.exports = function(grunt) {
 
         //替换模版内容
         replace: {
-            //替换环境变量 /* grunt|env:xxx */ ... /* end */
+            //替换环境变量，支持兩種格式：
+            // /* grunt|env:xxx */ ... /* end */
+            // <!-- grunt|env:xxx --> ... <!-- end -->
             env: {
                 src: [
                     '<%= CONSTS.SERVER %>**/*.js',
+                    '<%= CONSTS.WWW_SOURCE %>*.html',
                     '<%= CONSTS.WWW_SOURCE %>js/controllers/MainVideoUploaderController.js'
                 ],
                 overwrite: true,
                 filter: 'isFile',
                 replacements: [{
-                    from: /(\/\* grunt\|env:(.+?) \*\/)(.*?)(\/\* end \*\/)/g,
+                    from: /((\/\*|\<\!--) grunt\|env:(.+?) (\*\/|--\>))(.*?)((\/\*|\<\!--) end (\*\/|--\>))/g,
                     to: function(matchedWord, pos, fullContent, matches){
                         var env = grunt.option('env') || 'localhost';
-                        return matches[0] + '<%= env.' + env + '.' + matches[1] + ' %>' + matches[3];
+                        return matches[0] + '<%= env.' + env + '.' + matches[2] + ' %>' + matches[5];
                     }
                 }]
             },
@@ -388,7 +401,7 @@ module.exports = function(grunt) {
         }
         else {
             grunt.task.run([
-                //编译前端，更新环境变量，打包发布包
+                //编译前端，替換文件里的环境变量，打包发布包
                 'default',
                 'replace:env',
                 'shell:zipDist',
