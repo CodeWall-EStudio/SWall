@@ -156,6 +156,36 @@ module.exports = function(grunt) {
                 }
             },
 
+            //永定二小
+            'ydex': {
+                www: {
+                    img: { logo: '<img src="img/logo_yqex.png">' }
+                },
+                server: {
+                    host: '"71xiaoxue.com"',
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"localhost"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        login: {    host: '"localhost:8091"'        },
+                        uploader: { host: '"szone.71xiaoxue.com"'   }
+                    },
+                    //部署路径和服务器
+                    home: '/data/project/Media',
+                    ssh: {
+                        host: '58.117.151.6',
+                        username: 'root',
+                        password: '69802847'
+                    }
+                }
+            },
+
             //helpers
             //获取当前环境
             env: function(){
