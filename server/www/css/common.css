@@ -33,16 +33,21 @@ a{
 
 #topNavBar{
     border: none;
-    background-color: rgb(36, 74, 134);
+    background-color: /* grunt|env:www.theme.nav.bg[0] */#fff/* end */;
     box-shadow: 0 0 10px rgba(0,0,0,0.8);
 }
 #topNavBar .navbar-brand{
     color: #FFF;
 }
+#topNavBar .navbar-header{
+    font-size: 22px;
+    color: /* grunt|env:www.theme.nav.text[0] */rgb(32,66,121)/* end */;
+    margin-right: 10px;
+}
 #topNavBar li > a{
-    color: rgb(180,201,221);
+    color: /* grunt|env:www.theme.nav.text[0] */rgb(32,66,121)/* end */;
 }
 #topNavBar li.active > a{
-    color: #fff;
-    background-color: rgb(32,66,121);
+    color: /* grunt|env:www.theme.nav.text[1] */#fff/* end */;
+    background-color: /* grunt|env:www.theme.nav.bg[1] */rgb(32,66,121)/* end */;
 }

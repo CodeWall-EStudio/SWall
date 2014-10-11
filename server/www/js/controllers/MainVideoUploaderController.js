@@ -1,4 +1,4 @@
-document.domain = /* grunt|env:server.host */"71xiaoxue.com"/* end */;
+document.domain = /* grunt|env:server.host */"hylc-edu.cn"/* end */;
 
 angular.module('ap.controllers.videoUploader', [
         'ts.services.activity',
@@ -9,7 +9,7 @@ angular.module('ap.controllers.videoUploader', [
         function($rootScope, $scope, $location, ActivityService, UserService, UtilsService)
         {
             var mainVideoInput = document.getElementById('mainVideoFile');
-            var apiHost = /* grunt|env:server.api.uploader.host */"szone.71xiaoxue.com"/* end */;
+            var apiHost = /* grunt|env:server.api.uploader.host */"ydszone.hylc-edu.cn"/* end */;
 
             $scope.skey = UtilsService.cookie.get('skey');
 

@@ -847,7 +847,7 @@ app.put('/users/:uid/login', function(req, res){
                         session = decodeURIComponent(result.session),
                         expiresDate = new Date(Date.now() + 3600000*24),
                         options = {
-                            domain: "." + /* grunt|env:server.host */"71xiaoxue.com"/* end */,
+                            domain: "." + /* grunt|env:server.host */"hylc-edu.cn"/* end */,
                             path: '/',
                             expires: expiresDate
                         };

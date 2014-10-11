@@ -12,6 +12,8 @@ angular.module('ap.controllers.main', [
                 linkPanel = document.getElementById('linkPanel'),
                 linkPanelIframe = document.getElementById('linkPanelFrame');
 
+            $rootScope.apiHost = /* grunt|env:server.api.uploader.host */"ydszone.hylc-edu.cn"/* end */;
+
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;
             $rootScope.uploadedUsers = []; //上傳過資源的用戶
@@ -551,7 +553,7 @@ angular.module('ap.controllers.main', [
                     }
 
                     //单独过滤出图片和视频这些可以预览大图的资源，用来做上下翻页
-                    if(r.type == 1 || r.type == 2){
+                    if(r.type == 1 || r.type == 4 || r.type == 2){
                         $rootScope.presources.splice(0, 0, r);
                     }
 

@@ -3,8 +3,7 @@
 2. 安装依赖包：npm install
 
 #如何初始化服务器
-在服务器上执行 setup.sh 脚本来安装NodeJS、MongoDB、Redis
-可以通过参数来禁止安装部分组件，具体见 ./setup.sh -h
+在服务器上执行 setup.sh 脚本来安装NodeJS、MongoDB、Redis，可以通过参数来禁止安装部分组件，具体见 ./setup.sh -h
 
 #如何编译项目（本地调试使用）
 grunt

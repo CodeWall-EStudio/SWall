@@ -21,7 +21,8 @@
     <div id="topNavBar" class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <!-- grunt|env:www.img.logo --><img src="img/logo_yqex.png"><!-- end -->
+                <!-- grunt|env:www.img.logo --><img src="img/logo_ydex.png"><!-- end -->
+                <!-- grunt|env:www.title -->北京第二实验小学永定分校<!-- end -->
             </div>
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
@@ -141,13 +142,21 @@
                          ng-click="showResourceDetail(resource, $groupIndex, $resourceIndex)"
                          ng-class="{highlight: highlightResource.g==$groupIndex && highlightResource.r==$resourceIndex}"
                          ng-switch on="resource.type">
+
+                        <!--onload="onImgLoad(event)"-->
+                        <!-- type=1：图片完整url，type=4：图片ID-->
                         <div class="thumb imageThumb" ng-switch-when="1">
-                            <img ng-src="{{resource.content}}"><!--onload="onImgLoad(event)"-->
+                            <img ng-src="{{resource.content}}">
                         </div>
+                        <div class="thumb imageThumb" ng-switch-when="4">
+                            <img ng-src="http://{{apiHost}}/api/media/download?fileId={{resource.content}}">
+                        </div>
+
                         <div class="thumb videoThumb" ng-switch-when="2"></div>
                         <div class="content">
                             <span ng-switch-when="0">文字</span>
                             <span ng-switch-when="1">图片</span>
+                            <span ng-switch-when="4">图片</span>
                             <span ng-switch-when="2">视频</span>
                             <span ng-switch-when="3">音频</span>
                             <span>{{uid2nick(resource.user)}}</span>
@@ -325,12 +334,16 @@
                     <div ng-switch-when="1" class="image">
                         <img ng-src="{{selectedResource.content}}">
                     </div>
+                    <div ng-switch-when="4" class="image">
+                        <img ng-src="http://{{apiHost}}/api/media/download?fileId={{selectedResource.content}}">
+                    </div>
                     <div ng-switch-when="2" class="video">
                         <video autoplay controls id="videoPlayer"></video>
                     </div>
                     <div>
                         <span ng-switch-when="0">文字</span>
                         <span ng-switch-when="1">图片</span>
+                        <span ng-switch-when="4">图片</span>
                         <span ng-switch-when="2">视频</span>
                         <span>{{uid2nick(selectedResource.user)}}</span>
                     </div>
@@ -470,8 +483,8 @@
     <script src="lib/amcharts/serial.js"></script>
     <script src="lib/amcharts/themes/light.js"></script>
 
-    <!-- grunt:activityPlay.min.js -->
-    <script src="js/activityPlay.min.js?20140402001"></script>
+    <!-- grunt|minjs:activityPlay.min.js -->
+    <script src="js/activityPlay.min.js"></script>
     <!-- end -->
 </body>
 </html>

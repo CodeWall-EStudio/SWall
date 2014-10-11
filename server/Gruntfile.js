@@ -19,7 +19,15 @@ module.exports = function(grunt) {
             //localhost
             localhost: {
                 www: {
-                    img: { logo: '<img src="img/logo2.png">' }
+                    img: {
+                        logo: '<img src="img/logo2.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['rgb(36,74,134)', 'rgb(32,66,121)'],
+                            text: ['rgb(180,201,221)', '#fff']
+                        }
+                    }
                 },
                 server: {
                     host: '"hylc-edu.cn"',
@@ -42,7 +50,15 @@ module.exports = function(grunt) {
             //swall.codewalle.com 測試環境
             'codewalle': {
                 www: {
-                    img: { logo: '<img src="img/logo2.png">' }
+                    img: {
+                        logo: '<img src="img/logo2.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['rgb(36,74,134)', 'rgb(32,66,121)'],
+                            text: ['rgb(180,201,221)', '#fff']
+                        }
+                    }
                 },
                 server: {
                     host: '"codewalle.com"',
@@ -71,7 +87,15 @@ module.exports = function(grunt) {
             //阿里云 体验环境
             'aliyun': {
                 www: {
-                    img: { logo: '<img src="img/logo3.png">' }
+                    img: {
+                        logo: '<img src="img/logo3.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['rgb(36,74,134)', 'rgb(32,66,121)'],
+                            text: ['rgb(180,201,221)', '#fff']
+                        }
+                    }
                 },
                 server: {
                     host: '"hylc-edu.cn"',
@@ -101,7 +125,15 @@ module.exports = function(grunt) {
             //延慶二小
             'yqex47': {
                 www: {
-                    img: { logo: '<img src="img/logo_yqex.png">' }
+                    img: {
+                        logo: '<img src="img/logo_yqex.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['rgb(36,74,134)', 'rgb(32,66,121)'],
+                            text: ['rgb(180,201,221)', '#fff']
+                        }
+                    }
                 },
                 server: {
                     host: '"71xiaoxue.com"',
@@ -129,7 +161,15 @@ module.exports = function(grunt) {
             },
             'yqex49': {
                 www: {
-                    img: { logo: '<img src="img/logo_yqex.png">' }
+                    img: {
+                        logo: '<img src="img/logo_yqex.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['rgb(36,74,134)', 'rgb(32,66,121)'],
+                            text: ['rgb(180,201,221)', '#fff']
+                        }
+                    }
                 },
                 server: {
                     host: '"71xiaoxue.com"',
@@ -159,10 +199,19 @@ module.exports = function(grunt) {
             //永定二小
             'ydex': {
                 www: {
-                    img: { logo: '<img src="img/logo_yqex.png">' }
+                    title: '北京第二实验小学永定分校',
+                    img: {
+                        logo: '<img src="img/logo_ydex.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['#fff', 'rgb(32,66,121)'],
+                            text: ['rgb(32,66,121)', '#fff']
+                        }
+                    }
                 },
                 server: {
-                    host: '"71xiaoxue.com"',
+                    host: '"hylc-edu.cn"',
                     express: {
                         port: 8090
                     },
@@ -174,14 +223,14 @@ module.exports = function(grunt) {
                     },
                     api: {
                         login: {    host: '"localhost:8091"'        },
-                        uploader: { host: '"szone.71xiaoxue.com"'   }
+                        uploader: { host: '"ydszone.hylc-edu.cn"'   }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
                     ssh: {
                         host: '58.117.151.6',
                         username: 'root',
-                        password: '69802847'
+                        password: '71@xiaoxue'
                     }
                 }
             },
@@ -303,6 +352,8 @@ module.exports = function(grunt) {
                 src: [
                     '<%= CONSTS.SERVER %>**/*.js',
                     '<%= CONSTS.WWW_SOURCE %>*.html',
+                    '<%= CONSTS.WWW_SOURCE %>css/*.css',
+                    '<%= CONSTS.WWW_SOURCE %>js/controllers/PlayerMainController.js',
                     '<%= CONSTS.WWW_SOURCE %>js/controllers/MainVideoUploaderController.js'
                 ],
                 overwrite: true,
@@ -411,7 +462,7 @@ module.exports = function(grunt) {
 
 
     //默认任务：重新编译整个前端项目
-    grunt.registerTask('default', ['clean:build', 'uglify', 'cssmin', 'copy', 'replace:minjs', 'htmlmin']);
+    grunt.registerTask('default', ['clean:build', 'uglify', 'cssmin', 'copy', 'replace:env', 'replace:minjs', 'htmlmin']);
 
 
     //本地的后台服务任务
@@ -433,7 +484,6 @@ module.exports = function(grunt) {
             grunt.task.run([
                 //编译前端，替換文件里的环境变量，打包发布包
                 'default',
-                'replace:env',
                 'shell:zipDist',
 
                 //部署发布包到对应的环境并重启服务
