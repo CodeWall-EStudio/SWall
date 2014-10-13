@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.widget.RelativeLayout;
+import com.codewalle.tra.utils.Utils;
 
 import java.lang.ref.WeakReference;
 
@@ -39,16 +40,21 @@ public class IMERelativeLayout extends RelativeLayout {
         if(mOnSizeChangedListennerRef == null) return;
         onSizeChangedListenner onSizeChangedListenner = mOnSizeChangedListennerRef.get();
         if (onSizeChangedListenner != null) {
-            //只强制竖屏
+            boolean oldOpenStatus = isOpen;
             if(w == oldw && oldw != 0 && oldh != 0){
-                if (h < oldh && Math.abs(h-oldh) > 50) {
-                    isOpen = true;
-                } else if (h > oldh && Math.abs(h-oldh) > 50) {
+                if (h < oldh){
+                    if(Math.abs(h-screenHeight) > Utils.dp2px(150, getResources())){
+                        isOpen = true;
+                    }else{
+                        isOpen = false;
+                    }
+                }else if(Math.abs(h-oldh) > Utils.dp2px(150, getResources())){
+                    // 如果高度变大，并且变化大于一定的数值，则认为键盘已弹回
                     isOpen = false;
-                } else {
-                    return;
+                }else{
+                    // 否则键盘状态未变
                 }
-                onSizeChangedListenner.onSizeChange(isOpen, oldh, h);
+                onSizeChangedListenner.onSizeChange(isOpen,oldOpenStatus!=isOpen, oldh, h);
                 measure(widthMeasureSpec-w+getWidth(), heightMeasureSpec-h+getHeight());
             }
         }
@@ -62,7 +68,7 @@ public class IMERelativeLayout extends RelativeLayout {
     }
 
     public interface onSizeChangedListenner{
-        void onSizeChange(boolean isOpen, int preH, int curH);
+        void onSizeChange(boolean isOpen, boolean changed,int preH, int curH);
     }
 
     public void setOnSizeChangedListenner(onSizeChangedListenner l){

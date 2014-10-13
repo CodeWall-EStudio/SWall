@@ -100,7 +100,8 @@ public class LoginActivity extends BaseActivity implements IMERelativeLayout.onS
     }
 
     @Override
-    public void onSizeChange(boolean isOpen, int preH, int curH) {
+    public void onSizeChange(boolean isOpen, boolean changed,int preH, int curH) {
+        if(!changed)return;
         if(isOpen){
             mSchoolNameView.setImageResource(R.drawable.login_top_image_inputing);
         }else{
