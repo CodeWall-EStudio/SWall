@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Test" default="replace71">
+
+
+    <!-- java code  replace regexps -->
+    <property name="replaceBegin_prefix" value="\/\*C_BEGIN_"/>
+    <property name="replaceEnd" value="&quot;\/\*C_END\*\/" />
+    <property name="replaceBegin_postfix" value="\*\/&quot;" />
+
+    <property name="replaceLoginUrl" value="LOGIN_URL" />
+    <property name="replaceDataUrl" value="DATA_URL" />
+    <property name="replaceFSUrl" value="FS_URL" />
+    <property name="replaceloginmethod" value="LOGIN_METHOD" />
+    <property name="replaceloginurlsource" value="C_BEGIN_LOGIN_URL_SOURCE" />
+    <!-- end of replace regexps  -->
+
+
+    <target name="replace71">
+        <antcall target="replace">
+            <param name="loginurl" value="http://my.71xiaoxue.com/authenticationUser.do" />
+            <param name="dataurl" value="http://media.71xiaoxue.com/" />
+            <param name="fsurl" value="http://szone.71xiaoxue.com/" />
+            <param name="loginmethod" value="POST" />
+            <param name="resourceDir" value="../71xiaoxue/" />
+            <param name="loginSource" value="" />
+        </antcall>
+    </target>
+    <target name="replace">
+        <echo>====replacing java code===</echo>
+        <echo>replace login url</echo>
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="${replaceBegin_prefix}${replaceLoginUrl}${replaceBegin_postfix}(.+)${replaceEnd}"
+                       flags="g"
+                       replace="${replaceBegin_prefix}${replaceLoginUrl}${replaceBegin_postfix}${loginurl}${replaceEnd}"
+                       byline="true"
+                       encoding="UTF-8"
+                >
+            <!--<fileset dir="src/">-->
+            <!--<include name="**/*.java"/>-->
+            <!--</fileset>-->
+        </replaceregexp>
+        <echo>replace data url</echo>
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="${replaceBegin_prefix}${replaceDataUrl}${replaceBegin_postfix}(.+)${replaceEnd}"
+                       flags="g"
+                       replace="${replaceBegin_prefix}${replaceDataUrl}${replaceBegin_postfix}${dataurl}${replaceEnd}"
+                       byline="true"
+                       encoding="UTF-8"
+                >
+            <!--<fileset dir="src/">-->
+            <!--<include name="**/*.java"/>-->
+            <!--</fileset>-->
+        </replaceregexp>
+        <echo>replace media url</echo>
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="${replaceBegin_prefix}${replaceFSUrl}${replaceBegin_postfix}(.+)${replaceEnd}"
+                       flags="g"
+                       replace="${replaceBegin_prefix}${replaceFSUrl}${replaceBegin_postfix}${fsurl}${replaceEnd}"
+                       byline="true"
+                       encoding="UTF-8"
+                >
+            <!--<fileset dir="src/">-->
+            <!--<include name="**/*.java"/>-->
+            <!--</fileset>-->
+        </replaceregexp>
+        <echo>replace login method</echo>
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="${replaceBegin_prefix}${loginmethod}${replaceBegin_postfix}(.+)${replaceEnd}"
+                       flags="g"
+                       replace="${replaceBegin_prefix}${loginmethod}${replaceBegin_postfix}${loginmethod}${replaceEnd}"
+                       byline="true"
+                       encoding="UTF-8"
+                >
+            <!--<fileset dir="src/">-->
+            <!--<include name="**/*.java"/>-->
+            <!--</fileset>-->
+        </replaceregexp>
+        <echo>replac java code end</echo>
+        <echo>====replacing image files===</echo>
+        <copy todir="res/drawable-hdpi" overwrite="true">
+            <fileset dir="${resourceDir}/drawable-hdpi">
+                <include name="*.png"/>
+            </fileset>
+        </copy>
+        <copy todir="res/drawable-xhdpi" overwrite="true">
+            <fileset dir="${resourceDir}/drawable-xhdpi">
+                <include name="*.png,*.xml"/>
+            </fileset>
+        </copy>
+
+
+    </target>
+</project>

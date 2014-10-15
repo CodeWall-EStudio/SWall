@@ -49,6 +49,11 @@ public class LoginActivity extends BaseActivity implements IMERelativeLayout.onS
 
 
     @AfterViews
+    void test(){
+        loginButton();
+    }
+
+    @AfterViews
     public void setupBackgroud(){
         mRoot.setBackgroundColor(app.getBgColor());
     }
@@ -71,7 +76,7 @@ public class LoginActivity extends BaseActivity implements IMERelativeLayout.onS
         String password = mPassword.getText().toString();
 
         updateState(LoginState.REQUESTING);
-        app.doLogin(this, username, password, this);
+        app.doLogin( username, password, this);
     }
 
 
@@ -100,8 +105,7 @@ public class LoginActivity extends BaseActivity implements IMERelativeLayout.onS
     }
 
     @Override
-    public void onSizeChange(boolean isOpen, boolean changed,int preH, int curH) {
-        if(!changed)return;
+    public void onSizeChange(boolean isOpen, int preH, int curH) {
         if(isOpen){
             mSchoolNameView.setImageResource(R.drawable.login_top_image_inputing);
         }else{
@@ -118,7 +122,7 @@ public class LoginActivity extends BaseActivity implements IMERelativeLayout.onS
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
-        if(e != null){
+        if(e != null || result == null){
             updateState(LoginState.FAIL);
             // TODO network problem?
             Log.e(TAG,e.getMessage(),e );

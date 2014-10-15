@@ -12,20 +12,28 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
-import com.codewalle.tra.Model.AccountInfo;
-import com.codewalle.tra.Model.TRAApp;
+import com.codewalle.tra.Model.*;
 import com.codewalle.tra.utils.TRAResponseParser;
 import com.codewalle.tra.utils.Constants;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.DataEmitter;
 import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpRequest;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Loader;
+import com.koushikdutta.ion.bitmap.BitmapInfo;
+import com.koushikdutta.ion.cookie.CookieMiddleware;
 import com.koushikdutta.ion.future.ResponseFuture;
 import com.umeng.analytics.MobclickAgent;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.HttpCookie;
 import java.util.*;
 
 /**
@@ -49,7 +57,8 @@ public class TRAApplication extends Application implements TRAApp{
     public static final String KEY_LOGIN_TIME = "login_time";
     public static final String KEY_SESION_ID = "session";
     private static Context mContext;
-
+    private AccountInfo mAccount;
+    private String mCookieString;
 
 
     private boolean isNetworkConnected() {
@@ -151,6 +160,11 @@ public class TRAApplication extends Application implements TRAApp{
         super.onCreate();
         app = this;
 
+        Ion.Config config = Ion.getDefault(this).configure();
+        config.proxy("192.168.56.1", 8889);
+        config.setLogging("Ion", Log.DEBUG);
+
+
         Bitmap bitmap = ((BitmapDrawable)(getResources().getDrawable(R.drawable.login_top_image_normal))).getBitmap();
         bgColor = 0xffffffff;
         try{
@@ -173,11 +187,27 @@ public class TRAApplication extends Application implements TRAApp{
 
     @Override
     public AccountInfo getCachedAccount() {
-        return null;
+        return mAccount;
     }
 
     @Override
     public void cacheAccount(AccountInfo account) {
+        this.mAccount = account;
+        // save to preference
+
+        // save cookie
+        String cookieString = "";
+        CookieMiddleware cookieMiddleware = Ion.getDefault(this).getCookieMiddleware();
+        List<HttpCookie> cookies = cookieMiddleware.getCookieStore().getCookies();
+        if(cookies != null && !cookies.isEmpty()){
+            StringBuilder sb = new StringBuilder(cookies.size()*4);
+            for(HttpCookie cookie : cookies){
+                sb.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
+            }
+            cookieString = sb.toString();
+        }
+        Log.i("AAA-cookie:",cookieString);
+        mCookieString = cookieString;
     }
 
     @Override
@@ -200,18 +230,147 @@ public class TRAApplication extends Application implements TRAApp{
 
 
     @Override
-    public Future doLogin(Context context, String username, String password, FutureCallback callback) {
-        return Ion.with(context)
-            .load(Constants.VALUES.LOGIN_METHOD,Constants.getLoginUrl(username,password))
-            .proxy("10.66.93.34",8889)
+    public Future doLogin( String username, String password, FutureCallback callback) {
+        return Ion.with(this)
+
+            .load(Constants.VALUES.LOGIN_METHOD, Constants.getLoginUrl(username, password))
+//            .proxy("10.66.93.34",8889)
+
             .setBodyParameter("name", username)
             .setBodyParameter("pwd",password)
             .setBodyParameter("json","true")
             .setBodyParameter("loginName",username)
             .setBodyParameter("password",password)
             .asString()
-
             .setCallback(callback);
+    }
+
+    @Override
+    public java.util.concurrent.Future getJoinedActivityInfo(FutureCallback callback) {
+        return Ion.with(this)
+                .load(Constants.getActivityListUrl(mAccount.userName,true,true,0))
+                .setHeader("Cookie",getCookies())
+                .asJsonObject()
+                .setCallback(callback);
+    }
+
+    private String getCookies() {
+        return mCookieString;
+    }
+
+    @Override
+    public java.util.concurrent.Future getActivityInfo(String activityId, FutureCallback callback) {
+        return null;
+    }
+
+
+    @Override
+    public java.util.concurrent.Future getTRAList(boolean expired, FutureCallback callback) {
+        return Ion.with(this)
+                .load(Constants.getActivityListUrl(mAccount.userName, expired, false, 0))
+//                .setHeader("Cookie",getCookies())
+                .asJsonObject()
+                .setCallback(callback);
+    }
+
+
+    @Override
+    public java.util.concurrent.Future joinActivity(String activityId, FutureCallback callback) {
+        return Ion.with(this)
+                .load("POST",Constants.getJoinUrl(mAccount.userName, activityId))
+
+//                .setHeader("Cookie",getCookies())
+                .asJsonObject()
+                .setCallback(callback);
+    }
+
+    @Override
+    public Future quitActivity(String activityId, FutureCallback callback) {
+        return Ion.with(this)
+                .load("DELETE",Constants.getQuitUrl(mAccount.userName, activityId))
+
+//                .setHeader("Cookie",getCookies())
+                .asJsonObject()
+                .setCallback(callback);
+    }
+
+    @Override
+    public Future postComment(TRAInfo info, ActivityComment comment, FutureCallback callback) {
+        switch (comment.getType()){
+            case TEXT:
+            {
+                ActivityTextComment comment1 = (ActivityTextComment)comment;
+                return _postComment(ActivityComment.CommentType.TEXT,info.id,comment1.text,"",callback);
+            }
+            case IMAGE:
+            {
+                ActivityImageComment comment1 = (ActivityImageComment)comment;
+                return doUploadResource(ActivityComment.CommentType.IMAGE,info,comment1.localUrl,comment1.text, new FutureCallback<JsonObject>(){
+
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+
+                    }
+                });
+            }
+
+            case VIDEO:
+            {
+                ActivityVideoComment comment1 = (ActivityVideoComment)comment;
+                return doUploadResource(ActivityComment.CommentType.VIDEO,info,comment1.localUrl,comment1.text,new FutureCallback<JsonObject>(){
+
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+
+                    }
+                });
+
+            }
+        }
+        return null;
+    }
+
+    private Future doUploadResource(final ActivityComment.CommentType type,final TRAInfo info, final String path,final String comment, final FutureCallback<JsonObject> callback) {
+        String url = Constants.getUploadUrl();
+        return Ion.with(this)
+                .load("POST",url)
+                .setMultipartParameter("media", "1")
+                .setMultipartParameter("skey", getCachedAccount().encodeKey)
+                .setMultipartParameter("activityId",info.id)
+                .setMultipartParameter("activityTime",info.getTimeFormated())
+                .setMultipartParameter("activityName",info.title)
+                .setMultipartParameter("name",path)
+                .setMultipartFile("file", new File(path))
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        if(result != null){
+                            if(result.has("data")){
+                                String fid = result.getAsJsonObject("data").get("fid").getAsString();
+                                String url = Constants.getDownloadUrl(fid);
+                                _postComment(type,info.id,url,comment,callback);
+                            }else{
+                                callback.onCompleted(e,result);
+                            }
+                        }else{
+                            callback.onCompleted(e,result);
+                        }
+                    }
+                });
+
+    }
+
+    private Future _postComment(ActivityComment.CommentType type,String aid,String content,String comment,FutureCallback callback){
+        String url = Constants.getPostUrl(mAccount.userName,aid);
+        return Ion.with(this)
+                .load("POST",url)
+                .setBodyParameter("comment", comment)
+                .setBodyParameter("content", content)
+                .setBodyParameter("type",ActivityComment.getTypeString(type))
+//                .setHeader("Cookie",getCookies())
+                .asJsonObject()
+                .setCallback(callback);
     }
 
     @Override

@@ -35,7 +35,7 @@
                 android:singleLine="true"
                 android:background="@android:color/white"
                 android:padding="10dp"
-                android:text="test"/>
+                android:text="xzone_admin"/>
         <View
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"

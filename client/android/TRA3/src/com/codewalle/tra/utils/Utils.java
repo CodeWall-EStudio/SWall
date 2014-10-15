@@ -1,7 +1,6 @@
 package com.codewalle.tra.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Environment;
 import android.widget.Toast;
 import com.codewalle.tra.LoginActivity;
@@ -196,9 +195,5 @@ public class Utils {
         if(sToast != null)sToast.cancel();
         sToast = Toast.makeText(context,s,Toast.LENGTH_LONG);
         sToast.show();
-    }
-
-    public static int dp2px(int dp, Resources resources) {
-        return (int)(dp * resources.getDisplayMetrics().density + 0.5f);
     }
 }

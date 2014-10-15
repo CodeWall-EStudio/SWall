@@ -6,16 +6,19 @@
 package com.codewalle.tra;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import com.codewalle.tra.R.layout;
 import org.androidannotations.api.view.HasViews;
+import org.androidannotations.api.view.OnViewChangedListener;
 import org.androidannotations.api.view.OnViewChangedNotifier;
 
 public final class AvailableActivitiesFragment_
-    extends AvailableActivitiesFragment
-    implements HasViews
+    extends TRAListFragment
+    implements HasViews, OnViewChangedListener
 {
 
     private final OnViewChangedNotifier onViewChangedNotifier_ = new OnViewChangedNotifier();
@@ -46,6 +49,7 @@ public final class AvailableActivitiesFragment_
     }
 
     private void init_(Bundle savedInstanceState) {
+        OnViewChangedNotifier.registerOnViewChangedListener(this);
     }
 
     @Override
@@ -58,6 +62,12 @@ public final class AvailableActivitiesFragment_
         return new AvailableActivitiesFragment_.FragmentBuilder_();
     }
 
+    @Override
+    public void onViewChanged(HasViews hasViews) {
+        listView = ((ListView) hasViews.findViewById(com.codewalle.tra.R.id.listview));
+        rootLayout = ((SwipeRefreshLayout) hasViews.findViewById(com.codewalle.tra.R.id.root));
+    }
+
     public static class FragmentBuilder_ {
 
         private Bundle args_;
@@ -66,7 +76,7 @@ public final class AvailableActivitiesFragment_
             args_ = new Bundle();
         }
 
-        public AvailableActivitiesFragment build() {
+        public TRAListFragment build() {
             AvailableActivitiesFragment_ fragment_ = new AvailableActivitiesFragment_();
             fragment_.setArguments(args_);
             return fragment_;

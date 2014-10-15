@@ -3,4 +3,11 @@
     <color name="title_bg">#ffffff</color>
     <color name="titleTextColor">#23ff0f</color>
     <color name="login_bg">#FFFFFF</color>
+
+
+    <color name="bg">#224888</color>
+    <color name="gray_normal">#E3E5E9</color>
+    <color name="gray_selected">#EFEFEF</color>
+    <color name="title_tips_bg_color">#F0A108</color>
+    <color name="blue">#3333ff</color>
 </resources>
