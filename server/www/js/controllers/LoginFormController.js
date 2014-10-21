@@ -47,7 +47,11 @@ angular.module('ts.controllers.loginForm', [
                     }
                     else return;
                 }
-                $('#loginModal').modal('show');
+
+                //$('#loginModal').modal('show');
+                var apiHost = /* grunt|env:server.api.host */"szone.hylc-edu.cn"/* end */,
+                    loginUrl = 'http://' + apiHost + '/login.html?jump_url=' + encodeURIComponent(location.href);
+                location.href = loginUrl;
             });
 
             //NOTE 20140302 QQ登錄改造，改用QQ互聯OAUTH2登錄

@@ -34,7 +34,7 @@ angular.module('ts.services.user', [
                     //找一下localStorage里存储的登录结果，并对比uid确认是否当前用户
                     var s = localStorage['login_result'],
                         r = s ? JSON.parse(s) : {};
-                    return r ? r.nick : uid;
+                    return (r && r.nick) ? r.nick : uid;
                 }
                 else {
                     return '登录';
@@ -66,10 +66,11 @@ angular.module('ts.services.user', [
             }
 
             function logout(){
-                var d = (new Date()).toGMTString();
-                document.cookie = 'uid=; domain=.codewalle.com; path=/; expires=' + d;
-                document.cookie = 'skey=; domain=.codewalle.com; path=/; expires=' + d;
-                document.cookie = 'connect.sid=; domain=.codewalle.com; path=/; expires=' + d;
+                var d = (new Date()).toGMTString(),
+                    domain = /* grunt|env:server.host */"hylc-edu.cn"/* end */;
+                document.cookie = 'uid=; domain=.' + domain + '; path=/; expires=' + d;
+                document.cookie = 'skey=; domain=.' + domain + '; path=/; expires=' + d;
+                document.cookie = 'connect.sid=; domain=.' + domain + '; path=/; expires=' + d;
                 localStorage.removeItem('login_result');
             }
 
