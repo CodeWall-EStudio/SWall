@@ -247,6 +247,46 @@ module.exports = function(grunt) {
                 }
             },
 
+            //怀柔二小
+            'hrex': {
+                www: {
+                    img: {
+                        logo: '<img src="img/logo_hrex.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['#fff', 'rgb(32,66,121)'],
+                            text: ['rgb(32,66,121)', '#fff']
+                        }
+                    }
+                },
+                server: {
+                    host: '"hylc-edu.cn"',
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"localhost"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        host: '"hrmedia.hylc-edu.cn"',
+                        login: {
+                            host: '"localhost:8091"'
+                        }
+                    },
+                    //部署路径和服务器
+                    home: '/data/project/Media',
+                    ssh: {
+                        host: '58.133.96.3',
+                        username: 'root',
+                        password: '71@xiaoxue'
+                    }
+                }
+            },
+
             //helpers
             //获取当前环境
             env: function(){

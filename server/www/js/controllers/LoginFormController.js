@@ -49,7 +49,7 @@ angular.module('ts.controllers.loginForm', [
                 }
 
                 //$('#loginModal').modal('show');
-                var apiHost = /* grunt|env:server.api.host */"szone.hylc-edu.cn"/* end */,
+                var apiHost = /* grunt|env:server.api.host */"hrmedia.hylc-edu.cn"/* end */,
                     loginUrl = 'http://' + apiHost + '/login.html?jump_url=' + encodeURIComponent(location.href);
                 location.href = loginUrl;
             });

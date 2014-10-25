@@ -9,7 +9,7 @@ angular.module('ap.controllers.videoUploader', [
         function($rootScope, $scope, $location, ActivityService, UserService, UtilsService)
         {
             var mainVideoInput = document.getElementById('mainVideoFile');
-            var apiHost = /* grunt|env:server.api.host */"szone.hylc-edu.cn"/* end */;
+            var apiHost = /* grunt|env:server.api.host */"hrmedia.hylc-edu.cn"/* end */;
 
             $scope.skey = UtilsService.cookie.get('skey');
 
