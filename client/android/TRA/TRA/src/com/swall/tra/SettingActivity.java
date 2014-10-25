@@ -31,9 +31,9 @@ public class SettingActivity extends SherlockPreferenceActivity implements Prefe
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
-                actionBar.setIcon(R.drawable.icon_qiyi);
+                actionBar.setIcon(R.drawable.icon);
             }else{
-                actionBar.setIcon(R.drawable.icon_hong);
+                actionBar.setIcon(R.drawable.icon);
             }
 
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

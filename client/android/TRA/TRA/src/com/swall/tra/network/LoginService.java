@@ -167,10 +167,10 @@ public class LoginService extends ActionService {
             params.put("json","true");
             int method = Request.Method.POST;
 
-            if(Constants.getCurEnv() == Constants.ENV_TEST){
+//            if(Constants.getCurEnv() == Constants.ENV_TEST){
                 // 演示环境用的是PUT
-                method = Request.Method.PUT;
-            }
+//                method = Request.Method.PUT;
+//            }
 
 
             NetworkUtils.StringRequestWithParams request  = new NetworkUtils.StringRequestWithParams(
@@ -204,11 +204,11 @@ public class LoginService extends ActionService {
                                     JSONObject resultObject = o;
                                     String showName = "",encodeKey = "", session = "";
 
-                                    if(Constants.getCurEnv() == Constants.ENV_PUBLISH) {
+                                    if(Constants.getCurEnv() == Constants.ENV_TEST) {
                                         // 71环境
-                                        resultObject = JSONUtils.getJSONObject(o, Constants.KEY_LOGIN_RESULT_OBJECT, new JSONObject());
-                                        showName = JSONUtils.getString(resultObject, "userName", "");
-                                        encodeKey = JSONUtils.getString(resultObject, "encodeKey", "");
+                                        resultObject = JSONUtils.getJSONObject(o, "result", new JSONObject());
+                                        showName = JSONUtils.getString(resultObject, "nick", "");
+                                        encodeKey = JSONUtils.getString(resultObject, "skey", "");
                                     } else {
                                         // 演示环境，多了个session
                                         showName = JSONUtils.getString(resultObject, "nick", "");

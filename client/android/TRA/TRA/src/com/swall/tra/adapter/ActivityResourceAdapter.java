@@ -181,9 +181,9 @@ public class ActivityResourceAdapter extends BaseAdapter {
                     imageView.setVisibility(View.VISIBLE);
                     commentTextView.setVisibility(View.VISIBLE);
                     if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
-                        imageView.setDefaultImageResId(R.drawable.icon_qiyi);
+                        imageView.setDefaultImageResId(R.drawable.icon);
                     }else{
-                        imageView.setDefaultImageResId(R.drawable.icon_hong);
+                        imageView.setDefaultImageResId(R.drawable.icon);
                     }
                     //如果本地存在，拿本地图片，否则从网络获取
                     //File file = new File(Utils.getUrlFileName(item.content));

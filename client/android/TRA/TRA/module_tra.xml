@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_tra" default="compile.module.tra">
+  <dirname property="module.tra.basedir" file="${ant.file.module_tra}"/>
+  
+  <property name="module.jdk.home.tra" value="${jdk.home.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.bin.tra" value="${jdk.bin.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.classpath.tra" value="jdk.classpath.android_4.2.2_google_apis"/>
+  
+  <property name="compiler.args.tra" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="tra.output.dir" value="${module.tra.basedir}/../out/production/TRA"/>
+  <property name="tra.testoutput.dir" value="${module.tra.basedir}/../out/test/TRA"/>
+  
+  <path id="tra.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="tra.module.production.classpath">
+    <path refid="${module.jdk.classpath.tra}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.runtime.production.module.classpath">
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.module.classpath">
+    <path refid="${module.jdk.classpath.tra}"/>
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.testoutput.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.testoutput.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.runtime.module.classpath">
+    <pathelement location="${tra.testoutput.dir}"/>
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.testoutput.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.testoutput.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.tra">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.tra">
+    <patternset refid="excluded.from.module.tra"/>
+  </patternset>
+  
+  <path id="tra.module.sourcepath">
+    <dirset dir="${module.tra.basedir}">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.tra" depends="compile.module.tra.production,compile.module.tra.tests" description="Compile module TRA"/>
+  
+  <target name="compile.module.tra.production" depends="compile.module.android-volley,compile.module.pulltorefresh,compile.module.actionbarsherlock" description="Compile module TRA; production classes">
+    <mkdir dir="${tra.output.dir}"/>
+    <javac destdir="${tra.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.tra}/javac">
+      <compilerarg line="${compiler.args.tra}"/>
+      <bootclasspath refid="tra.module.bootclasspath"/>
+      <classpath refid="tra.module.production.classpath"/>
+      <src refid="tra.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.tra"/>
+    </javac>
+    
+    <copy todir="${tra.output.dir}">
+      <fileset dir="${module.tra.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.tra.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.tra.tests" depends="compile.module.tra.production" description="compile module TRA; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.tra" description="cleanup module">
+    <delete dir="${tra.output.dir}"/>
+    <delete dir="${tra.testoutput.dir}"/>
+  </target>
+</project>

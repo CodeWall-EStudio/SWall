@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tra" default="replace71">
+
+    <target name="replace">
+
+
+        <property name="pkg" value="${pkg}" />
+
+
+        <echo message="替import R" />
+        <replaceregexp byline="true">
+            <regexp pattern="(import\s)com\.[^R]+\.R"/>
+            <substitution expression="\1${pkg}.R;"/>
+            <fileset dir="./TRA/src">
+                <include name="**/*.java"/>
+            </fileset>
+        </replaceregexp>
+        <echo message="替换 manifest 里的包名" />
+        <replaceregexp file="TRA/AndroidManifest.xml"
+                       match="package(\s*)=[^\n]+"
+                       replace="package=&quot;${pkg}&quot;"
+                       byline="true"
+                />
+
+    </target>
+
+
+    <target name="replace71">
+        <antcall target="replace">
+            <param name="pkg" value="com.swall.tra71"/>
+        </antcall>
+    </target>
+</project>

@@ -76,8 +76,8 @@ public class ServiceManager {
                     break;
                 case Constants.ENV_TEST:// demo 环境 2041.7.26
                     // http://qzone.codewalle.com/
-                    DATA_URL_PREFIX = "http://szone-test.hylc-edu.cn/";
-                    FILE_SERVER_URL = "http://media-test.hylc-edu.cn/";
+                    FILE_SERVER_URL = "http://ydszone.hylc-edu.cn/";
+                    DATA_URL_PREFIX = "http://ydmedia.hylc-edu.cn/";
                     break;
                 case Constants.ENV_DEV:
                     DATA_URL_PREFIX = "http://media.71xiaoxue.com/";
@@ -92,7 +92,7 @@ public class ServiceManager {
             // DEMO
 //            return "http://qzone.codewalle.com/api/user/login?"+Math.random();
             if(getCurEnv() == ENV_TEST) {
-                return LOGIN_URL_TEST + userId + "/login?" + Math.random();
+                return FILE_SERVER_URL +"api/user/login?" + Math.random();
             } else {
                 return LOGIN_URL + "?t="+Math.random();
             }

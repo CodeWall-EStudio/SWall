@@ -10,7 +10,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="一年级数学组教研活动"
-            android:textColor="@color/bg"
+            android:textColor="@color/title_color"
             android:layout_alignParentTop="true"
             android:id="@+id/tra_name"
             android:layout_alignParentLeft="true"/>

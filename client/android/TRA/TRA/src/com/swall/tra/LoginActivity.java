@@ -184,9 +184,9 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     public void onSizeChange(boolean isOpen, int preH, int curH) {
         if(isOpen){
-            mSchoolNameView.setImageResource(R.drawable.login_school_input_hong);
+            mSchoolNameView.setImageResource(R.drawable.login_school_input);
         }else{
-            mSchoolNameView.setImageResource(R.drawable.login_school_normal_hong);
+            mSchoolNameView.setImageResource(R.drawable.login_school_normal);
         }
     }
 

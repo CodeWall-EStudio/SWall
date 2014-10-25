@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tra" default="all">
+  
+  
+  <property file="tra.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="700m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+    <exclude name="**/__pycache__/**"/>
+    <exclude name="**/.bundle/**"/>
+    <exclude name="**/*.rbc/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.apk"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.ane"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <exclude name="**/?*.java"/>
+    <exclude name="**/?*.form"/>
+    <exclude name="**/?*.class"/>
+    <exclude name="**/?*.groovy"/>
+    <exclude name="**/?*.scala"/>
+    <exclude name="**/?*.flex"/>
+    <exclude name="**/?*.kt"/>
+    <exclude name="**/?*.clj"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.android_api_14_platform" value="${jdk.home.android_api_14_platform}/../../../../System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin"/>
+  <path id="jdk.classpath.android_api_14_platform">
+    <fileset dir="${jdk.home.android_api_14_platform}">
+      <include name="platforms/android-14/android.jar"/>
+      <include name="platforms/android-14/data/res"/>
+      <include name="tools/support/annotations.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="jdk.bin.android_4.2.2_google_apis" value="${jdk.home.android_4.2.2_google_apis}/../../../../System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/bin"/>
+  <path id="jdk.classpath.android_4.2.2_google_apis">
+    <fileset dir="${jdk.home.android_4.2.2_google_apis}">
+      <include name="platforms/android-17/android.jar"/>
+      <include name="add-ons/addon-google_apis-google-17/libs/effects.jar"/>
+      <include name="add-ons/addon-google_apis-google-17/libs/usb.jar"/>
+      <include name="add-ons/addon-google_apis-google-17/libs/maps.jar"/>
+      <include name="platforms/android-17/data/res"/>
+      <include name="tools/support/annotations.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.android_4.1.2_google_apis}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.android_4.1.2_google_apis}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.android_4.1.2_google_apis"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.android-support-v4.classpath">
+    <pathelement location="${basedir}/pullToRefresh/sample/libs/android-support-v4.jar"/>
+  </path>
+  
+  
+  <!-- Global Libraries -->
+  
+  <path id="library.android-support-v4.classpath">
+    <pathelement location="/Users/pxz/Documents/android-sdk-macosx/extras/android/support/v4/android-support-v4.jar"/>
+  </path>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module actionbarsherlock -->
+  
+  <dirname property="module.actionbarsherlock.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.actionbarsherlock" value="${jdk.home.android_api_14_platform}"/>
+  <property name="module.jdk.bin.actionbarsherlock" value="${jdk.bin.android_api_14_platform}"/>
+  <property name="module.jdk.classpath.actionbarsherlock" value="jdk.classpath.android_api_14_platform"/>
+  
+  <property name="compiler.args.actionbarsherlock" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="actionbarsherlock.output.dir" value="${module.actionbarsherlock.basedir}/out/production/actionbarsherlock"/>
+  <property name="actionbarsherlock.testoutput.dir" value="${module.actionbarsherlock.basedir}/out/test/actionbarsherlock"/>
+  
+  <path id="actionbarsherlock.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="actionbarsherlock.module.production.classpath">
+    <path refid="${module.jdk.classpath.actionbarsherlock}"/>
+    <path refid="library.android-support-v4.classpath"/>
+  </path>
+  
+  <path id="actionbarsherlock.runtime.production.module.classpath">
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+  </path>
+  
+  <path id="actionbarsherlock.module.classpath">
+    <path refid="${module.jdk.classpath.actionbarsherlock}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+  </path>
+  
+  <path id="actionbarsherlock.runtime.module.classpath">
+    <pathelement location="${actionbarsherlock.testoutput.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.actionbarsherlock">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.actionbarsherlock">
+    <patternset refid="excluded.from.module.actionbarsherlock"/>
+  </patternset>
+  
+  <path id="actionbarsherlock.module.sourcepath">
+    <dirset dir="${module.actionbarsherlock.basedir}/../../../../../androidProjects/ActionBarSherlock/actionbarsherlock">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.actionbarsherlock" depends="compile.module.actionbarsherlock.production,compile.module.actionbarsherlock.tests" description="Compile module actionbarsherlock"/>
+  
+  <target name="compile.module.actionbarsherlock.production" description="Compile module actionbarsherlock; production classes">
+    <mkdir dir="${actionbarsherlock.output.dir}"/>
+    <javac destdir="${actionbarsherlock.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.actionbarsherlock}/javac">
+      <compilerarg line="${compiler.args.actionbarsherlock}"/>
+      <bootclasspath refid="actionbarsherlock.module.bootclasspath"/>
+      <classpath refid="actionbarsherlock.module.production.classpath"/>
+      <src refid="actionbarsherlock.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.actionbarsherlock"/>
+    </javac>
+    
+    <copy todir="${actionbarsherlock.output.dir}">
+      <fileset dir="${module.actionbarsherlock.basedir}/../../../../../androidProjects/ActionBarSherlock/actionbarsherlock/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.actionbarsherlock.basedir}/../../../../../androidProjects/ActionBarSherlock/actionbarsherlock/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.actionbarsherlock.tests" depends="compile.module.actionbarsherlock.production" description="compile module actionbarsherlock; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.actionbarsherlock" description="cleanup module">
+    <delete dir="${actionbarsherlock.output.dir}"/>
+    <delete dir="${actionbarsherlock.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module android-volley -->
+  
+  <dirname property="module.android-volley.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.android-volley" value="${jdk.home.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.bin.android-volley" value="${jdk.bin.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.classpath.android-volley" value="jdk.classpath.android_4.2.2_google_apis"/>
+  
+  <property name="compiler.args.android-volley" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="android-volley.output.dir" value="${module.android-volley.basedir}/out/production/android-volley"/>
+  <property name="android-volley.testoutput.dir" value="${module.android-volley.basedir}/out/test/android-volley"/>
+  
+  <path id="android-volley.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="android-volley.module.production.classpath">
+    <path refid="${module.jdk.classpath.android-volley}"/>
+  </path>
+  
+  <path id="android-volley.runtime.production.module.classpath">
+    <pathelement location="${android-volley.output.dir}"/>
+  </path>
+  
+  <path id="android-volley.module.classpath">
+    <path refid="${module.jdk.classpath.android-volley}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+  </path>
+  
+  <path id="android-volley.runtime.module.classpath">
+    <pathelement location="${android-volley.testoutput.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.android-volley">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.android-volley">
+    <patternset refid="excluded.from.module.android-volley"/>
+  </patternset>
+  
+  <path id="android-volley.module.sourcepath">
+    <dirset dir="${module.android-volley.basedir}/android-volley">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.android-volley" depends="compile.module.android-volley.production,compile.module.android-volley.tests" description="Compile module android-volley"/>
+  
+  <target name="compile.module.android-volley.production" description="Compile module android-volley; production classes">
+    <mkdir dir="${android-volley.output.dir}"/>
+    <javac destdir="${android-volley.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.android-volley}/javac">
+      <compilerarg line="${compiler.args.android-volley}"/>
+      <bootclasspath refid="android-volley.module.bootclasspath"/>
+      <classpath refid="android-volley.module.production.classpath"/>
+      <src refid="android-volley.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.android-volley"/>
+    </javac>
+    
+    <copy todir="${android-volley.output.dir}">
+      <fileset dir="${module.android-volley.basedir}/android-volley/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.android-volley.basedir}/android-volley/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.android-volley.tests" depends="compile.module.android-volley.production" description="compile module android-volley; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.android-volley" description="cleanup module">
+    <delete dir="${android-volley.output.dir}"/>
+    <delete dir="${android-volley.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module pulltorefresh -->
+  
+  <dirname property="module.pulltorefresh.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.pulltorefresh" value="${jdk.home.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.bin.pulltorefresh" value="${jdk.bin.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.classpath.pulltorefresh" value="jdk.classpath.android_4.2.2_google_apis"/>
+  
+  <property name="compiler.args.pulltorefresh" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="pulltorefresh.output.dir" value="${module.pulltorefresh.basedir}/out/production/pulltorefresh"/>
+  <property name="pulltorefresh.testoutput.dir" value="${module.pulltorefresh.basedir}/out/test/pulltorefresh"/>
+  
+  <path id="pulltorefresh.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="pulltorefresh.module.production.classpath">
+    <path refid="${module.jdk.classpath.pulltorefresh}"/>
+  </path>
+  
+  <path id="pulltorefresh.runtime.production.module.classpath">
+    <pathelement location="${pulltorefresh.output.dir}"/>
+  </path>
+  
+  <path id="pulltorefresh.module.classpath">
+    <path refid="${module.jdk.classpath.pulltorefresh}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+  </path>
+  
+  <path id="pulltorefresh.runtime.module.classpath">
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.pulltorefresh">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.pulltorefresh">
+    <patternset refid="excluded.from.module.pulltorefresh"/>
+  </patternset>
+  
+  <path id="pulltorefresh.module.sourcepath">
+    <dirset dir="${module.pulltorefresh.basedir}/pullToRefresh/library">
+      <include name="src"/>
+      <include name="gen"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.pulltorefresh" depends="compile.module.pulltorefresh.production,compile.module.pulltorefresh.tests" description="Compile module pulltorefresh"/>
+  
+  <target name="compile.module.pulltorefresh.production" description="Compile module pulltorefresh; production classes">
+    <mkdir dir="${pulltorefresh.output.dir}"/>
+    <javac destdir="${pulltorefresh.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.pulltorefresh}/javac">
+      <compilerarg line="${compiler.args.pulltorefresh}"/>
+      <bootclasspath refid="pulltorefresh.module.bootclasspath"/>
+      <classpath refid="pulltorefresh.module.production.classpath"/>
+      <src refid="pulltorefresh.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.pulltorefresh"/>
+    </javac>
+    
+    <copy todir="${pulltorefresh.output.dir}">
+      <fileset dir="${module.pulltorefresh.basedir}/pullToRefresh/library/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.pulltorefresh.basedir}/pullToRefresh/library/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.pulltorefresh.tests" depends="compile.module.pulltorefresh.production" description="compile module pulltorefresh; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.pulltorefresh" description="cleanup module">
+    <delete dir="${pulltorefresh.output.dir}"/>
+    <delete dir="${pulltorefresh.testoutput.dir}"/>
+  </target>
+  
+  
+  <!-- Module TRA -->
+  
+  <dirname property="module.tra.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.tra" value="${jdk.home.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.bin.tra" value="${jdk.bin.android_4.2.2_google_apis}"/>
+  <property name="module.jdk.classpath.tra" value="jdk.classpath.android_4.2.2_google_apis"/>
+  
+  <property name="compiler.args.tra" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="tra.output.dir" value="${module.tra.basedir}/out/production/TRA"/>
+  <property name="tra.testoutput.dir" value="${module.tra.basedir}/out/test/TRA"/>
+  
+  <path id="tra.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="tra.module.production.classpath">
+    <path refid="${module.jdk.classpath.tra}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.runtime.production.module.classpath">
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.module.classpath">
+    <path refid="${module.jdk.classpath.tra}"/>
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.testoutput.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.testoutput.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  <path id="tra.runtime.module.classpath">
+    <pathelement location="${tra.testoutput.dir}"/>
+    <pathelement location="${tra.output.dir}"/>
+    <pathelement location="${android-volley.testoutput.dir}"/>
+    <pathelement location="${android-volley.output.dir}"/>
+    <pathelement location="${pulltorefresh.testoutput.dir}"/>
+    <pathelement location="${pulltorefresh.output.dir}"/>
+    <pathelement location="${actionbarsherlock.testoutput.dir}"/>
+    <pathelement location="${actionbarsherlock.output.dir}"/>
+    <path refid="library.android-support-v4.classpath"/>
+    <pathelement location="${basedir}/TRA/libs/httpcore-4.3.jar"/>
+    <pathelement location="${basedir}/TRA/libs/umeng_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/httpmime-4.3.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/universal-image-loader-1.9.1.jar"/>
+    <pathelement location="${basedir}/TRA/libs/open_sdk.jar"/>
+    <pathelement location="${basedir}/TRA/libs/mta-sdk-1.0.0.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.tra">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.tra">
+    <patternset refid="excluded.from.module.tra"/>
+  </patternset>
+  
+  <path id="tra.module.sourcepath">
+    <dirset dir="${module.tra.basedir}/TRA">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.tra" depends="compile.module.tra.production,compile.module.tra.tests" description="Compile module TRA"/>
+  
+  <target name="compile.module.tra.production" depends="compile.module.android-volley,compile.module.pulltorefresh,compile.module.actionbarsherlock" description="Compile module TRA; production classes">
+    <mkdir dir="${tra.output.dir}"/>
+    <javac destdir="${tra.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.tra}/javac">
+      <compilerarg line="${compiler.args.tra}"/>
+      <bootclasspath refid="tra.module.bootclasspath"/>
+      <classpath refid="tra.module.production.classpath"/>
+      <src refid="tra.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.tra"/>
+    </javac>
+    
+    <copy todir="${tra.output.dir}">
+      <fileset dir="${module.tra.basedir}/TRA/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.tra.basedir}/TRA/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.tra.tests" depends="compile.module.tra.production" description="compile module TRA; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.tra" description="cleanup module">
+    <delete dir="${tra.output.dir}"/>
+    <delete dir="${tra.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.actionbarsherlock, clean.module.android-volley, clean.module.pulltorefresh, clean.module.tra" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.actionbarsherlock, compile.module.android-volley, compile.module.pulltorefresh, compile.module.tra" description="build all modules"/>
+  
+  <target name="init.artifacts">
+    <property name="artifacts.temp.dir" value="${basedir}/__artifacts_temp"/>
+    <property name="artifact.output.tra" value="${basedir}/../../../../../parttime"/>
+    <mkdir dir="${artifacts.temp.dir}"/>
+    <property name="temp.jar.path.TRA.apk" value="${artifacts.temp.dir}/TRA.apk"/>
+  </target>
+  
+  <target name="artifact.tra" depends="init.artifacts, compile.module.tra" description="Build &#39;TRA&#39; artifact">
+    <property name="artifact.temp.output.tra" value="${artifacts.temp.dir}/TRA"/>
+    <mkdir dir="${artifact.temp.output.tra}"/>
+    <zip destfile="${temp.jar.path.TRA.apk}"/>
+    <copy file="${temp.jar.path.TRA.apk}" tofile="${artifact.temp.output.tra}/TRA.apk"/>
+  </target>
+  
+  <target name="build.all.artifacts" depends="artifact.tra" description="Build all artifacts">
+    <mkdir dir="${artifact.output.tra}"/>
+    <copy todir="${artifact.output.tra}">
+      <fileset dir="${artifact.temp.output.tra}"/>
+    </copy>
+    
+    <!-- Delete temporary files -->
+    <delete dir="${artifacts.temp.dir}"/>
+  </target>
+  
+  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+
+  <target name="replace">
+
+
+      <property name="pkg" value="${pkg}" />
+
+
+      <echo message="替import R" />
+      <replaceregexp byline="true">
+          <regexp pattern="(import\s)com\.[^R]+\.R"/>
+          <substitution expression="\1${pkg}.R;"/>
+          <fileset dir="./TRA/src">
+              <include name="**/*.java"/>
+          </fileset>
+      </replaceregexp>
+      <echo message="替换 manifest 里的包名" />
+      <replaceregexp file="TRA/AndroidManifest.xml"
+                     match="package(\s*)=[^\n]+"
+                     replace="package=&quot;${pkg}&quot;"
+                     byline="true"
+              />
+
+  </target>
+
+
+  <target name="replace71">
+      <antcall target="replace">
+          <param name="pkg" value="com.swall.tra71"/>
+      </antcall>
+  </target>
+  <target name="all71" depends="replace71, all" />
+</project>

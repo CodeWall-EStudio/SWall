@@ -11,7 +11,7 @@
             android:layout_marginRight="200dp"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@android:color/holo_blue_light"
+            android:textColor="@color/primary_text_color"
             android:text="张三张三张三张三张三张三张三张三张三张三张三张三张三张三张三张三张三"
             android:id="@+id/item_resource_owner"/>
 

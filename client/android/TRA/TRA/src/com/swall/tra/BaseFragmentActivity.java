@@ -70,7 +70,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity implements Um
         if(mShowQuitButton){
             mMenuItemSettings = menu.add("设置")
                      //.setIcon(R.drawable.logout_icon);
-                    .setIcon(R.drawable.setting_icon);
+                    .setIcon(R.drawable.setting_yongding);
             mMenuItemSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 //        menu.add("设置").setIcon(R.drawable.setting_icon);
@@ -125,11 +125,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity implements Um
         if(actionBar != null){
             actionBar.setCustomView(R.layout.title_bar);
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            if(ServiceManager.Constants.getCurEnv() == ServiceManager.Constants.ENV_PUBLISH) {
-                actionBar.setIcon(R.drawable.icon_qiyi);
-            }else{
-                actionBar.setIcon(R.drawable.icon_hong);
-            }
+            actionBar.setIcon(R.drawable.icon);
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable((R.color.bg)));

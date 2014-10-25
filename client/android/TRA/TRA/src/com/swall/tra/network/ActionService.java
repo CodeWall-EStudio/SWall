@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import com.swall.tra.TRAApplication;
+import com.swall.tra.model.AccountInfo;
 import com.swall.tra.utils.AccountDatabaseHelper;
 import com.swall.tra.utils.NetworkUtils;
 import org.apache.http.HttpHeaders;
@@ -46,6 +48,12 @@ public abstract class ActionService {
                     if(splitSessionId.length > 1){
                         theValue = splitSessionId[1].trim();
                     }
+                    if("connect.sid".equals(theValue)){
+                        sSessionId = theValue;
+                        AccountInfo info  = TRAApplication.getApp().getCachedAccount();
+                        info.sessionId = sSessionId;
+                        TRAApplication.getApp().updateCurrentAccount(info);
+                    }
                     sessionCookies.put(theKey,theValue);
                 }
             }
@@ -55,15 +63,15 @@ public abstract class ActionService {
     }
 
     private static void updateCookieString() {
-//        StringBuilder builder = new StringBuilder();
-//        for(String key:sessionCookies.keySet()){
-//            builder.append(key);
-//            builder.append("=");
-//            builder.append(sessionCookies.get(key));
-//            builder.append("; ");
-//        }
-//        cookieString = builder.toString();
-        cookieString =" skey="+sEncodeKey+"; connect.sid="+sSessionId+";";
+        StringBuilder builder = new StringBuilder();
+        for(String key:sessionCookies.keySet()){
+            builder.append(key);
+            builder.append("=");
+            builder.append(sessionCookies.get(key));
+            builder.append("; ");
+        }
+        cookieString = builder.toString();
+        cookieString += " skey="+sEncodeKey+"; connect.sid="+sSessionId+";";
         sRequestCookies.put("Cookie",cookieString);
     }
 
