@@ -12,7 +12,7 @@ angular.module('ap.controllers.main', [
                 linkPanel = document.getElementById('linkPanel'),
                 linkPanelIframe = document.getElementById('linkPanelFrame');
 
-            $rootScope.apiHost = /* grunt|env:server.api.uploader.host */"szone.hylc-edu.cn"/* end */;
+            $rootScope.apiHost = /* grunt|env:server.api.host */"hrmedia.hylc-edu.cn"/* end */;
 
             $rootScope.username = UserService.nick();
             $rootScope.userCount = 0;

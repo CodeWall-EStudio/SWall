@@ -2,6 +2,7 @@ package com.codewalle.tra;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextPaint;
 import android.util.Log;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +22,17 @@ import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.codewalle.tra.Model.TRAInfo;
+import com.codewalle.tra.Network.RequestError;
+import com.codewalle.tra.utils.TRAResponseParser;
+import com.codewalle.tra.widget.ExpiredActivitiesFragment_;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
+import com.koushikdutta.ion.builder.GsonFutureBuilder;
 import org.androidannotations.annotations.*;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,32 +54,72 @@ public class MainActivity extends BaseFragmentActivity {
     private TabsAdapter mTabsAdapter;
 
 
-    @AfterViews
-    public void initTabs(){
+    private void initTabs(){
+        if(mTabsAdapter != null){
+            return;
+        }
         mTabHost.setup();
         if(mTabHost == null || mViewPager == null){
             return;
         }
 
+
+
+        Bundle expiredBundle = new Bundle();
+        expiredBundle.putBoolean("expired",true);
+
         mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("home").setIndicator(getString(R.string.available_activities)),
-                AvailableActivitiesFragment_.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("home").setIndicator(getString(R.string.available_activities)),
-                AvailableActivitiesFragment_.class, null);
+        mTabsAdapter.addTab(mTabHost.newTabSpec("available").setIndicator(getString(R.string.available_activities)),
+                TRAListFragment_.class, null);
+        mTabsAdapter.addTab(mTabHost.newTabSpec("expired").setIndicator(getString(R.string.expired_activities)),
+                TRAListFragment_.class, expiredBundle);
+    }
+
+
+    @Override
+    protected void onPostResume(){
+        super.onPostResume();
+        // 查询是否已有参与的活动
+        getJoinedActivity();
+    }
+    
+    
+    private void getJoinedActivity(){
+
+        app.getJoinedActivityInfo(new FutureCallback<JsonObject>() {
+            @Override
+            public void onCompleted(Exception e, JsonObject result) {
+                Pair<TRAInfo,RequestError> parsed =  TRAResponseParser.parseJoinedActivity(result,e);
+                TRAInfo info = null;
+                RequestError error = null;
+                if(parsed != null) {
+                    info = parsed.first;
+                    error = parsed.second;
+                }
+                if(info == null){
+                    initTabs();
+                }else{
+                    gotoJoinedActivity(info);
+                }
+            }
+        });
+    }
+
+    private void gotoJoinedActivity(TRAInfo activity) {
+        Intent i = new Intent(this, CurrentTRAActivity_.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("result",activity.toString());
+        startActivity(i);
+        finish();
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i("AAA","onPause");
+//        Log.i("AAA","onPause");
     }
 
-
-    @UiThread
-    void test(){
-
-    }
 
     public static class TabsAdapter extends FragmentPagerAdapter
             implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {

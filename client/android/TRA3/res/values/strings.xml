@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TRA2</string>
-    <string name="available_activities">进行中的活动</string>
+    <string name="available_activities">当前活动</string>
+    <string name="expired_activities">历史活动</string>
+    <string name="launch_camera_fail">启动相机失败</string>
 </resources>

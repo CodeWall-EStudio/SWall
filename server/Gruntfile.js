@@ -41,8 +41,10 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {    host: '"szone.hylc-edu.cn"' },
-                        uploader: { host: '"szone.hylc-edu.cn"' }
+                        host: '"szone.hylc-edu.cn"',
+                        login: {
+                            host: '"szone.hylc-edu.cn"'
+                        }
                     }
                 }
             },
@@ -72,8 +74,10 @@ module.exports = function(grunt) {
                         password: '"DfvszXKePFtfB9KM"'
                     },
                     api: {
-                        login: {    host: '"qzone.codewalle.com"'   },
-                        uploader: { host: '"qzone.codewalle.com"'   }
+                        host: '"qzone.codewalle.com"',
+                        login: {
+                            host: '"qzone.codewalle.com"'
+                        }
                     },
                     //部署路径和服务器
                     home: '/home/swall/SWall',
@@ -109,8 +113,10 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {    host: '"szone.hylc-edu.cn"' },
-                        uploader: { host: '"szone.hylc-edu.cn"' }
+                        host: '"szone.hylc-edu.cn"',
+                        login: {
+                            host: '"szone.hylc-edu.cn"'
+                        }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
@@ -147,8 +153,10 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {    host: '"localhost:8091"'        },
-                        uploader: { host: '"szone.71xiaoxue.com"'   }
+                        host: '"szone.71xiaoxue.com"',
+                        login: {
+                            host: '"localhost:8091"'
+                        }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
@@ -183,8 +191,10 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {    host: '"localhost:8091"'        },
-                        uploader: { host: '"szone.71xiaoxue.com"'   }
+                        host: '"szone.71xiaoxue.com"',
+                        login: {
+                            host: '"localhost:8091"'
+                        }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
@@ -222,13 +232,55 @@ module.exports = function(grunt) {
                         password: '""'
                     },
                     api: {
-                        login: {    host: '"localhost:8091"'        },
-                        uploader: { host: '"ydszone.hylc-edu.cn"'   }
+                        host: '"ydszone.hylc-edu.cn"',
+                        login: {
+                            host: '"localhost:8091"'
+                        }
                     },
                     //部署路径和服务器
                     home: '/data/project/Media',
                     ssh: {
                         host: '58.117.151.6',
+                        username: 'root',
+                        password: '71@xiaoxue'
+                    }
+                }
+            },
+
+            //怀柔二小
+            'hrex': {
+                www: {
+                    img: {
+                        logo: '<img src="img/logo_hrex.png">'
+                    },
+                    theme: {
+                        nav: {
+                            bg: ['#fff', 'rgb(32,66,121)'],
+                            text: ['rgb(32,66,121)', '#fff']
+                        }
+                    }
+                },
+                server: {
+                    host: '"hylc-edu.cn"',
+                    express: {
+                        port: 8090
+                    },
+                    mongodb: {
+                        host: '"localhost"',
+                        port: 27017,
+                        username: '""',
+                        password: '""'
+                    },
+                    api: {
+                        host: '"hrmedia.hylc-edu.cn"',
+                        login: {
+                            host: '"localhost:8091"'
+                        }
+                    },
+                    //部署路径和服务器
+                    home: '/data/project/Media',
+                    ssh: {
+                        host: '58.133.96.3',
                         username: 'root',
                         password: '71@xiaoxue'
                     }
@@ -353,8 +405,7 @@ module.exports = function(grunt) {
                     '<%= CONSTS.SERVER %>**/*.js',
                     '<%= CONSTS.WWW_SOURCE %>*.html',
                     '<%= CONSTS.WWW_SOURCE %>css/*.css',
-                    '<%= CONSTS.WWW_SOURCE %>js/controllers/PlayerMainController.js',
-                    '<%= CONSTS.WWW_SOURCE %>js/controllers/MainVideoUploaderController.js'
+                    '<%= CONSTS.WWW_SOURCE %>js/**/*.js'
                 ],
                 overwrite: true,
                 filter: 'isFile',

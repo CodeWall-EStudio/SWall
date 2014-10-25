@@ -13,6 +13,7 @@ public class RequestError {
         USER_OR_PASSWORD_NOT_MATCH,
         SERVER_5XX,
         SERVER_4XX,
+        NORMAL,
         NO_JSON
     }
     private ErrorType errorType;

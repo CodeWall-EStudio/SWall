@@ -36,8 +36,8 @@
         <delete dir="${gen.dir}" />
     </target>
 
-    <!-- Compiles this project's .java files into .class files. -->
-    <target name="-compile" depends=" -pre-compile">
+    <target name="-compile" depends="-build-setup, -pre-build, -code-gen, -pre-compile">
+        <mkdir dir="${gen.dir}" />
         <do-only-if-manifest-hasCode elseText="hasCode = false. Skipping...">
             <!-- merge the project's own classpath and the tested project's classpath -->
             <path id="project.javac.classpath">
@@ -49,11 +49,11 @@
             <javac encoding="${java.encoding}"
                    source="${java.source}" target="${java.target}"
                    debug="true" extdirs="" includeantruntime="false"
-                   destdir="${out.classes.absolute.dir}"
+                   destdir="${gen.dir}"
                    bootclasspathref="project.target.class.path"
                    verbose="${verbose}"
                    classpathref="project.javac.classpath"
-                   fork="${need.javac.fork}">
+                   fork="false">
                 <src path="${source.absolute.dir}" />
                 <src path="${gen.absolute.dir}" />
                 <compilerarg line="${java.compilerargs}" />
@@ -115,4 +115,30 @@
 
         </do-only-if-manifest-hasCode>
     </target>
+
+
+
+    <target name="replace71">
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="(String\s+LOGIN_URL\s*=)(\s*)&quot;[\w]+&quot;"
+                       replace="String LOGIN_URL = &quot;http://my.71xiaoxue.com/authenticationUser.do&quot;"
+                       byline="true"
+                       encoding="UTF-8"
+                />
+    </target>
+
+    <target name="-replace71">
+        <antcall target="replace">
+            <param name="loginurl" value="http://my.71xiaoxue.com/authenticationUser.do" />
+        </antcall>
+    </target>
+    <target name="replace">
+        <replaceregexp file="src/com/codewalle/tra/utils/Constants.java"
+                       match="/\*C_BEING_LOGIN_URL\*/(.*)/\*C_END\*/"
+                       replace="/\*C_BEING_LOGIN_URL\*//\*\1\*/&quot;$loginurl&quot;/\*C_END\*/"
+                       byline="true"
+                       encoding="UTF-8"
+                />
+    </target>
+
 </project>

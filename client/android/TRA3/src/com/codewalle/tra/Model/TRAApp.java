@@ -31,7 +31,13 @@ public interface TRAApp {
 
     boolean isAutoLogin();
 
-    Future doLogin(Context context,String username, String password, FutureCallback callback);
+    Future doLogin(String username, String password, FutureCallback callback);
+    Future getJoinedActivityInfo(FutureCallback callback);
+    Future getActivityInfo(String activityId,FutureCallback callback);
+    Future getTRAList(boolean expired, FutureCallback callback);
+    Future joinActivity(String activityId,FutureCallback callback);
+    Future quitActivity(String actiivtyId,FutureCallback callback);
+    Future postComment(TRAInfo info, ActivityComment comment, FutureCallback callback);
 
     int getBgColor();
 }

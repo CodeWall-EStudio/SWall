@@ -9,8 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -30,7 +28,6 @@ public final class MainActivity_
 {
 
     private final OnViewChangedNotifier onViewChangedNotifier_ = new OnViewChangedNotifier();
-    private Handler handler_ = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,23 +78,8 @@ public final class MainActivity_
 
     @Override
     public void onViewChanged(HasViews hasViews) {
-        mViewPager = ((ViewPager) hasViews.findViewById(id.viewpager));
         mTabHost = ((TabHost) hasViews.findViewById(id.tabhost));
-        initTabs();
-    }
-
-    @Override
-    public void test() {
-        handler_.post(new Runnable() {
-
-
-            @Override
-            public void run() {
-                MainActivity_.super.test();
-            }
-
-        }
-        );
+        mViewPager = ((ViewPager) hasViews.findViewById(id.viewpager));
     }
 
     public static class IntentBuilder_ {

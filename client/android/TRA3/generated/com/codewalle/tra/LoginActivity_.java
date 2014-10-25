@@ -71,11 +71,11 @@ public final class LoginActivity_
 
     @Override
     public void onViewChanged(HasViews hasViews) {
-        mUserName = ((EditText) hasViews.findViewById(id.username));
         mSchoolNameView = ((ImageView) hasViews.findViewById(id.login_school_name));
         mPassword = ((EditText) hasViews.findViewById(id.password));
-        mLoginButton = ((Button) hasViews.findViewById(id.login_button));
+        mUserName = ((EditText) hasViews.findViewById(id.username));
         mRoot = ((IMERelativeLayout) hasViews.findViewById(id.login_root));
+        mLoginButton = ((Button) hasViews.findViewById(id.login_button));
         {
             View view = hasViews.findViewById(id.login_button);
             if (view!= null) {
@@ -91,8 +91,9 @@ public final class LoginActivity_
                 );
             }
         }
-        initListeners();
         setupBackgroud();
+        test();
+        initListeners();
     }
 
     public static class IntentBuilder_ {
