@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.ActionListener;
 import com.swall.tra.network.ServiceManager;
 import com.swall.tra.utils.JSONUtils;
+import com.swall.tra.utils.Utils;
 import com.swall.tra.widget.InputMethodRelativeLayout;
 import com.swall.tra_demo.R;
 import org.json.JSONException;
@@ -101,6 +103,8 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
             }
         });
 
+        mRootLayout.setBackgroundColor(app.getBgColor());
+        //mRootLayout.setBackground(new ColorDrawable(Utils.getColorOfPic(0, 0, R.drawable.login_school_normal,this)));
         mRootLayout.setOnSizeChangedListenner(this);
         findViewById(R.id.login_button).setOnClickListener(this);
 
@@ -126,6 +130,18 @@ public class LoginActivity extends BaseFragmentActivity implements View.OnClickL
         ((RadioGroup)findViewById(R.id.env_rg)).setOnCheckedChangeListener(this);
 
         setBackConfirm(true);
+
+
+        updateAccounts(app.getCachedAccount());
+        if(!TextUtils.isEmpty(mEtUserName.getText().toString())){
+            mEtPassword.requestFocus();
+        }
+    }
+
+    private void updateAccounts(AccountInfo account) {
+        if(account != null){
+            updateAccounts(account.userName,"");
+        }
     }
 
     @Override

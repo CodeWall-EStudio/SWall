@@ -17,12 +17,19 @@ public class SplashActivity extends BaseActivity {
         checkSDCard();
 
         AccountInfo info = app.getCachedAccount();
-        if(info == null || TextUtils.isEmpty(info.userName)){
+        if(!validateAccountInfo(info)){
             gotoLogin();
         }else{
             gotoMain();
         }
         finish();
+    }
+
+    private boolean validateAccountInfo(AccountInfo info) {
+        if(info != null){
+            return info.isValidate();
+        }
+        return false;
     }
 
     private void checkSDCard() {

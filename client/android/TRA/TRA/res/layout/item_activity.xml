@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="middle"
-                android:textColor="@color/title_color"
+                android:textColor="@color/resource_title_color"
                 android:text="英语教学英语教学英语教学英语教学英语教学英语教学"
                 android:id="@+id/tra_name"
                 android:layout_alignParentTop="true"

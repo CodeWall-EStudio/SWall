@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="bg">#ffffff</color>
+    <color name="bg">#1A2E78</color>
     <color name="gray_normal">#E3E5E9</color>
     <color name="gray_selected">#EFEFEF</color>
     <color name="title_tips_bg_color">#F0A108</color>
     <color name="primary_text_color">#0c3f7e</color>
-    <color name="title_color">#0c3f7e</color>
+    <color name="title_color">#ffffff</color>
+    <color name="login_bg">#1A2E78</color>
+    <color name="resource_title_color">#000000</color>
 </resources>

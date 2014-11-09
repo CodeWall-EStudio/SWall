@@ -1,5 +1,7 @@
 package com.swall.tra.model;
 
+import android.text.TextUtils;
+
 /**
  * Created by ippan on 13-12-24.
  */
@@ -24,5 +26,13 @@ public class AccountInfo {
     }
     public long getTime(){
         return mTime;
+    }
+
+    public boolean isValidate() {
+        return !(TextUtils.isEmpty(userName) ||
+                TextUtils.isEmpty(password) ||
+                TextUtils.isEmpty(encodeKey) ||
+                TextUtils.isEmpty(sessionId)
+                );
     }
 }

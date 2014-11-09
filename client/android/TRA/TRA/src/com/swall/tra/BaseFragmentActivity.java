@@ -70,7 +70,7 @@ public class BaseFragmentActivity extends SherlockFragmentActivity implements Um
         if(mShowQuitButton){
             mMenuItemSettings = menu.add("设置")
                      //.setIcon(R.drawable.logout_icon);
-                    .setIcon(R.drawable.setting_yongding);
+                    .setIcon(R.drawable.settings);
             mMenuItemSettings.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
 //        menu.add("设置").setIcon(R.drawable.setting_icon);

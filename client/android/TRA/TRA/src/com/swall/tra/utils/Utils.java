@@ -2,9 +2,13 @@ package com.swall.tra.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import com.swall.tra.SettingActivity;
 import com.swall.tra.TRAApplication;
+import com.swall.tra_demo.R;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -179,5 +183,20 @@ public class Utils {
             }
         }
 
+    }
+
+    public static int getColorOfPic(int x, int y, int resourceId,Context context) {
+        Bitmap bitmap = ((BitmapDrawable)(context.getResources().getDrawable(resourceId))).getBitmap();
+        int bgColor = 0xffffffff;
+        try{
+            bgColor = bitmap.getPixel(0,0);
+            // 如果右上角全透明，则设为白色
+            if(0 == Color.alpha(bgColor)){
+                bgColor = 0xffffffff;
+            }
+        }catch (IllegalArgumentException e){
+
+        }
+        return bgColor;
     }
 }

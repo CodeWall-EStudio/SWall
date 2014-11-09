@@ -67,6 +67,7 @@ public class MainActivity extends BaseFragmentActivity  implements TabHost.TabCo
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(hasFocus){
+//            initTabs();
             fetchCurrentActivity();
         }
     }

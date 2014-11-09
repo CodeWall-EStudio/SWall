@@ -48,13 +48,16 @@ public abstract class ActionService {
                     if(splitSessionId.length > 1){
                         theValue = splitSessionId[1].trim();
                     }
-                    if("connect.sid".equals(theValue)){
-                        sSessionId = theValue;
-                        AccountInfo info  = TRAApplication.getApp().getCachedAccount();
-                        info.sessionId = sSessionId;
-                        TRAApplication.getApp().updateCurrentAccount(info);
+                    if(!TextUtils.isEmpty(theValue)){
+
+                        if("connect.sid".equals(theKey)){
+                            sSessionId = theValue;
+                            AccountInfo info  = TRAApplication.getApp().getCachedAccount();
+                            info.sessionId = sSessionId;
+                            TRAApplication.getApp().updateCurrentAccount(info);
+                        }
+                        sessionCookies.put(theKey, theValue);
                     }
-                    sessionCookies.put(theKey,theValue);
                 }
             }
             updateCookieString();

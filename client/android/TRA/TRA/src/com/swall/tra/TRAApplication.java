@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.widget.Toast;
 import com.swall.tra.model.AccountInfo;
 import com.swall.tra.network.*;
+import com.swall.tra.utils.Utils;
+import com.swall.tra_demo.R;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.*;
@@ -70,6 +72,7 @@ public class TRAApplication extends Application {
         }
     };
     private DataService mDataService;
+    private int mBgColor = -1;
 
     public TRAApplication(){
         sInstance = this;
@@ -212,9 +215,9 @@ public class TRAApplication extends Application {
             }catch(Exception e){
                 // do nothing
             }
-            if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password) || loginTime == 0l){
-                return new AccountInfo("","","","", data.get(KEY_SESION_ID));
-            }
+//            if(TextUtils.isEmpty(name) || TextUtils.isEmpty(password) || loginTime == 0l || TextUtils.isEmpty(data.get(KEY_SESION_ID))){
+//                return new AccountInfo("","","","", "");
+//            }
             mAccountInfo = new AccountInfo(name,password,showName,encodeKey, data.get(KEY_SESION_ID));
             mAccountInfo.setTime(loginTime);
         }
@@ -232,7 +235,7 @@ public class TRAApplication extends Application {
             mAccountInfo = null;
             currentTime = 0;
         }else{
-            mAccountInfo = account;
+            mAccountInfo = account.clone();
             mAccountInfo.setTime(currentTime);
         }
         ActionService.setEncodeKey(account.encodeKey,account.sessionId);
@@ -319,6 +322,24 @@ public class TRAApplication extends Application {
 
     public static Context getContext() {
         return mContext;
+    }
+
+    public int getBgColor() {
+        if(mBgColor == -1){
+            mBgColor = Utils.getColorOfPic(0, 0, R.drawable.login_school_normal, this);
+        }
+        return mBgColor;
+    }
+
+    public void clearAccount(boolean leaveUserName) {
+        if(leaveUserName){
+            mAccountInfo.password = "";
+            mAccountInfo.encodeKey = "";
+            mAccountInfo.sessionId = "";
+            updateCurrentAccount(mAccountInfo);
+        }else{
+            updateCurrentAccount(null);
+        }
     }
 
     // ############ 基本接口END  ####################
