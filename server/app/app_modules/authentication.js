@@ -418,6 +418,8 @@ function request(method, api, body, cookies, onData, onError){
 
 exports.api = {
     login:                          login,
+    info : info,
+    callback : callback,    
     response401IfUnauthoirzed:      response401IfUnauthoirzed,
     fetchOrganizationTree:          fetchOrganizationTree,
     fetchOrganizationTreeFromAZ:    fetchOrganizationTreeFromAZ,
