@@ -870,6 +870,14 @@ app.put('/users/:uid/login', function(req, res){
         res.json(200, {uid:uid, super:result});
     });
 });*/
+/*71*/
+app.get('/users/info',function(req,res){
+    auth.info(req,res);
+});
+
+app.get('/users/callback',function(req,res){
+    auth.callback(req,res);
+});
 
 
 //獲取指定用戶的昵稱
