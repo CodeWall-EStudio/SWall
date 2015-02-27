@@ -1,8 +1,11 @@
 var http = require('http'),
     redis = require('redis'),
     every = require('schedule').every,
+    CAS = require('./cas'),
     _ = require('underscore')._;
 
+var querystring = require('querystring');
+var url = require('url');
 
 var redisClient = redis.createClient();
 
@@ -99,6 +102,171 @@ function response401IfUnauthoirzed(req, res, callback){
         }
     });
 }
+
+/*71 单点登陆*/
+function cas(req, res) {
+    if (!cas.ins) {
+        var host = req.protocol+'://'+req.headers.host;
+        cas.ins = new CAS({
+            base_url: 'http://dand.71xiaoxue.com:80/sso.web',
+            service: host + '/users/callback'
+        });
+    }
+    return cas.ins;
+}
+
+function casrequest(params, callback) {
+
+    var obj = url.parse(params.url);
+
+    var options = {
+        hostname: obj.hostname,
+        port: obj.port,
+        path: obj.path
+    };
+
+    options.method = params.method;
+    options.headers = params.headers || {};
+
+    var req = (obj.protocol === 'https:' ? https : http).request(options, function(res) {
+        if (res.statusCode === 200) {
+            res.setEncoding(params.encoding || 'utf8');
+            var response = '';
+            res.on('error', callback);
+
+            res.on('data', function(chunk) {
+                response += chunk;
+            });
+            res.on('end', function() {
+                callback(null, response, res);
+            });
+
+        } else {
+            callback(null, '', res);
+        }
+
+    });
+    if (options.method === 'POST' && params.data) {
+        req.write(params.data);
+    }
+    req.on('error', callback);
+    req.end();
+};
+
+function decode(skey, callback) {
+
+    var data = querystring.stringify({
+        encodeKey: skey
+    });
+
+    casrequest({
+        url: 'http://mapp.71xiaoxue.com/components/getUserInfo.htm',
+        method: 'POST',
+        data: data,
+        headers: {
+            "Content-Type": 'application/x-www-form-urlencoded',
+            "Content-Length": data.length
+        }
+
+    }, function(err, data) {
+        console.log('decode function:         '  ,data,err);
+        if (err) {
+            console.log('error');
+            callback(err);
+        } else {
+            try {
+                if (!data) {
+                    callback('the sso server does not return any thing');
+                } else {
+                    console.log(typeof data,data);
+                    callback(null, JSON.parse(data));
+                }
+            } catch (e) {
+                //Logger.error('getUserInfo Error', data);
+                callback('getUserInfo JSON parse error: ' + e.message);
+            }
+        }
+    });
+}
+
+function info(req,res){
+    var url = cas(req, res).login();
+        //Logger.info('[login] redirect to: ' + url);
+    res.redirect(url);
+}
+
+function callback(req,res){
+    var ticket = req.param('ticket');
+
+    if (!ticket) {
+        res.json({
+            err: 100001
+        });
+        return;
+    }
+
+    cas(req, res).validate(ticket, function(err, status, data) {
+
+        if (err) {
+            return res.json({
+                err: 100002,
+                msg: err
+            });
+        } else if (!status) {
+            return res.json({
+                err: 100003,
+                msg: 'cas ticket "' + ticket + '" 验证失败!'
+            });
+        }
+        try {
+            data = JSON.parse(data);
+        } catch (e) {
+            return res.json({
+                err: 100002,
+                msg: 'CAS返回的数据格式异常'
+            });
+        }
+        console.log('return:    ' ,data);
+
+        var user = {};
+        user.id = data.loginName;
+        user.skey = data.encodeKey;
+        user.role = 2; //'teacher';
+
+        //req.session.user = user;
+        res.cookie('skey', data.encodeKey);
+
+        decode(data.encodeKey, function(err, data) {
+            console.log('decode', data);
+            if (err) {
+                return res.json({
+                    err: 100001,
+                    msg: err
+                });
+            }
+
+            if (!data.success) {
+                return res.json({
+                    err: ERR.LOGIN_FAILURE,
+                    msg: data.resultMsg
+                });
+            }
+            data = data.userInfo;
+            res.cookie('loginname':data.loginName);
+            res.cookie('username':data.name);
+            return res.redirect('/teacher_space.html');
+            //console.log(data);
+            // callback(null, res.statusCode, {
+            //     uid: user.id,
+            //     skey: user.skey,
+            //     nick: data.name
+            // });            
+        });
+
+    });
+}
+/*71 单点登陆　ｅｎｄ*/
+
 
 
 /**
@@ -264,6 +432,8 @@ function request(method, api, body, cookies, onData, onError){
 
 exports.api = {
     login:                      login,
+    info : info,
+    callback : callback,     
     verifyEncodeKey:            verifyEncodeKey,
     response401IfUnauthoirzed:  response401IfUnauthoirzed,
     fetchOrganizationTree:      fetchOrganizationTree,

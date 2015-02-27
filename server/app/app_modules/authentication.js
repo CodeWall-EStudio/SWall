@@ -4,7 +4,8 @@ var http = require('http'),
     CAS = require('./cas'),
     _ = require('underscore')._;
 
-
+var querystring = require('querystring');
+var url = require('url');
 var redisClient = redis.createClient();
 
 
@@ -28,7 +29,7 @@ function cas(req, res) {
     return cas.ins;
 }
 
-function request(params, callback) {
+function casrequest(params, callback) {
 
     var obj = url.parse(params.url);
 
@@ -72,7 +73,7 @@ function decode(skey, callback) {
         encodeKey: skey
     });
 
-    request({
+    casrequest({
         url: 'http://mapp.71xiaoxue.com/components/getUserInfo.htm',
         method: 'POST',
         data: data,

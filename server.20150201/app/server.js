@@ -803,6 +803,15 @@ app.put('/activities/:aid/videos/:vid', function(req, res){
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 登錄與用戶相關
+/*71单点登录*/
+app.get('/users/info',function(req,res){
+    auth.info(req,res);
+});
+
+app.get('/users/callback',function(req,res){
+    auth.callback(req,res);
+});
+
 
 
 //跳轉到QQ互聯登錄
