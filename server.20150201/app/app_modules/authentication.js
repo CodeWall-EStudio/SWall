@@ -252,8 +252,8 @@ function callback(req,res){
                 });
             }
             data = data.userInfo;
-            res.cookie('loginname':data.loginName);
-            res.cookie('username':data.name);
+            res.cookie('loginname',data.loginName);
+            res.cookie('username',data.name);
             return res.redirect('/teacher_space.html');
             //console.log(data);
             // callback(null, res.statusCode, {
