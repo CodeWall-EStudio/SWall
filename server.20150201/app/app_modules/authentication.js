@@ -234,7 +234,9 @@ function callback(req,res){
         user.role = 2; //'teacher';
 
         //req.session.user = user;
+        res.cookie('uid',user.id);
         res.cookie('skey', data.encodeKey);
+        res.cookie('connect.sid', 'no value');
 
         decode(data.encodeKey, function(err, data) {
             console.log('decode', data);
@@ -252,6 +254,7 @@ function callback(req,res){
                 });
             }
             data = data.userInfo;
+
             res.cookie('loginname',data.loginName);
             res.cookie('username',data.name);
             return res.redirect('/teacher_space.html');
