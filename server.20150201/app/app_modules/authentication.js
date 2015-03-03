@@ -233,10 +233,17 @@ function callback(req,res){
         user.skey = data.encodeKey;
         user.role = 2; //'teacher';
 
+        var expiresDate = new Date(Date.now() + 3600000*24),
+            options = {
+                //domain: "." + /* grunt|env:server.host */"71xiaoxue.com"/* end */,
+                path: '/',
+                expires: expiresDate
+            };
+
         //req.session.user = user;
-        res.cookie('uid',user.id);
-        res.cookie('skey', data.encodeKey);
-        res.cookie('connect.sid', 'no value');
+        res.cookie('uid',user.id, options);
+        res.cookie('skey', data.encodeKey, options);
+        res.cookie('connect.sid', 'no value', options);
 
         decode(data.encodeKey, function(err, data) {
             console.log('decode', data);
@@ -255,8 +262,8 @@ function callback(req,res){
             }
             data = data.userInfo;
 
-            res.cookie('loginname',data.loginName);
-            res.cookie('username',data.name);
+            res.cookie('loginname',data.loginName,options);
+            res.cookie('username',data.name,options);
             return res.redirect('/teacher_space.html');
             //console.log(data);
             // callback(null, res.statusCode, {
